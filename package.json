@@ -1,8 +1,8 @@
 {
-  "name": "koha-plugin-kitchen-sink",
-  "version": "2.1.28",
-  "previous_version": "2.1.27",
-  "description": "Koha Kitchen Sink Plugin",
+  "name": "koha-plugin-shelfreading",
+  "version": "1.0.0",
+  "previous_version": "0.0.0",
+  "description": "Koha Shelf Reading Plugin",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-cli": "^1.2.2",
@@ -14,12 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bywatersolutions/koha-plugin-kitchen-sink.git"
+    "url": "git+https://https://github.com/hmconorthwestu/koha-plugin-shelfreading.git"
   },
-  "author": "Kyle M Hall <kyle@bywatersolutions.com>",
+  "author": "Hannah Co <hannah.co@northwestu.edu>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/bywatersolutions/koha-plugin-kitchen-sink/issues"
+    "url": "https://github.com/hmconorthwestu/koha-plugin-shelfreading/issues"
   },
   "homepage": "https://github.com/bywatersolutions/koha-plugin-kitchen-sink#readme",
   "dependencies": {
