@@ -1,4 +1,4 @@
-package Koha::Plugin::Com::ByWaterSolutions::KitchenSink::BotherPatronController;
+package Koha::Plugin::Com::NULibrar::ShelfReading::BotherPatronController;
 
 # This file is part of Koha.
 #
