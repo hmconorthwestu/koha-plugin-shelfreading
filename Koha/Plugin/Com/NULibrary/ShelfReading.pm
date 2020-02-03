@@ -325,7 +325,7 @@ sub tool_step1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-    my $template = $self->get_template({ file => 'tool-step1.tt' });
+    my $template = $self->get_template({ file => 'inventory.tt' });
 
     $self->output_html( $template->output() );
 }
@@ -354,22 +354,7 @@ sub tool_step2 {
         my $brw = Koha::Patrons->find( $r->{'borrowernumber'} )->unblessed();
         push( @victims, ( $brw ) );
     }
-    $template->param(
-	    authorised_values        => \@authorised_value_list,
-	    today                    => dt_from_string,
-	    minlocation              => $minlocation,
-	    maxlocation              => $maxlocation,
-	    location                 => $location,
-	    ignoreissued             => $ignoreissued,
-	    branchcode               => $branchcode,
-	    branch                   => $branch,
-	    datelastseen             => $datelastseen,
-	    compareinv2barcd         => $compareinv2barcd,
-	    uploadedbarcodesflag     => $uploadbarcodes ? 1 : 0,
-	    ignore_waiting_holds     => $ignore_waiting_holds,
-	    class_sources            => \@class_sources,
-	    pref_class               => $pref_class
-	);
+   
 
     $dbh->do( "INSERT INTO $table ( borrowernumber ) VALUES ( ? )",
         undef, ($borrowernumber) );
