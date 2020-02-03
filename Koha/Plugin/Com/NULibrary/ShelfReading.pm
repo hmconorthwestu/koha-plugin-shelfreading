@@ -10,6 +10,7 @@ use base qw(Koha::Plugins::Base);
 use CGI qw ( -utf8 );
 my $input = CGI->new;
 my $uploadbarcodes = $input->param('uploadbarcodes');
+my $barcode = $input->param('barcode');
 use C4::Context;
 use C4::Auth;
 use C4::Output;
@@ -98,10 +99,10 @@ sub tool {
     my $cgi = $self->{'cgi'};
 
     unless ( $cgi->param('submitted') ) {
-        $self->tool_step1();
+        $self->inventory();
     }
     else {
-        $self->tool_step2();
+        $self->inventory();
     }
 
 }
@@ -113,13 +114,13 @@ sub tool {
 sub intranet_head {
     my ( $self ) = @_;
 
-    return q|
-        <style>
-          body {
-            background-color: orange;
-          }
-        </style>
-    |;
+##    return q|
+##        <style>
+##          body {
+##            background-color: orange;
+##          }
+##        </style>
+##    |;
 }
 
 ## If your plugin needs to add some javascript in the staff intranet, you'll want
@@ -215,14 +216,23 @@ sub upgrade {
 sub uninstall() {
     my ( $self, $args ) = @_;
 
-    my $table = $self->get_qualified_table_name('mytable');
+##    my $table = $self->get_qualified_table_name('mytable');
 
-    return C4::Context->dbh->do("DROP TABLE IF EXISTS $table");
+##    return C4::Context->dbh->do("DROP TABLE IF EXISTS $table");
 }
 
 ## These are helper functions that are specific to this plugin
 ## You can manage the control flow of your plugin any
 ## way you wish, but I find this is a good approach
+sub inventory {
+    my ( $self, $args ) = @_;
+    my $cgi = $self->{'cgi'};
+
+    my $template = $self->get_template({ file => 'inventory.tt' });
+
+    $self->output_html( $template->output() );
+}
+
 sub report_step1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
@@ -324,7 +334,7 @@ sub tool_step2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-    my $template = $self->get_template({ file => 'tool-step2.tt' });
+    my $template = $self->get_template({ file => 'inventory.tt' });
 
     my $borrowernumber = C4::Context->userenv->{'number'};
     my $borrower = Koha::Patrons->find( $borrowernumber );
@@ -344,7 +354,22 @@ sub tool_step2 {
         my $brw = Koha::Patrons->find( $r->{'borrowernumber'} )->unblessed();
         push( @victims, ( $brw ) );
     }
-    $template->param( 'victims' => \@victims );
+    $template->param(
+	    authorised_values        => \@authorised_value_list,
+	    today                    => dt_from_string,
+	    minlocation              => $minlocation,
+	    maxlocation              => $maxlocation,
+	    location                 => $location,
+	    ignoreissued             => $ignoreissued,
+	    branchcode               => $branchcode,
+	    branch                   => $branch,
+	    datelastseen             => $datelastseen,
+	    compareinv2barcd         => $compareinv2barcd,
+	    uploadedbarcodesflag     => $uploadbarcodes ? 1 : 0,
+	    ignore_waiting_holds     => $ignore_waiting_holds,
+	    class_sources            => \@class_sources,
+	    pref_class               => $pref_class
+	);
 
     $dbh->do( "INSERT INTO $table ( borrowernumber ) VALUES ( ? )",
         undef, ($borrowernumber) );

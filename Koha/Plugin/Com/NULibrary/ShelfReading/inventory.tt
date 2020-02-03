@@ -20,6 +20,10 @@
             <main>
 
     <h1>Inventory</h1>
+	[% IF barcodes %]
+	[% END %]
+	<input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus />
+	
     [% IF (moddatecount) %]<div class="dialog message">[% moddatecount | html %] items modified : datelastseen set to [% date | $KohaDates %]</div>
     <div class="dialog alert">Number of potential barcodes read: [% LinesRead | html %]</div>[% END %]
     [% IF (errorfile) %]<div class="dialog alert">[% errorfile | html %] can't be opened</div>[% END %]
