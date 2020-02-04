@@ -369,28 +369,28 @@ sub tool_step2 {
 # plugin and read it here. This allows to use the spec for mainline Koha later,
 # thus making this a good prototyping tool.
 
-sub api_routes {
-    my ( $self, $args ) = @_;
+#sub api_routes {
+#    my ( $self, $args ) = @_;
 
-    my $spec_str = $self->mbf_read('openapi.json');
-    my $spec     = decode_json($spec_str);
+#    my $spec_str = $self->mbf_read('openapi.json');
+#    my $spec     = decode_json($spec_str);
 
-    return $spec;
-}
+#    return $spec;
+#}
 
-sub api_namespace {
-    my ( $self ) = @_;
+#sub api_namespace {
+#    my ( $self ) = @_;
     
-    return 'kitchensink';
-}
+#    return 'kitchensink';
+#}
 
-sub static_routes {
-    my ( $self, $args ) = @_;
+#sub static_routes {
+#    my ( $self, $args ) = @_;
 
-    my $spec_str = $self->mbf_read('staticapi.json');
-    my $spec     = decode_json($spec_str);
+#    my $spec_str = $self->mbf_read('staticapi.json');
+#    my $spec     = decode_json($spec_str);
 
-    return $spec;
-}
+#    return $spec;
+#}
 
 1;
