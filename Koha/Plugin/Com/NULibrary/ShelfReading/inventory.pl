@@ -68,7 +68,8 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my @authorised_value_list;
+my @location_list;
+my @collection_list;
 my $authorisedvalue_categories = '';
 
 my $frameworks = Koha::BiblioFrameworks->search({}, { order_by => ['frameworktext'] })->unblessed;
@@ -84,7 +85,21 @@ for my $fwk ( @$frameworks ){
       foreach my $value (@$data){
         $value->{selected}=1 if ($value->{authorised_value} eq ($location));
       }
-      push @authorised_value_list,@$data;
+      push @location_list,@$data;
+    }
+}
+
+for my $fwk ( @$frameworks ){
+  my $fwkcode = $fwk->{frameworkcode};
+  my $mss = Koha::MarcSubfieldStructures->search({ frameworkcode => $fwkcode, kohafield => 'items.ccode', authorised_value => [ -and => {'!=' => undef }, {'!=' => ''}] });
+  my $authcode = $mss->count ? $mss->next->authorised_value : undef;
+    if ($authcode && $authorisedvalue_categories!~/\b$authcode\W/){
+      $authorisedvalue_categories.="$authcode ";
+      my $data=GetAuthorisedValues($authcode);
+      foreach my $value (@$data){
+        $value->{selected}=1 if ($value->{authorised_value} eq ($location));
+      }
+      push @collection_list,@$data;
     }
 }
 
@@ -124,7 +139,8 @@ my $pref_class = C4::Context->preference("DefaultClassificationSource");
 
 
 $template->param(
-    authorised_values        => \@authorised_value_list,
+    locations 		       => \@location_list,
+	collections	    	    => \@collection_list,
     today                    => dt_from_string,
     minlocation              => $minlocation,
     maxlocation              => $maxlocation,

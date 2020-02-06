@@ -20,10 +20,6 @@
             <main>
 
     <h1>Inventory</h1>
-	[% IF barcodes %]
-	[% END %]
-	<input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus />
-	
     [% IF (moddatecount) %]<div class="dialog message">[% moddatecount | html %] items modified : datelastseen set to [% date | $KohaDates %]</div>
     <div class="dialog alert">Number of potential barcodes read: [% LinesRead | html %]</div>[% END %]
     [% IF (errorfile) %]<div class="dialog alert">[% errorfile | html %] can't be opened</div>[% END %]
@@ -42,15 +38,15 @@
     [% END %]
        [% UNLESS op %]
 
-    <form method="post" id="inventory_form" action="inventory.pl" enctype="multipart/form-data">
+    <form method="post">
         <fieldset class="rows">
           <legend>Use a barcode file</legend>
           <ol>
-            <li><label for="uploadbarcodes">Barcode file: </label> <input type="file" id="uploadbarcodes" name="uploadbarcodes" /></li>
-            <li><label for="setdate">Set inventory date to:</label> <input type="text" id="setdate" name="setdate" value="[% today | $KohaDates %]" class="datepicker" disabled /></li>
-            <li><label for="compareinv2barcd">Compare barcodes list to results: </label><input type="checkbox" name="compareinv2barcd" id="compareinv2barcd" disabled /></li>
-            <li><label for="dont_checkin">Do not check in items scanned during inventory: </label><input type="checkbox" name="dont_checkin" id="dont_checkin" disabled /></li>
-            <li><label for="out_of_order">Check barcodes list for items shelved out of order: </label><input type="checkbox" name="out_of_order" id="out_of_order" disabled /></li>
+            <li><input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus ></li>
+            <li><input type="hidden" id="setdate" name="setdate" value="[% today %]" class="datepicker" disabled /></li>
+            <li><input type="hidden" name="compareinv2barcd" id="compareinv2barcd" disabled /></li>
+            <li><label for="dont_checkin">Do not check in items scanned during inventory: </label><input type="hidden" name="dont_checkin" id="dont_checkin" enabled /></li>
+            <li><label for="out_of_order">Check barcodes list for items shelved out of order: </label><input type="hidden" name="out_of_order" id="out_of_order" enabled /></li>
           </ol>
         </fieldset>
 
@@ -66,7 +62,22 @@
             [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1, ) %]
         </select>
         </li>
-        [% IF (authorised_values) %]
+        [% IF (collections) %]
+		<li>
+            <label for="collectionloop">Collection is: </label>
+        <select id="collectionloop" name="ccode">
+                <option value="">Filter location</option>
+        [% FOREACH value IN authorised_values %]
+            [% IF (value.selected) %]
+                <option value="[% value.authorised_value | html %]" selected="selected">[% value.lib | html %]</option>
+            [% ELSE %]
+                <option value="[% value.authorised_value | html %]">[% value.lib | html %]</option>
+            [% END %]
+        [% END %]
+        </select>        
+		</li>
+		[% END %]
+		[% IF (locations) %]
         <li>
             <label for="locationloop">Shelving location (items.location) is: </label>
         <select id="locationloop" name="location">
@@ -78,25 +89,9 @@
                 <option value="[% value.authorised_value | html %]">[% value.lib | html %]</option>
             [% END %]
         [% END %]
-        </select>        </li>
+        </select>        
+		</li>
         [% END %]
-        <li>
-            <label for="minlocation">Item callnumber between: </label>
-                <input type="text" name="minlocation" id="minlocation" value="[% minlocation | html %]" /> (items.itemcallnumber)  </li>
-           <li><label for="maxlocation">...and: </label>
-                <input type="text" name="maxlocation" id="maxlocation" value="[% maxlocation | html %]" />
-           <li>
-            <label for="class_source">Callnumber classification scheme</label>
-            <select name="class_source">
-            [% FOREACH class_source IN class_sources %]
-                [% IF class_source.cn_source == pref_class %]
-                <option value="[% class_source.cn_source | html %]" selected="selected">[% class_source.description | html %] (default)</option>
-                [% ELSE %]
-                <option value="[% class_source.cn_source | html %]">[% class_source.description | html %]</option>
-                [% END %]
-            [% END %]
-            </select>
-          </li>
     </ol>
     </fieldset>
 
