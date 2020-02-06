@@ -341,15 +341,17 @@ my $compareinv2barcd = $input->param('compareinv2barcd');
 my $dont_checkin = $input->param('dont_checkin');
 my $out_of_order = $input->param('out_of_order');
 
+
 # tell which template to load and pass needed params
-    my $template = $self->get_template_and_user( {   template_name   => "inventory.tt",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "inventory.tt",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
         flagsrequired   => { tools => 'inventory' },
         debug           => 1,
-    });
-	
+    }
+);
 
 
 my @location_list;
