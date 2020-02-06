@@ -391,6 +391,61 @@ for my $fwk ( @$frameworks ){
     }
 }
 
+
+my $statuses = [];
+my @notforloans;
+for my $statfield (qw/items.notforloan items.itemlost items.withdrawn items.damaged/){
+    my $hash = {};
+    $hash->{fieldname} = $statfield;
+    my $mss = Koha::MarcSubfieldStructures->search({ frameworkcode => '', kohafield => $statfield, authorised_value => [ -and => {'!=' => undef }, {'!=' => ''}] });
+    $hash->{authcode} = $mss->count ? $mss->next->authorised_value : undef;
+    if ($hash->{authcode}){
+        my $arr = GetAuthorisedValues($hash->{authcode});
+        if ( $statfield eq 'items.notforloan') {
+            # Add notforloan == 0 to the list of possible notforloan statuses
+            # The lib value is replaced in the template
+            push @$arr, { authorised_value => 0, id => 'stat0' , lib => '__IGNORE__' } if ! grep { $_->{authorised_value} eq '0' } @$arr;
+            @notforloans = map { $_->{'authorised_value'} } @$arr;
+        }
+        $hash->{values} = $arr;
+        push @$statuses, $hash;
+    }
+}
+
+$template->param( statuses => $statuses );
+my $staton = {}; #authorized values that are ticked
+for my $authvfield (@$statuses) {
+    $staton->{$authvfield->{fieldname}} = [];
+    for my $authval (@{$authvfield->{values}}){
+        if ( defined $input->param('status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value}) && $input->param('status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value}) eq 'on' ){
+            push @{$staton->{$authvfield->{fieldname}}}, $authval->{authorised_value};
+        }
+    }
+}
+
+my @class_sources = Koha::ClassSources->search({ used => 1 });
+my $pref_class = C4::Context->preference("DefaultClassificationSource");
+
+
+$template->param(
+    locations 		       => \@location_list,
+	collections	    	    => \@collection_list,
+    today                    => dt_from_string,
+    minlocation              => $minlocation,
+    maxlocation              => $maxlocation,
+    location                 => $location,
+    ignoreissued             => $ignoreissued,
+    branchcode               => $branchcode,
+    branch                   => $branch,
+    datelastseen             => $datelastseen,
+    compareinv2barcd         => $compareinv2barcd,
+    uploadedbarcodesflag     => $uploadbarcodes ? 1 : 0,
+    ignore_waiting_holds     => $ignore_waiting_holds,
+    class_sources            => \@class_sources,
+    pref_class               => $pref_class
+);
+
+
     $self->output_html_with_http_headers( $input, $cookie, $template->output() );
 }
 
