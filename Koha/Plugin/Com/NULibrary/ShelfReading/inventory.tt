@@ -45,8 +45,8 @@
             <li><input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus ></li>
             <li><input type="hidden" id="setdate" name="setdate" value="[% today %]" class="datepicker" disabled /></li>
             <li><input type="hidden" name="compareinv2barcd" id="compareinv2barcd" disabled /></li>
-            <li><label for="dont_checkin">Do not check in items scanned during inventory: </label><input type="hidden" name="dont_checkin" id="dont_checkin" enabled /></li>
-            <li><label for="out_of_order">Check barcodes list for items shelved out of order: </label><input type="hidden" name="out_of_order" id="out_of_order" enabled /></li>
+            <li><label for="dont_checkin">Do not check in items scanned during inventory: </label><input type="checkbox" name="dont_checkin" id="dont_checkin" enabled /></li>
+            <li><label for="out_of_order">Check barcodes list for items shelved out of order: </label><input type="checkbox" name="out_of_order" id="out_of_order" enabled /></li>
           </ol>
         </fieldset>
 

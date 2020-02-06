@@ -324,10 +324,72 @@ sub report_step2 {
 sub tool_step1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
+	
+	# set all parameters needed	
+my $minlocation=$input->param('minlocation') || '';
+my $maxlocation=$input->param('maxlocation');
+my $class_source=$input->param('class_source');
+$maxlocation=$minlocation.'Z' unless ( $maxlocation || ! $minlocation );
+my $location=$input->param('location') || '';
+my $ignoreissued=$input->param('ignoreissued');
+my $ignore_waiting_holds = $input->param('ignore_waiting_holds');
+my $datelastseen = $input->param('datelastseen'); # last inventory date
+my $branchcode = $input->param('branchcode') || '';
+my $branch     = $input->param('branch');
+my $op         = $input->param('op');
+my $compareinv2barcd = $input->param('compareinv2barcd');
+my $dont_checkin = $input->param('dont_checkin');
+my $out_of_order = $input->param('out_of_order');
 
-    my $template = $self->get_template({ file => 'inventory.tt' });
+# tell which template to load and pass needed params
+    my $template = $self->get_template_and_user( {   template_name   => "inventory.tt",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { tools => 'inventory' },
+        debug           => 1,
+    });
+	
 
-    $self->output_html( $template->output() );
+
+my @location_list;
+my @collection_list;
+my $authorisedvalue_categories = '';
+
+my $frameworks = Koha::BiblioFrameworks->search({}, { order_by => ['frameworktext'] })->unblessed;
+unshift @$frameworks, { frameworkcode => '' };
+
+# build list of possible locations
+for my $fwk ( @$frameworks ){
+  my $fwkcode = $fwk->{frameworkcode};
+  my $mss = Koha::MarcSubfieldStructures->search({ frameworkcode => $fwkcode, kohafield => 'items.location', authorised_value => [ -and => {'!=' => undef }, {'!=' => ''}] });
+  my $authcode = $mss->count ? $mss->next->authorised_value : undef;
+    if ($authcode && $authorisedvalue_categories!~/\b$authcode\W/){
+      $authorisedvalue_categories.="$authcode ";
+      my $data=GetAuthorisedValues($authcode);
+      foreach my $value (@$data){
+        $value->{selected}=1 if ($value->{authorised_value} eq ($location));
+      }
+      push @location_list,@$data;
+    }
+}
+
+# build list of possible collections
+for my $fwk ( @$frameworks ){
+  my $fwkcode = $fwk->{frameworkcode};
+  my $mss = Koha::MarcSubfieldStructures->search({ frameworkcode => $fwkcode, kohafield => 'items.ccode', authorised_value => [ -and => {'!=' => undef }, {'!=' => ''}] });
+  my $authcode = $mss->count ? $mss->next->authorised_value : undef;
+    if ($authcode && $authorisedvalue_categories!~/\b$authcode\W/){
+      $authorisedvalue_categories.="$authcode ";
+      my $data=GetAuthorisedValues($authcode);
+      foreach my $value (@$data){
+        $value->{selected}=1 if ($value->{authorised_value} eq ($location));
+      }
+      push @collection_list,@$data;
+    }
+}
+
+    $self->output_html_with_http_headers( $input, $cookie, $template->output() );
 }
 
 sub tool_step2 {
