@@ -99,10 +99,10 @@ sub tool {
     my $cgi = $self->{'cgi'};
 
     unless ( $cgi->param('submitted') ) {
-        $self->inventory();
+        $self->inventory2();
     }
     else {
-        $self->inventory();
+        $self->inventory2();
     }
 
 }
@@ -321,7 +321,7 @@ sub report_step2 {
     print $template->output();
 }
 
-sub tool_step1 {
+sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 	
