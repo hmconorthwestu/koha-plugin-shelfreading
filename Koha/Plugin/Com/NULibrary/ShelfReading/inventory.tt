@@ -17,7 +17,6 @@
         <div class="col-sm-10 col-sm-push-2">
             <main>
 
-    <h1>Inventory</h1>
     [% IF (moddatecount) %]<div class="dialog message">[% moddatecount | html %] items modified : datelastseen set to [% date | $KohaDates %]</div>
     <div class="dialog alert">Number of potential barcodes read: [% LinesRead | html %]</div>[% END %]
     [% IF (errorfile) %]<div class="dialog alert">[% errorfile | html %] can't be opened</div>[% END %]
@@ -65,7 +64,7 @@
             <label for="collectionloop">Collection is: </label>
         <select id="collectionloop" name="ccode">
                 <option value="">Filter location</option>
-        [% FOREACH value IN authorised_values %]
+        [% FOREACH value IN collections %]
             [% IF (value.selected) %]
                 <option value="[% value.authorised_value | html %]" selected="selected">[% value.lib | html %]</option>
             [% ELSE %]
@@ -80,7 +79,7 @@
             <label for="locationloop">Shelving location (items.location) is: </label>
         <select id="locationloop" name="location">
                 <option value="">Filter location</option>
-        [% FOREACH value IN authorised_values %]
+        [% FOREACH value IN locations %]
             [% IF (value.selected) %]
                 <option value="[% value.authorised_value | html %]" selected="selected">[% value.lib | html %]</option>
             [% ELSE %]
