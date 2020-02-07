@@ -12,6 +12,7 @@ my $input = CGI->new;
 my $uploadbarcodes = $input->param('uploadbarcodes');
 my $barcode = $input->param('barcode');
 use C4::Context;
+use lib C4::Context->config("pluginsdir");
 use C4::Auth;
 use C4::Output;
 use C4::Biblio;
