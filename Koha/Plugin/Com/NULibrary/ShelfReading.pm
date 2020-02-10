@@ -257,7 +257,7 @@ my $out_of_order = $input->param('out_of_order');
 
 # tell which template to load and pass needed params
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {   template_name   => "ShelfReading/inventory.tt",
+    {   template_name   => $self->mbf_path( $args->{'inventory.tt'} ),
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
