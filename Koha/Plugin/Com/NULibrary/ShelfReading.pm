@@ -78,17 +78,17 @@ sub new {
 ## either as HTML or as a CSV file. Technically, you could put all your code
 ## in the report method, but that would be a really poor way to write code
 ## for all but the simplest reports
-sub report {
-    my ( $self, $args ) = @_;
-    my $cgi = $self->{'cgi'};
+##sub report {
+##    my ( $self, $args ) = @_;
+##    my $cgi = $self->{'cgi'};
 
-    unless ( $cgi->param('output') ) {
-        $self->report_step1();
-    }
-    else {
-        $self->report_step2();
-    }
-}
+##    unless ( $cgi->param('output') ) {
+##        $self->report_step1();
+##    }
+##    else {
+##        $self->report_step2();
+##    }
+##}
 
 ## The existance of a 'tool' subroutine means the plugin is capable
 ## of running a tool. The difference between a tool and a report is
@@ -256,8 +256,8 @@ my $out_of_order = $input->param('out_of_order');
 
 
 # tell which template to load and pass needed params
-my ( $template, $borrowernumber, $cookie ) = $self->get_template_and_user(
-    {   template_name   => "ShelfReading/inventory.tt",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "inventory.tt",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
