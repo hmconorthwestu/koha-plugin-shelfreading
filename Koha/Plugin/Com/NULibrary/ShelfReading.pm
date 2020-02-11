@@ -359,7 +359,7 @@ $template->param(
 );
 
 
-    $self->output_html_with_http_headers( $input, $cookie, $template->output() );
+    $self->output_html($template->output() );
 }
 
 sub tool_step2 {
