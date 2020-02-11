@@ -256,16 +256,16 @@ my $out_of_order = $input->param('out_of_order');
 
 
 # tell which template to load and pass needed params
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {   template_name   => $self->mbf_path( $args->{'ShelfReading/inventory.tt'} ),
-        query           => $input,
-        type            => "intranet",
-        authnotrequired => 0,
-        flagsrequired   => { tools => 'inventory' },
-        debug           => 1,
-    }
-);
-
+#my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+#    {   template_name   => $self->mbf_path( $args->{'ShelfReading/inventory.tt'} ),
+##        query           => $input,
+#        type            => "intranet",
+ #       authnotrequired => 0,
+#        flagsrequired   => { tools => 'inventory' },
+#        debug           => 1,
+#    }
+#);
+my $template = $self->get_template({ file => 'inventory.tt' });
 
 my @location_list;
 my @collection_list;
