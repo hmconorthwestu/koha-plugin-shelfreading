@@ -277,6 +277,7 @@
                 if ( !(
                     $('#branchloop').val()   ||
                     $('#locationloop').val() ||
+					$('#collectionloop').val() ||
                     $('#minlocation').val()  ||
                     $('#maxlocation').val()  ||
                     $('#statuses input:checked').length
