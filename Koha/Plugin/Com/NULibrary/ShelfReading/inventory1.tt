@@ -32,13 +32,7 @@
 
     [% END %]
     [% IF (op) %]
-    <form method="post" action="inventory.pl" class="checkboxed">
-    <input type="hidden" name="minlocation" value="[% minlocation | html %]" />
-    <input type="hidden" name="maxlocation" value="[% maxlocation | html %]" />
-    <input type="hidden" name="location" value="[% location | html %]" />
-    <input type="hidden" name="branchcode" value="[% branchcode | html %]" />
-    <input type="hidden" name="datelastseen" value="[% datelastseen | html %]" />
-
+    <form method="post" class="checkboxed">
     <table id="inventoryt">
     <thead>
         <tr>
