@@ -251,6 +251,11 @@ sub inventory1 {
 	
 	# set date to log in datelastseen column
 	my $datelastseen = '%Y-%m-%d';
+	
+$template->param(
+    uploadedbarcodesflag     => $bc ? 1 : 0,
+);
+
 my $results = {};
 my @scanned_items;
 my @errorloop;
