@@ -358,6 +358,218 @@ $template->param(
     pref_class               => $pref_class
 );
 
+my $results = {};
+my @scanned_items;
+my @errorloop;
+my $moddatecount = 0;
+if ( $uploadbarcodes && length($uploadbarcodes) > 0 ) {
+    my $dbh = C4::Context->dbh;
+    my $date = dt_from_string( scalar $input->param('setdate') );
+    $date = output_pref ( { dt => $date, dateformat => 'iso' } );
+
+    my $strsth  = "select * from issues, items where items.itemnumber=issues.itemnumber and items.barcode =?";
+    my $qonloan = $dbh->prepare($strsth);
+    $strsth="select * from items where items.barcode =? and items.withdrawn = 1";
+    my $qwithdrawn = $dbh->prepare($strsth);
+
+    my @barcodes;
+    my @uploadedbarcodes;
+
+    my $sth = $dbh->column_info(undef,undef,"items","barcode");
+    my $barcode_def = $sth->fetchall_hashref('COLUMN_NAME');
+    my $barcode_size = $barcode_def->{barcode}->{COLUMN_SIZE};
+    my $err_length=0;
+    my $err_data=0;
+    my $lines_read=0;
+    binmode($uploadbarcodes, ":encoding(UTF-8)");
+    while (my $barcode=<$uploadbarcodes>) {
+        my $split_chars = C4::Context->preference('BarcodeSeparators');
+        push @uploadedbarcodes, grep { /\S/ } split( /[$split_chars]/, $barcode );
+    }
+    for my $barcode (@uploadedbarcodes) {
+        next unless $barcode;
+        ++$lines_read;
+        if (length($barcode)>$barcode_size) {
+            $err_length += 1;
+        }
+        my $check_barcode = $barcode;
+        $check_barcode =~ s/\p{Print}//g;
+        if (length($check_barcode)>0) { # Only printable unicode characters allowed.
+            $err_data += 1;
+        }
+        next if length($barcode)>$barcode_size;
+        next if ( length($check_barcode)>0 );
+        push @barcodes,$barcode;
+    }
+    $template->param( LinesRead => $lines_read );
+    if (! @barcodes) {
+        push @errorloop, {'barcode'=>'No valid barcodes!'};
+        $op=''; # force the initial inventory screen again.
+    }
+    else {
+        $template->param( err_length => $err_length,
+                          err_data   => $err_data );
+    }
+    foreach my $barcode (@barcodes) {
+        if ( $qwithdrawn->execute($barcode) && $qwithdrawn->rows ) {
+            push @errorloop, { 'barcode' => $barcode, 'ERR_WTHDRAWN' => 1 };
+        } else {
+            my $item = Koha::Items->find({barcode => $barcode});
+            if ( $item ) {
+                $item = $item->unblessed;
+                # Modify date last seen for scanned items, remove lost status
+                ModItem( { itemlost => 0, datelastseen => $date }, undef, $item->{'itemnumber'} );
+                $moddatecount++;
+                # update item hash accordingly
+                $item->{itemlost} = 0;
+                $item->{datelastseen} = $date;
+                unless ( $dont_checkin ) {
+                    $qonloan->execute($barcode);
+                    if ($qonloan->rows){
+                        my $data = $qonloan->fetchrow_hashref;
+                        my ($doreturn, $messages, $iteminformation, $borrower) =AddReturn($barcode, $data->{homebranch});
+                        if( $doreturn ) {
+                            $item->{onloan} = undef;
+                            $item->{datelastseen} = dt_from_string;
+                        } else {
+                            push @errorloop, { barcode => $barcode, ERR_ONLOAN_NOT_RET => 1 };
+                        }
+                    }
+                }
+                push @scanned_items, $item;
+            } else {
+                push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
+            }
+        }
+    }
+    $template->param( date => $date );
+    $template->param( errorloop => \@errorloop ) if (@errorloop);
+}
+
+# Build inventorylist: used as result list when you do not pass barcodes
+# This list is also used when you want to compare with barcodes
+my ( $inventorylist, $rightplacelist );
+if ( $op && ( !$uploadbarcodes || $compareinv2barcd )) {
+    ( $inventorylist ) = GetItemsForInventory({
+      minlocation  => $minlocation,
+      maxlocation  => $maxlocation,
+      class_source => $class_source,
+      location     => $location,
+      ignoreissued => $ignoreissued,
+      datelastseen => $datelastseen,
+      branchcode   => $branchcode,
+      branch       => $branch,
+      offset       => 0,
+      statushash   => $staton,
+      ignore_waiting_holds => $ignore_waiting_holds,
+    });
+}
+# Build rightplacelist used to check if a scanned item is in the right place.
+if( @scanned_items ) {
+    ( $rightplacelist ) = GetItemsForInventory({
+      minlocation  => $minlocation,
+      maxlocation  => $maxlocation,
+      class_source => $class_source,
+      location     => $location,
+      ignoreissued => undef,
+      datelastseen => undef,
+      branchcode   => $branchcode,
+      branch       => $branch,
+      offset       => 0,
+      statushash   => undef,
+      ignore_waiting_holds => $ignore_waiting_holds,
+    });
+    # Convert the structure to a hash on barcode
+    $rightplacelist = {
+        map { $_->{barcode} ? ( $_->{barcode}, $_ ) : (); } @$rightplacelist
+    };
+}
+
+# Report scanned items that are on the wrong place, or have a wrong notforloan
+# status, or are still checked out.
+for ( my $i = 0; $i < @scanned_items; $i++ ) {
+
+    my $item = $scanned_items[$i];
+
+    $item->{notforloancode} = $item->{notforloan}; # save for later use
+    my $fc = $item->{'frameworkcode'} || '';
+
+    # Populating with authorised values description
+    foreach my $field (qw/ location notforloan itemlost damaged withdrawn /) {
+        my $av = Koha::AuthorisedValues->get_description_by_koha_field(
+            { frameworkcode => $fc, kohafield => "items.$field", authorised_value => $item->{$field} } );
+        if ( $av and defined $item->{$field} and defined $av->{lib} ) {
+            $item->{$field} = $av->{lib};
+        }
+    }
+
+    # If we have scanned items with a non-matching notforloan value
+    if( none { $item->{'notforloancode'} eq $_ } @notforloans ) {
+        $item->{problems}->{changestatus} = 1;
+        additemtoresults( $item, $results );
+    }
+
+    # Check for items shelved out of order
+    if ($out_of_order) {
+        unless ( $i == 0 ) {
+            my $previous_item = $scanned_items[ $i - 1 ];
+            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
+                $item->{problems}->{out_of_order} = 1;
+                additemtoresults( $item, $results );
+            }
+        }
+        unless ( $i == scalar(@scanned_items) ) {
+            my $next_item = $scanned_items[ $i + 1 ];
+            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+                $item->{problems}->{out_of_order} = 1;
+                additemtoresults( $item, $results );
+            }
+        }
+    }
+
+    # Report an item that is checked out (unusual!) or wrongly placed
+    if( $item->{onloan} ) {
+        $item->{problems}->{checkedout} = 1;
+        additemtoresults( $item, $results );
+        next; # do not modify item
+    } elsif( !exists $rightplacelist->{ $item->{barcode} } ) {
+        $item->{problems}->{wrongplace} = 1;
+        additemtoresults( $item, $results );
+    }
+}
+
+# Compare barcodes with inventory list, report no_barcode and not_scanned.
+# not_scanned can be interpreted as missing
+if ( $compareinv2barcd ) {
+    my @scanned_barcodes = map {$_->{barcode}} @scanned_items;
+    for my $item ( @$inventorylist ) {
+        my $barcode = $item->{barcode};
+        if( !$barcode ) {
+            $item->{problems}->{no_barcode} = 1;
+        } elsif ( grep { $_ eq $barcode } @scanned_barcodes ) {
+            next;
+        } else {
+            $item->{problems}->{not_scanned} = 1;
+        }
+        additemtoresults( $item, $results );
+    }
+}
+
+# Construct final results, add biblio information
+my $loop = $uploadbarcodes
+    ? [ map { $results->{$_} } keys %$results ]
+    : $inventorylist // [];
+for my $item ( @$loop ) {
+    my $biblio = Koha::Biblios->find( $item->{biblionumber} );
+    $item->{title} = $biblio->title;
+    $item->{author} = $biblio->author;
+}
+
+$template->param(
+    moddatecount => $moddatecount,
+    loop         => $loop,
+    op           => $op,
+);
 
     $self->output_html($template->output() );
 }
