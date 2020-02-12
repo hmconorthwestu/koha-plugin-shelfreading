@@ -9,7 +9,7 @@ use base qw(Koha::Plugins::Base);
 ## We will also need to include any Koha libraries we want to access
 use CGI qw ( -utf8 );
 my $input = CGI->new;
-my $uploadbarcodes = $input->param('uploadbarcodes');
+my $bc = $input->param('bc');
 my $barcode = $input->param('barcode');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
