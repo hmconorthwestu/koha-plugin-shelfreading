@@ -316,7 +316,6 @@ if ( $bc && length($bc) > 0 ) {
                 $item = $item->unblessed;
                 # Modify date last seen for scanned items, remove lost status
                 ModItem( { itemlost => 0, datelastseen => $date }, undef, $item->{'itemnumber'} );
-                $moddatecount++;
                 # update item hash accordingly
                 $item->{itemlost} = 0;
                 $item->{datelastseen} = $date;
