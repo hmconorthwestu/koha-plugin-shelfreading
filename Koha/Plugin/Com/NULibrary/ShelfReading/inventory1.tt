@@ -9,6 +9,7 @@
 </head>
 
 <body id="tools_inventory" class="tools">
+[% INCLUDE 'header.inc' %]
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo; [% IF (loop) %]<a href="inventory.pl">Shelf Reading</a> &rsaquo; Results[% ELSE %]Shelf Reading[% END %]</div>
 
@@ -17,7 +18,6 @@
         <div class="col-sm-10 col-sm-push-2">
             <main>
 
-    [% IF (moddatecount) %]<div class="dialog message">[% moddatecount | html %] items modified : datelastseen set to [% date | $KohaDates %]</div>
     <form method="post">
         <fieldset class="rows">
           <legend>enter a barcode</legend>
@@ -29,8 +29,6 @@
 
             <fieldset class="action"><input type="submit" value="Submit" class="button" /></fieldset>
     </form>
-
-    [% END %]
     [% IF (op) %]
     <form method="post" class="checkboxed">
     <table id="inventoryt">
