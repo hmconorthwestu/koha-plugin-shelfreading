@@ -251,6 +251,7 @@ sub inventory1 {
 	
 	# set date to log in datelastseen column
 	my $datelastseen = '%Y-%m-%d';
+	my $op         = $input->param('op');
 	
 $template->param(
     uploadedbarcodesflag     => $bc ? 1 : 0,
