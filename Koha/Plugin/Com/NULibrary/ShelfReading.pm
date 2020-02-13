@@ -103,7 +103,7 @@ sub tool {
         $self->inventory1();
     }
     else {
-        $self->inventory1();
+        $self->inventory();
     }
 
 }
