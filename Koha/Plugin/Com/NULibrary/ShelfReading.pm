@@ -100,10 +100,10 @@ sub tool {
     my $cgi = $self->{'cgi'};
 
     unless ( $cgi->param('submitted') ) {
-        $self->inventory1();
+        $self->inventory();
     }
     else {
-        $self->inventory();
+        $self->inventory1();
     }
 
 }
@@ -229,7 +229,7 @@ sub inventory {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-    my $template = $self->get_template({ file => 'inventory.tt' });
+    my $template = $self->get_template({ file => 'inventory1.tt' });
 	
 	# to get lists of collections and shelving locations to choose from
 	my $location=$input->param('location') || '';
@@ -243,6 +243,7 @@ sub inventory {
 
     $self->output_html( $template->output() );
 }
+
 sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
@@ -253,81 +254,81 @@ sub inventory1 {
 	my $datelastseen = '%Y-%m-%d';
 	my $op         = $input->param('op');
 	
-$template->param(
-    uploadedbarcodesflag     => $bc ? 1 : 0,
-);
-
-my $results = {};
-my @scanned_items;
-my @errorloop;
-if ( $bc && length($bc) > 0 ) {
-    my $dbh = C4::Context->dbh;
-    my $date = $datelastseen;
-
-    my $strsth  = "select * from issues, items where items.itemnumber=issues.itemnumber and items.barcode =?";
-    my $qonloan = $dbh->prepare($strsth);
-    $strsth="select * from items where items.barcode =? and items.withdrawn = 1";
-    my $qwithdrawn = $dbh->prepare($strsth);
-
-    my @barcodes;
-    my @uploadedbarcodes;
-
-    my $sth = $dbh->column_info(undef,undef,"items","barcode");
-    my $barcode_def = $sth->fetchall_hashref('COLUMN_NAME');
-    my $barcode_size = $barcode_def->{barcode}->{COLUMN_SIZE};
-    my $err_length=0;
-    my $err_data=0;
-    my $lines_read=0;
-    binmode($bc, ":encoding(UTF-8)");
-    while (my $barcode=<$bc>) {
-        my $split_chars = C4::Context->preference('BarcodeSeparators');
-        push @uploadedbarcodes, grep { /\S/ } split( /[$split_chars]/, $barcode );
-    }
-    for my $barcode (@uploadedbarcodes) {
-        next unless $barcode;
-        ++$lines_read;
-        if (length($barcode)>$barcode_size) {
-            $err_length += 1;
-        }
-        my $check_barcode = $barcode;
-        $check_barcode =~ s/\p{Print}//g;
-        if (length($check_barcode)>0) { # Only printable unicode characters allowed.
-            $err_data += 1;
-        }
-        next if length($barcode)>$barcode_size;
-        next if ( length($check_barcode)>0 );
-        push @barcodes,$barcode;
-    }
-    $template->param( LinesRead => $lines_read );
-    if (! @barcodes) {
-        push @errorloop, {'barcode'=>'No valid barcodes!'};
-        $op=''; # force the initial inventory screen again.
-    }
-    else {
-        $template->param( err_length => $err_length,
-                          err_data   => $err_data );
-    }
-    foreach my $barcode (@barcodes) {
-        if ( $qwithdrawn->execute($barcode) && $qwithdrawn->rows ) {
-            push @errorloop, { 'barcode' => $barcode, 'ERR_WTHDRAWN' => 1 };
-        } else {
-            my $item = Koha::Items->find({barcode => $barcode});
-            if ( $item ) {
-                $item = $item->unblessed;
-                # Modify date last seen for scanned items, remove lost status
-                ModItem( { itemlost => 0, datelastseen => $date }, undef, $item->{'itemnumber'} );
-                # update item hash accordingly
-                $item->{itemlost} = 0;
-                $item->{datelastseen} = $date;
-                push @scanned_items, $item;
-            } else {
-                push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
-            }
-        }
-    }
-    $template->param( date => $date );
-    $template->param( errorloop => \@errorloop ) if (@errorloop);
-}
+	$template->param(
+	    uploadedbarcodesflag     => $bc ? 1 : 0,
+	);
+	
+	my $results = {};
+	my @scanned_items;
+	my @errorloop;
+	if ( $bc && length($bc) > 0 ) {
+	    my $dbh = C4::Context->dbh;
+	    my $date = $datelastseen;
+	
+	    my $strsth  = "select * from issues, items where items.itemnumber=issues.itemnumber and items.barcode =?";
+	    my $qonloan = $dbh->prepare($strsth);
+	    $strsth="select * from items where items.barcode =? and items.withdrawn = 1";
+	    my $qwithdrawn = $dbh->prepare($strsth);
+	
+	    my @barcodes;
+	    my @uploadedbarcodes;
+	
+	    my $sth = $dbh->column_info(undef,undef,"items","barcode");
+	    my $barcode_def = $sth->fetchall_hashref('COLUMN_NAME');
+	    my $barcode_size = $barcode_def->{barcode}->{COLUMN_SIZE};
+	    my $err_length=0;
+	    my $err_data=0;
+	    my $lines_read=0;
+	    binmode($bc, ":encoding(UTF-8)");
+	    while (my $barcode=<$bc>) {
+	        my $split_chars = C4::Context->preference('BarcodeSeparators');
+	        push @uploadedbarcodes, grep { /\S/ } split( /[$split_chars]/, $barcode );
+	    }
+	    for my $barcode (@uploadedbarcodes) {
+	        next unless $barcode;
+	        ++$lines_read;
+	        if (length($barcode)>$barcode_size) {
+	            $err_length += 1;
+	        }
+	        my $check_barcode = $barcode;
+	        $check_barcode =~ s/\p{Print}//g;
+	        if (length($check_barcode)>0) { # Only printable unicode characters allowed.
+	            $err_data += 1;
+	        }
+	        next if length($barcode)>$barcode_size;
+	        next if ( length($check_barcode)>0 );
+	        push @barcodes,$barcode;
+	    }
+	    $template->param( LinesRead => $lines_read );
+	    if (! @barcodes) {
+	        push @errorloop, {'barcode'=>'No valid barcodes!'};
+	        $op=''; # force the initial inventory screen again.
+	    }
+	    else {
+	        $template->param( err_length => $err_length,
+	                          err_data   => $err_data );
+	    }
+	    foreach my $barcode (@barcodes) {
+	        if ( $qwithdrawn->execute($barcode) && $qwithdrawn->rows ) {
+	            push @errorloop, { 'barcode' => $barcode, 'ERR_WTHDRAWN' => 1 };
+	        } else {
+	            my $item = Koha::Items->find({barcode => $barcode});
+	            if ( $item ) {
+	                $item = $item->unblessed;
+	                # Modify date last seen for scanned items, remove lost status
+	                ModItem( { itemlost => 0, datelastseen => $date }, undef, $item->{'itemnumber'} );
+	                # update item hash accordingly
+	                $item->{itemlost} = 0;
+	                $item->{datelastseen} = $date;
+	                push @scanned_items, $item;
+	            } else {
+	                push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
+	            }
+	        }
+	    }
+	    $template->param( date => $date );
+	    $template->param( errorloop => \@errorloop ) if (@errorloop);
+	}
 
     $self->output_html( $template->output() );
 }
