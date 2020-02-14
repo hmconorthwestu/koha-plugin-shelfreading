@@ -127,15 +127,11 @@
     <script type="text/javascript">
         function checkForm() {
             if ( $('#bc').val() ) {
-                if ( !(
-                    $('#branchloop').val()
-                ) ) {
                     return confirm(
                         _("You have not selected any catalog filters and are about to compare a file of barcodes to your entire catalog.") + "\n\n" +
                         _("For large catalogs this can result in unexpected behavior") + "\n\n" +
                         _("Are you sure you want to do this?")
                     );
-                }
             }
 
             return true;

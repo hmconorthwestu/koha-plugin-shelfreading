@@ -2,6 +2,7 @@ package Koha::Plugin::Com::NULibrary::ShelfReading;
 
 ## It's good practice to use Modern::Perl
 use Modern::Perl;
+use strict;
 
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
@@ -100,7 +101,7 @@ sub tool {
     my $cgi = $self->{'cgi'};
 
     unless ( $cgi->param('submitted') ) {
-        $self->inventory();
+        $self->inventory1();
     }
     else {
         $self->inventory1();
