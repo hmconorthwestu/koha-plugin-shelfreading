@@ -251,6 +251,8 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 	
+	my $input = CGI->new;
+	my $bc = $input->param('bc');
 	# set date to log in datelastseen column
 	my $datelastseen = '%Y-%m-%d';
 	my $op         = $input->param('op');
