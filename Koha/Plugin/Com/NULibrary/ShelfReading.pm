@@ -101,7 +101,7 @@ sub tool {
     my $cgi = $self->{'cgi'};
 
     unless ( $cgi->param('submitted') ) {
-        $self->inventory1();
+        $self->inventory();
     }
     else {
         $self->inventory1();
@@ -231,16 +231,7 @@ sub inventory {
     my $cgi = $self->{'cgi'};
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
-	
-	# to get lists of collections and shelving locations to choose from
-	my $location=$input->param('location') || '';
-	my $collection=$input->param('collection') || '';
-	# set date to log in datelastseen column
-	my $datelastseen = '%Y-%m-%d';
-	# gets branch that Koha is logged into
-	my $branchcode = $input->param('branchcode') || '';
-	# confirmation that form was submitted
-	my $op         = $input->param('op');
+
 
     $self->output_html( $template->output() );
 }
@@ -249,7 +240,7 @@ sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-    my $template = $self->get_template({ file => 'inventory1.tt' });
+    my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my $input = CGI->new;
 	my $bc = $input->param('bc');
@@ -329,7 +320,7 @@ sub inventory1 {
 	            }
 	        }
 	    }
-	    $template->param( date => $date );
+	    $template->param( scanned_items => \@scanned_items );
 	    $template->param( errorloop => \@errorloop ) if (@errorloop);
 	}
 

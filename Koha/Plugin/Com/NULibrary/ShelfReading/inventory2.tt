@@ -1,0 +1,28 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Kitchen Sink Plugin: Example Tool</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Kitchen Sink &rsaquo; Example Tool</div>
+
+<div id="doc3">
+
+    [% IF scanned_items %]
+
+        <ul>
+            [% FOREACH b IN scanned_items %]
+                <li>b</li>
+            [% END %]
+        </ul>
+    [% ELSE %]
+        <p>No items scanned</p>
+		 [% IF errorloop %]
+		 <p>errorloop</p>
+		 [% END %]
+
+    [% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]
