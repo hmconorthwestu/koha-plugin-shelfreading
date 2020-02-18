@@ -242,12 +242,14 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
+	my @barcodes = '';
 	my $input = CGI->new;
 	my $bc = $input->param('bc');
 	# set date to log in datelastseen column
 	my $datelastseen = '%Y-%m-%d';
+	push ( @barcodes, ( $bc ) );
 
-	$template->param( scanned_items => $bc );
+	$template->param( 'scanned_items' => \@barcodes );
 
     $self->output_html( $template->output() );
 }
