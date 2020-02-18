@@ -12,7 +12,7 @@
 	[% IF barcodes %]
 	<p>template 2 </p>
 		[% FOREACH b IN barcodes %]
-		<p>[% b %]</p>
+		<p>[% b.itemnumber %]</p>
 		[% END %]
 	[% END %]
 </div>

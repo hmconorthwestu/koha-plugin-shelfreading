@@ -247,9 +247,10 @@ sub inventory2 {
 	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
 	my $datelastseen = '%Y-%m-%d';
-	push ( @barcodes, ( $bc ) );
+	my $item = Koha::Items->find({barcode => $bc});
+	push ( @barcodes, ( $item ) );
 
-	$template->param( 'scanned_items' => \@barcodes );
+	$template->param( 'barcodes' => \@barcodes );
 
     $self->output_html( $template->output() );
 }
