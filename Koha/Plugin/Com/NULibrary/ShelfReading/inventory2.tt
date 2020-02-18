@@ -9,10 +9,10 @@
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Kitchen Sink &rsaquo; Example Tool</div>
 
 <div id="doc3">
-	[% IF scanned_items %]
+	[% IF barcodes %]
 	<p>template 2 </p>
-		[% FOREACH b IN scanned_items %]
-		<p>[% b.bc %]</p>
+		[% FOREACH b IN barcodes %]
+		<p>[% b %]</p>
 		[% END %]
 	[% END %]
 </div>
