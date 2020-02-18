@@ -100,11 +100,11 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 
-    unless ( $cgi->param('submitted') ) {
-        $self->inventory();
+    unless ( $cgi->param('bc') ) {
+        $self->inventory1();
     }
     else {
-        $self->inventory1();
+        $self->inventory2();
     }
 
 }
@@ -226,7 +226,7 @@ sub uninstall() {
 ## These are helper functions that are specific to this plugin
 ## You can manage the control flow of your plugin any
 ## way you wish, but I find this is a good approach
-sub inventory {
+sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
@@ -236,13 +236,13 @@ sub inventory {
     $self->output_html( $template->output() );
 }
 
-sub inventory1 {
+sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
-	my @barcodes = '';
+	my @barcodes;
 	my $input = CGI->new;
 	my $bc = $input->param('bc');
 	# set date to log in datelastseen column
