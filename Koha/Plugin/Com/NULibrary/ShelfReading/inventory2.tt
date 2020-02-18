@@ -10,18 +10,8 @@
 
 <div id="doc3">
 
-    [% IF scanned_items %]
-        <ul>
+<p>template 2 </p>
 
-                <li>testing</li>
-
-        </ul>
-    [% ELSE %]
-        <p>No items scanned</p>
-		 [% IF errorloop %]
-		 <p>error loop exists</p>
-		 [% END %]
-
-    [% END %]
+</div>
 
 [% INCLUDE 'intranet-bottom.inc' %]
