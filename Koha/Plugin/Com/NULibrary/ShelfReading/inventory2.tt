@@ -12,14 +12,14 @@
 
     [% IF scanned_items %]
         <ul>
-            [% FOREACH b IN scanned_items %]
-                <li>b</li>
-            [% END %]
+
+                <li>testing</li>
+
         </ul>
     [% ELSE %]
         <p>No items scanned</p>
 		 [% IF errorloop %]
-		 <p>errorloop</p>
+		 <p>error loop exists</p>
 		 [% END %]
 
     [% END %]
