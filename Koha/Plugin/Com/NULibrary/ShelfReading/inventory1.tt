@@ -25,8 +25,6 @@
             <li><input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus ></li>
           </ol>
         </fieldset>
-            <input type="hidden" name="op" value="do_it" />
-
         <fieldset class="action"><input type="submit" value="Submit" class="button" />
 		</fieldset>
     </form>
