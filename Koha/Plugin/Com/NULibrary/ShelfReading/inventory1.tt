@@ -27,88 +27,10 @@
         </fieldset>
             <input type="hidden" name="op" value="do_it" />
 
-            <fieldset class="action"><input type="submit" value="Submit" class="button" /></fieldset>
-    </form>
-    [% IF (op) %]
-    <form method="post" class="checkboxed">
-    <table id="inventoryt">
-    <thead>
-        <tr>
-            [% UNLESS uploadedbarcodesflag %]<th>Seen</th>[% END %]
-            <th>Barcode</th>
-            <th>Call number</th>
-            <th>Library</th>
-            <th>Title</th>
-            <th>Not for loan</th>
-            <th>Lost</th>
-            <th>Damaged</th>
-            <th>Withdrawn</th>
-            <th>Last seen</th>
-            <th>Problems</th>
-        </tr>
-    </thead>
-    <tbody>
-    [% FOREACH result IN loop %]
-        <tr>
-            [% UNLESS uploadedbarcodesflag %]
-              <td>
-                <input type="checkbox" name="SEEN-[% result.itemnumber | html %]" value="1" />
-              </td>
-            [% END %]
-            <td>
-            [% result.barcode | html %]
-            </td>
-            <td>[% result.itemcallnumber | html %]</td>
-            <td>
-                [% Branches.GetName( result.homebranch ) | html %]
-                <span class="shelvingloc">[% result.location | html %]</span>
-            </td>
-            <td>
-                <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% result.biblionumber | uri %]" class="openWin">[% result.title | html %]</a>
-                [% IF ( result.author ) %]
-                    by <span class="author">[% result.author | html %]</span>
-                [% END %]
-            </td>
-            <td>
-            [% result.notforloan | html %]
-            </td>
-            <td>
-            [% result.itemlost | html %]
-            </td>
-            <td>
-            [% result.damaged | html %]
-            </td>
-            <td>
-            [% result.withdrawn | html %]
-            </td>
-            <td>
-            [% result.datelastseen | $KohaDates %]
-            </td>
-            <td>
-            [% FOREACH problem IN result.problems %]
-                [% IF problem.key == 'wrongplace' %]
-                    Found in wrong place<br/>
-                [% ELSIF problem.key == 'changestatus' %]
-                    Unknown not-for-loan status<br/>
-                [% ELSIF problem.key == 'not_scanned' %]
-                    Missing (not scanned)<br/>
-                [% ELSIF problem.key == 'checkedout' %]
-                    Still checked out<br/>
-                [% ELSIF problem.key == 'no_barcode' %]
-                    No barcode<br/>
-                [% ELSIF problem.key == 'out_of_order' %]
-                    Item may be shelved out of order<br/>
-                [% END %]
-            [% END %]
-            </td>
-        </tr>
-    [% END %]
-    </tbody>
-    </table>
+        <fieldset class="action"><input type="submit" value="Submit" class="button" />
+		</fieldset>
     </form>
 
-
-    [% END %]
 
             </main>
         </div> <!-- /.col-sm-10.col-sm-push-2 -->
@@ -119,30 +41,4 @@
         </div> <!-- .col-sm-2.col-sm-pull-10 -->
      </div> <!-- /.row -->
 
-[% MACRO jsinclude BLOCK %]
-    [% Asset.js("js/tools-menu.js") | $raw %]
-    [% INCLUDE 'datatables.inc' %]
-    [% INCLUDE 'calendar.inc' %]
-    [% Asset.js("lib/jquery/plugins/jquery.checkboxes.min.js") | $raw %]
-    <script type="text/javascript">
-        function checkForm() {
-            if ( $('#bc').val() ) {
-                    return confirm(
-                        _("You have not selected any catalog filters and are about to compare a file of barcodes to your entire catalog.") + "\n\n" +
-                        _("For large catalogs this can result in unexpected behavior") + "\n\n" +
-                        _("Are you sure you want to do this?")
-                    );
-            }
-
-            return true;
-        }
-
-            $("#inventory_form").on("submit",function(){
-                return checkForm();
-            });
-
-
-        });
-    </script>
-[% END %]
 [% INCLUDE 'intranet-bottom.inc' %]
