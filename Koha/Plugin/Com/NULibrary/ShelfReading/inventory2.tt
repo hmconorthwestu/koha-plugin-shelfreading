@@ -12,7 +12,7 @@
 	[% IF scanned_items %]
 	<p>template 2 </p>
 		[% FOREACH b IN scanned_items %]
-		<p>[% b.barcodes %]</p>
+		<p>[% b.bc %]</p>
 		[% END %]
 	[% END %]
 </div>
