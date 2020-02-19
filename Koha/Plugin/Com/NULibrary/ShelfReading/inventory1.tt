@@ -8,10 +8,13 @@
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 
-<body id="tools_inventory" class="tools">
-[% INCLUDE 'header.inc' %]
+<body>
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Shelf Reading</div>
+
+<div id="NUPluginTitle">
+<h1>Shelf Reading</h1>
+</div>
 
 <div id="doc3">
     <form method="post">

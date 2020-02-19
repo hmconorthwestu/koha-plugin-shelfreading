@@ -9,6 +9,7 @@ use base qw(Koha::Plugins::Base);
 
 ## We will also need to include any Koha libraries we want to access
 use CGI qw ( -utf8 );
+use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
 my $barcode = $input->param('barcode');
@@ -97,6 +98,9 @@ sub new {
 ## Koha database should be considered a tool
 sub tool {
     my ( $self, $args ) = @_;
+	
+	CGI::Session->name("Shelf");
+	my $session = CGI::Session->new () or die CGI::Session->errstr;
 
     my $cgi = $self->{'cgi'};
 
@@ -247,7 +251,7 @@ sub inventory2 {
 
 	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
-	my $datelastseen = '%Y-%m-%d';
+	my $datelastseen = strftime "%Y-%m-%d", localtime time;
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
 		$item = $item->unblessed;
@@ -258,10 +262,16 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 
 		push @barcodes, $item;
+		
+		$session->param('items', \@barcodes);
+		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
-	push ( @barcodes, ( $item ) );
+	
+	
+	
+	# push ( @barcodes, ( $item ) );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);

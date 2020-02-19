@@ -1,12 +1,14 @@
 [% INCLUDE 'doc-head-open.inc' %]
- <title>Koha: Kitchen Sink Plugin: Example Tool</title>
+ <title>Koha Shelf Reading</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body>
-[% INCLUDE 'header.inc' %]
-[% INCLUDE 'cat-search.inc' %]
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Kitchen Sink &rsaquo; Example Tool</div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Shelf Reading</div>
+
+<div id="NUPluginTitle">
+<h1>Shelf Reading</h1>
+</div>
 
 <div id="doc3">
 	[% IF barcodes %]
@@ -19,6 +21,7 @@
 		<p>datelastseen: [% b.datelastseen %]</p>
 		[% END %]
 	[% END %]
+	
 	<form method="post">
 		<input type="hidden" name="class" value="[% CLASS %]"/>
         <input type="hidden" name="method" value="[% METHOD %]"/>
