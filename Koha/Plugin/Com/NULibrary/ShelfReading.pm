@@ -259,7 +259,8 @@ sub inventory2 {
 
 	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
-	my $datelastseen = strftime "%Y-%m-%d", localtime;
+	my $dt = dt_from_string();
+	my $datelastseen = $dt->ymd('-');
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
 		$item = $item->unblessed;
