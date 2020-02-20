@@ -271,26 +271,28 @@ sub inventory2 {
 		push @barcodes, $item;
 		
 #		$session->param('items', \@barcodes);
+	my $s = CGI::Session->load() or die CGI::Session->errstr();
+	if ( $s->is_expired ) {
+		$template->param( 'expired_session' => $s );
+		$s = CGI::Session->new();
+	} 
+	if ( $s->is_empty ) {
+		$template->param( 'empty_session' => $s );
+		$template->param( 'session_id' => $s->id() );
+		$s->param("item",$item);
+		$template->param( 'session_items' => $s->load_param() );
+	} else {
+		$s->param("item",$item);
+		$template->param( 'session_items' => $s->load_param("item") );
+	}
+	
+
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
 	
-	my $s = CGI::Session->load() or die CGI::Session->errstr();
-	if ( $s->is_expired ) {
-		$template->param( 'expired_session' => $s );
-	} else {
-		my $n = 'item';
-		$s->param(-name=>$n,-value=>$item);
-		$template->param( 'session_items' => $s->load_param('item') );
-	}
-	if ( $s->is_empty ) {
-		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
-		my $n = 'item';
-		$s->param(-name=>$n,-value=>$item);
-		$template->param( 'session_items' => $s->load_param('item') );
-	}
+	
 	
 	# push ( @barcodes, ( $item ) );
 
