@@ -26,4 +26,10 @@
     </form>
 </div> 
 
+[% IF expired_session %]
+	<p>session expired </p>
+[% END %]
+[% IF empty_session %]
+	<p>session empty </p>
+[% END %]
 [% INCLUDE 'intranet-bottom.inc' %]

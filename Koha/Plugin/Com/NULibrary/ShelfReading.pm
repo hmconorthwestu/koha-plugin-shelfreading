@@ -99,8 +99,8 @@ sub new {
 sub tool {
     my ( $self, $args ) = @_;
 	
-	CGI::Session->name("Shelf");
-	my $session = CGI::Session->new () or die CGI::Session->errstr;
+#	CGI::Session->name("Shelf");
+#	my $session = CGI::Session->new () or die CGI::Session->errstr;
 
     my $cgi = $self->{'cgi'};
 
@@ -234,8 +234,16 @@ sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
+
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
+	$s = CGI::Session->load() or die CGI::Session->errstr();
+	if ( $s->is_expired ) {
+		$template->param( 'expired_session' => $s );
+	}
+	if ( $s->is_empty ) {
+		$template->param( 'empty_session' => $s );
+	}
 
     $self->output_html( $template->output() );
 }
@@ -251,7 +259,7 @@ sub inventory2 {
 
 	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
-	my $datelastseen = strftime "%Y-%m-%d", localtime time;
+	my $datelastseen = strftime "%Y-%m-%d", localtime;
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
 		$item = $item->unblessed;
@@ -263,7 +271,7 @@ sub inventory2 {
 
 		push @barcodes, $item;
 		
-		$session->param('items', \@barcodes);
+#		$session->param('items', \@barcodes);
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
