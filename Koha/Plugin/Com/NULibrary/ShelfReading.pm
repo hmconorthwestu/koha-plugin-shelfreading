@@ -98,9 +98,6 @@ sub new {
 ## Koha database should be considered a tool
 sub tool {
     my ( $self, $args ) = @_;
-	
-#	CGI::Session->name("Shelf");
-#	my $session = CGI::Session->new () or die CGI::Session->errstr;
 
     my $cgi = $self->{'cgi'};
 
@@ -243,6 +240,7 @@ sub inventory1 {
 	}
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
+		$template->param( 'session_id' => $s->id() );
 	}
 
     $self->output_html( $template->output() );
@@ -278,7 +276,21 @@ sub inventory2 {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
 	
-	
+	my $s = CGI::Session->load() or die CGI::Session->errstr();
+	if ( $s->is_expired ) {
+		$template->param( 'expired_session' => $s );
+	} else {
+		my $n = 'item';
+		$s->param(-name=>$n,-value=>$item);
+		$template->param( 'session_items' => $s->load_param('item') );
+	}
+	if ( $s->is_empty ) {
+		$template->param( 'empty_session' => $s );
+		$template->param( 'session_id' => $s->id() );
+		my $n = 'item';
+		$s->param(-name=>$n,-value=>$item);
+		$template->param( 'session_items' => $s->load_param('item') );
+	}
 	
 	# push ( @barcodes, ( $item ) );
 

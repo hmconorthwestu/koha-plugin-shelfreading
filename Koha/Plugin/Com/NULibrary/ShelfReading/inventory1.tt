@@ -30,6 +30,19 @@
 	<p>session expired </p>
 [% END %]
 [% IF empty_session %]
-	<p>session empty </p>
+	<p>session empty [% session_id %]</p>
+	
+	
+	
+[% END %]
+[% IF session_items %]
+	<p>session items exist</p>
+	[% FOREACH b IN session_items %]
+		<p>barcode: [% b.barcode %]</p>
+		<p>itemnumber: [% b.itemnumber %]</p>
+		<p>onloan: [% b.onloan %]</p>
+		<p>withdrawn: [% b.withdrawn %]</p>
+		<p>datelastseen: [% b.datelastseen %]</p>
+		[% END %]
 [% END %]
 [% INCLUDE 'intranet-bottom.inc' %]
