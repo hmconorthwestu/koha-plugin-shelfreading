@@ -237,7 +237,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	$s = CGI::Session->load() or die CGI::Session->errstr();
+	my $s = CGI::Session->load() or die CGI::Session->errstr();
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 	}
