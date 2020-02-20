@@ -30,7 +30,15 @@
 		</fieldset>
     </form>
 </div>
-
+[% IF expired_session %]
+	<p>session expired </p>
+[% END %]
+[% IF empty_session %]
+	<p>session empty [% session_id %]</p>
+	
+	
+	
+[% END %]
 [% IF session_items %]
 	<p>session items exist</p>
 	[% FOREACH b IN session_items %]

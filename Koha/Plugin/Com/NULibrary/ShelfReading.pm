@@ -280,7 +280,7 @@ sub inventory2 {
 		$template->param( 'empty_session' => $s );
 		$template->param( 'session_id' => $s->id() );
 		$s->param("item",$item);
-		$template->param( 'session_items' => $s->load_param() );
+		$template->param( 'session_items' => $s->load_param("item") );
 	} else {
 		$s->param("item",$item);
 		$template->param( 'session_items' => $s->load_param("item") );
