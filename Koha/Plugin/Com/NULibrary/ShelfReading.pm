@@ -282,11 +282,9 @@ sub inventory2 {
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
 		$template->param( 'session_id' => $s->id() );
-		$s->param("item",$item);
-		$template->param( 'session_items' => $s->load_param("item") );
+		
 	} else {
-		$s->param("item",$item);
-		$template->param( 'session_items' => $s->load_param("item") );
+		$template->param( 'session_id' => $s->id() );
 	}
 	
 
