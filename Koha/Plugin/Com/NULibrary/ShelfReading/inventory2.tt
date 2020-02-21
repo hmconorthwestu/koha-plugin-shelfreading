@@ -34,7 +34,8 @@
 	<p>session expired </p>
 [% END %]
 [% IF empty_session %]
-	<p>session empty [% session_id %]</p>
+	<p>session empty</p>
+	 <p>[% session_id %]</p>
 	
 	
 	

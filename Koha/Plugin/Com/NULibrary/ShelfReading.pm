@@ -100,6 +100,8 @@ sub tool {
     my ( $self, $args ) = @_;
 
     my $cgi = $self->{'cgi'};
+	
+	my $s = CGI::Session->new("items");
 
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
@@ -234,7 +236,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = CGI::Session->load() or die CGI::Session->errstr();
+	my $s = CGI::Session->load("items") or die CGI::Session->errstr();
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 	}
@@ -271,7 +273,8 @@ sub inventory2 {
 		push @barcodes, $item;
 		
 #		$session->param('items', \@barcodes);
-	my $s = CGI::Session->load() or die CGI::Session->errstr();
+
+	my $s = CGI::Session->load("items") or die CGI::Session->errstr();
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 		$s = CGI::Session->new();
