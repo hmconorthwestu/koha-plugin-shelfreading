@@ -40,6 +40,13 @@
 	
 	
 [% END %]
+[% IF session_id %]
+	<p>session id</p>
+	 <p>[% session_id %]</p>
+	
+	
+	
+[% END %]
 [% IF session_items %]
 	<p>session items exist</p>
 	[% FOREACH b IN session_items %]
