@@ -101,12 +101,12 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-	my $s = $cgi->load("items");
+	my $s = CGI::Session->load("items");
 	if ( $s->is_expired ) {
-		my $s = $cgi->new("items");
+		my $s = CGI::Session->new("items");
 	}
 	if ( $s->is_empty ) {
-		my $s = $cgi->new("items");
+		my $s = CGI::Session->new("items");
 	}
 	
     unless ( $cgi->param('bc') ) {
@@ -242,15 +242,15 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = $cgi->load("items");
+	my $s = CGI::Session->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 	}
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	}
 
     $self->output_html( $template->output() );
@@ -282,17 +282,17 @@ sub inventory2 {
 		
 #		$session->param('items', \@barcodes);
 
-	my $s = $cgi->load("items");
+	my $s = CGI::Session->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
-		$s = $cgi->new();
+		$s = CGI::Session->new();
 	} 
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 		
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	}
 	
 
