@@ -247,7 +247,7 @@ sub inventory2 {
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my @barcodes;
-	my @done_barcodes
+	my @done_barcodes;
 	my @errorloop;
 	my $dbitem;
 
@@ -280,7 +280,7 @@ sub inventory2 {
 		push @barcodes, $item;
 		
 		C4::Context->dbh->do( "INSERT INTO shelf_reading ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
-        undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber});
+        undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber}));
 
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
