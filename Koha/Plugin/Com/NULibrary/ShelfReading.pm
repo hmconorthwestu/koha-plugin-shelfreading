@@ -292,7 +292,7 @@ sub inventory2 {
 		
 		push @barcodes, $item;
 		
-		$dbh->do( "INSERT INTO $table ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
+		C4::Context->dbh->do( "INSERT INTO shelf_reading ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
         undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber});
 
 	} else {
@@ -304,7 +304,7 @@ sub inventory2 {
         SELECT * FROM shelf_reading
     ";
 
-    my $sth = $dbh->prepare($query);
+    my $sth = C4::Context->dbh->prepare($query);
     $sth->execute();
 
     my @results;
@@ -326,12 +326,12 @@ sub inventory2 {
             my $previous_item = $results[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
-            } elseif ( $previous_item && $item->{ccode} != $previous_item->{ccode} ) {
+            } elsif ( $previous_item && $item->{ccode} != $previous_item->{ccode} ) {
 				$item->{problems}->{wrong_collection} = 1;
 			}
         }
-        unless ( $i == scalar(@barcodes) ) {
-            my $next_item = $barcodes[ $i + 1 ];
+        unless ( $i == scalar(@results) ) {
+            my $next_item = $results[ $i + 1 ];
             if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
             }
