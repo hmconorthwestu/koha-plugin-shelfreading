@@ -101,8 +101,6 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-<<<<<<< HEAD
-=======
 	my $s = $cgi->load("items");
 	if ( $s->is_expired ) {
 		my $s = $cgi->new("items");
@@ -110,8 +108,6 @@ sub tool {
 	if ( $s->is_empty ) {
 		my $s = $cgi->new("items");
 	}
-	
->>>>>>> parent of 43758e0... try to get $cgi id
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
     }
@@ -248,20 +244,12 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-<<<<<<< HEAD
-=======
-	my $s = $cgi->load("items");
-	if ( $s->is_expired ) {
-		$template->param( 'expired_session' => $s );
-	}
-	if ( $s->is_empty ) {
-		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+	if ($cgi->cookie("items")) {
+		$template->param( 'session' => $cgi->cookie("items") );
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session' => '' );
 	}
 
->>>>>>> parent of 43758e0... try to get $cgi id
     $self->output_html( $template->output() );
 }
 
@@ -292,7 +280,6 @@ sub inventory2 {
 		#$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
 		
-<<<<<<< HEAD
 		# prep current item data for database
 		$dbitem->{cn_sort} = $item->{cn_sort};
 		$dbitem->{barcode} = $item->{barcode};
@@ -305,7 +292,7 @@ sub inventory2 {
 		}
 		
 		push @barcodes, $item;
-=======
+
 #		$session->param('items', \@barcodes);
 
 	my $s = $cgi->load("items");
@@ -320,9 +307,6 @@ sub inventory2 {
 	} else {
 		$template->param( 'session_id' => $s->id() );
 	}
-	
-
->>>>>>> parent of 43758e0... try to get $cgi id
 		
 		C4::Context->dbh->do( "INSERT INTO $table ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
         undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber}));
