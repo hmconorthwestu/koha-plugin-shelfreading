@@ -246,7 +246,6 @@ sub inventory2 {
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
-	my $table = $self->get_qualified_table_name('shelf_reading');
 	my @barcodes;
 	my @done_barcodes;
 	my @errorloop;
@@ -280,7 +279,7 @@ sub inventory2 {
 		
 		push @barcodes, $item;
 		
-		C4::Context->dbh->do( "INSERT INTO $table ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
+		C4::Context->dbh->do( "INSERT INTO shelf_reading ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
         undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber}));
 
 	} else {
@@ -292,7 +291,8 @@ sub inventory2 {
         SELECT * FROM shelf_reading
     ";
 
-    my $sth2 = C4::Context->dbh->do("SELECT * FROM shelf_reading");
+    my $sth2 = C4::Context->dbh->prepare($selectquery);
+    $sth2->execute();
 
     my @results;
     while ( my $row = $sth2->fetchrow_hashref() ) {
@@ -328,7 +328,7 @@ sub inventory2 {
 		if( $item->{onloan} ) {
 			$item->{problems}->{checkedout} = 1;
 			next; # do not modify item
-		}
+		} 
 		push @done_barcodes, $item;
 	}
 
