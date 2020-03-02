@@ -259,7 +259,7 @@ sub inventory2 {
         SELECT * FROM shelf_reading
     ";
 
-    my $sth = C4::Context->dbh->prepare($query);
+    my $sth = $dbh->prepare($query);
     $sth->execute();
 
     my @results;
