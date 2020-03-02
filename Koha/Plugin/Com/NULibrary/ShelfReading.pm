@@ -228,6 +228,7 @@ sub uninstall() {
     return C4::Context->dbh->do("DROP TABLE IF EXISTS $table");
 }
 
+
 ## These are helper functions that are specific to this plugin
 ## You can manage the control flow of your plugin any
 ## way you wish, but I find this is a good approach
@@ -338,6 +339,8 @@ sub inventory2 {
 
     $self->output_html( $template->output() );
 }
+
+
 
 ## API methods
 # If your plugin implements API routes, then the 'api_routes' method needs
