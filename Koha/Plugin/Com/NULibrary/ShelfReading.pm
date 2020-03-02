@@ -247,7 +247,7 @@ sub inventory1 {
 	if ($cgi->cookie("items")) {
 		$template->param( 'session' => $cgi->cookie("items") );
 	} else {
-		$template->param( 'session' => '' );
+		$template->param( 'session' => $cgi );
 	}
 
     $self->output_html( $template->output() );
@@ -298,14 +298,14 @@ sub inventory2 {
 	my $s = $cgi->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
-		$s = $cgi->new();
+		$s = $cgi->new("items");
 	} 
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $s->cookie() );
 		
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $s->cookie() );
 	}
 		
 		C4::Context->dbh->do( "INSERT INTO $table ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
