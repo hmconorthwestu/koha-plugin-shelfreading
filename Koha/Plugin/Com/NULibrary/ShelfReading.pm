@@ -248,9 +248,9 @@ sub inventory1 {
 	}
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $cgi->id() );
+		$template->param( 'session_id' => $cgi->cookie() );
 	} else {
-		$template->param( 'session_id' => $cgi->id() );
+		$template->param( 'session_id' => $cgi->cookie() );
 	}
 
     $self->output_html( $template->output() );
@@ -289,10 +289,10 @@ sub inventory2 {
 	} 
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $cgi->id() );
+		$template->param( 'session_id' => $cgi->cookie() );
 		
 	} else {
-		$template->param( 'session_id' => $cgi->id() );
+		$template->param( 'session_id' => $cgi->cookie() );
 	}
 	
 
