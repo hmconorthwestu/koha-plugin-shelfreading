@@ -101,6 +101,14 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
+	my $s = CGI::Session->load("items");
+	if ( $s->is_expired ) {
+		my $s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+	}
+	if ( $s->is_empty ) {
+		my $s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+	}
+	
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
     }
@@ -190,21 +198,17 @@ sub intranet_js {
 ## be done when the plugin if first installed should be executed in this method.
 ## The installation method should always return true if the installation succeeded
 ## or false if it failed.
- sub install() {
-    my ( $self, $args ) = @_;
-
-    my $table = $self->get_qualified_table_name('shelf_reading');
-
-    return C4::Context->dbh->do( "
-        CREATE TABLE IF NOT EXISTS $table (
-            `scan_order` INT( 11 ) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-			`barcode` VARCHAR( 20 ) NOT NULL,
-			`cn_sort` VARCHAR( 255 ) NOT NULL,
-			`error` VARCHAR( 255 ) NOT NULL,
-			`callnumber` VARCHAR( 255 ) NOT NULL
-        ) ENGINE = INNODB;
-    " );
- }
+## sub install() {
+##    my ( $self, $args ) = @_;
+##
+##    my $table = $self->get_qualified_table_name('mytable');
+##
+##    return C4::Context->dbh->do( "
+##        CREATE TABLE IF NOT EXISTS $table (
+##            `borrowernumber` INT( 11 ) NOT NULL
+##        ) ENGINE = INNODB;
+##    " );
+## }
 
 ## This is the 'upgrade' method. It will be triggered when a newer version of a
 ## plugin is installed over an existing older version of a plugin
@@ -223,9 +227,9 @@ sub upgrade {
 sub uninstall() {
     my ( $self, $args ) = @_;
 
-    my $table = $self->get_qualified_table_name('shelf_reading');
+##    my $table = $self->get_qualified_table_name('mytable');
 
-    return C4::Context->dbh->do("DROP TABLE IF EXISTS $table");
+##    return C4::Context->dbh->do("DROP TABLE IF EXISTS $table");
 }
 
 ## These are helper functions that are specific to this plugin
@@ -235,7 +239,19 @@ sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
+
     my $template = $self->get_template({ file => 'inventory1.tt' });
+
+	my $s = CGI::Session->load("items");
+	if ( $s->is_expired ) {
+		$template->param( 'expired_session' => $s );
+	}
+	if ( $s->is_empty ) {
+		$template->param( 'empty_session' => $s );
+		$template->param( 'session_id' => $s->id() );
+	} else {
+		$template->param( 'session_id' => $s->id() );
+	}
 
     $self->output_html( $template->output() );
 }
@@ -253,99 +269,43 @@ sub inventory2 {
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
-	
-	# get all items
-	my $query = "
-        SELECT * FROM shelf_reading
-    ";
-
-    my $sth = $dbh->prepare($query);
-    $sth->execute();
-
-    my @results;
-    while ( my $row = $sth->fetchrow_hashref() ) {
-        push( @results, $row );
-    }
-	
-	
-	#get current item data
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
 		$item = $item->unblessed;
-		# Modify date last seen for scanned items
-		ModItem( { datelastseen => $datelastseen }, undef, $item->{'itemnumber'} );
+		# Modify date last seen for scanned items, remove lost status
+		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, $item->{'itemnumber'} );
 		# update item hash accordingly
-		#$item->{itemlost} = 0;
+		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
-		
-		# prep current item data for database
-		$dbitem->{cn_sort} = $item->{cn_sort};
-		$dbitem->{barcode} = $item->{barcode};
-		$dbitem->{callnumber} = $item->{itemcallnumber};
-		if ($item->{withdrawn} > 0) {
-			$dbitem->{error} = 1;
-		}
-		if ($item->{itemlost} > 0) {
-			$dbitem->{error} = 1;
-		}
-		
+
 		push @barcodes, $item;
 		
-		$dbh->do( "INSERT INTO $table ( barcode, cn_sort, error, callnumber ) VALUES ( ? )",
-        undef, ($dbitem->{barcode}, $dbitem->{cn_sort}, $dbitem->{error}, $dbitem->{callnumber});
+#		$session->param('items', \@barcodes);
 
+	my $s = CGI::Session->load("items");
+	if ( $s->is_expired ) {
+		$template->param( 'expired_session' => $s );
+		$s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+	} 
+	if ( $s->is_empty ) {
+		$template->param( 'empty_session' => $s );
+		$template->param( 'session_id' => $s->id() );
+		
+	} else {
+		$template->param( 'session_id' => $s->id() );
+	}
+	
+
+		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
-	}	
+	}
 	
-		# get all items
-	my $query = "
-        SELECT * FROM shelf_reading
-    ";
-
-    my $sth = $dbh->prepare($query);
-    $sth->execute();
-
-    my @results;
-    while ( my $row = $sth->fetchrow_hashref() ) {
-        push( @results, $row );
-    }
 	
-	for ( my $i = 0; $i < @results; $i++ ) {
-
-		my $item = $results[$i];
-		
-		if ($item->{error} > 0) {
-			$item->{problems}->{error} = 1;
-		}
-
-    # Check for items shelved out of order
-
-        unless ( $i == 0 ) {
-            my $previous_item = $results[ $i - 1 ];
-            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
-                $item->{problems}->{out_of_order} = 1;
-            } elseif ( $previous_item && $item->{ccode} != $previous_item->{ccode} ) {
-				$item->{problems}->{wrong_collection} = 1;
-			}
-        }
-        unless ( $i == scalar(@barcodes) ) {
-            my $next_item = $barcodes[ $i + 1 ];
-            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-                $item->{problems}->{out_of_order} = 1;
-            }
-        }
-
-		# Report an item that is checked out (unusual!) or wrongly placed
-		if( $item->{onloan} ) {
-			$item->{problems}->{checkedout} = 1;
-			next; # do not modify item
-		} 
-		push @done_barcodes, $item;
-}
+	
+	# push ( @barcodes, ( $item ) );
 
 	$template->param( 'barcodes' => \@barcodes );
-	$template->param( 'done_barcodes' => \@done_barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
 
     $self->output_html( $template->output() );
