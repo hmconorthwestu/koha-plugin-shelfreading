@@ -257,7 +257,6 @@ sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my $table = $self->get_qualified_table_name('shelf_reading');
