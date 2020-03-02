@@ -27,9 +27,9 @@
 </div> 
 
 [% END %]
-[% IF session %]
-	<p>session existd</p>
-	[% FOREACH b IN session %]
+[% IF session_items %]
+	<p>session items exist</p>
+	[% FOREACH b IN session_items %]
 		<p>barcode: [% b.barcode %]</p>
 		<p>itemnumber: [% b.itemnumber %]</p>
 		<p>onloan: [% b.onloan %]</p>
