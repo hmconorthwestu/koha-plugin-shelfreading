@@ -103,10 +103,10 @@ sub tool {
 	
 	my $s = CGI::Session->load("items");
 	if ( $s->is_expired ) {
-		my $s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+		my $s = CGI::Session->new("items");
 	}
 	if ( $s->is_empty ) {
-		my $s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+		my $s = CGI::Session->new("items");
 	}
 	
     unless ( $cgi->param('bc') ) {
@@ -248,9 +248,9 @@ sub inventory1 {
 	}
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	}
 
     $self->output_html( $template->output() );
@@ -285,14 +285,14 @@ sub inventory2 {
 	my $s = CGI::Session->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
-		$s = CGI::Session->new("driver:file", "items", {Directory=>'/tmp'});
+		$s = CGI::Session->new();
 	} 
 	if ( $s->is_empty ) {
 		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 		
 	} else {
-		$template->param( 'session_id' => $s->id() );
+		$template->param( 'session_id' => $cgi->id() );
 	}
 	
 

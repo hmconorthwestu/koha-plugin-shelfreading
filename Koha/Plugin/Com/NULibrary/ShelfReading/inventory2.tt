@@ -43,9 +43,7 @@
 [% IF session_id %]
 	<p>session id</p>
 	 <p>[% session_id %]</p>
-	[% FOREACH s IN session %]
-		<p>id: [% s.id %]</p>
-	[% END %]
+	
 	
 	
 [% END %]
