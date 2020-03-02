@@ -248,7 +248,6 @@ sub inventory2 {
 	
 	my @barcodes;
 	my @errorloop;
-	my $dbitem;
 
 	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
