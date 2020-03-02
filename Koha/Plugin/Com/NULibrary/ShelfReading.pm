@@ -247,7 +247,6 @@ sub inventory2 {
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my @barcodes;
-	my @done_barcodes
 	my @errorloop;
 	my $dbitem;
 
@@ -255,7 +254,21 @@ sub inventory2 {
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
-		
+	
+	# get all items
+	my $query = "
+        SELECT * FROM shelf_reading
+    ";
+
+    my $sth = C4::Context->dbh->prepare($query);
+    $sth->execute();
+
+    my @results;
+    while ( my $row = $sth->fetchrow_hashref() ) {
+        push( @results, $row );
+    }
+	
+	
 	#get current item data
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
@@ -286,16 +299,16 @@ sub inventory2 {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}	
 	
-	# get all items
-	my $selectquery = "
+		# get all items
+	my $query = "
         SELECT * FROM shelf_reading
     ";
 
-    my $sth2 = C4::Context->dbh->prepare($selectquery);
-    $sth2->execute();
+    my $sth = C4::Context->dbh->prepare($query);
+    $sth->execute();
 
     my @results;
-    while ( my $row = $sth2->fetchrow_hashref() ) {
+    while ( my $row = $sth->fetchrow_hashref() ) {
         push( @results, $row );
     }
 	
@@ -330,7 +343,7 @@ sub inventory2 {
 			next; # do not modify item
 		} 
 		push @done_barcodes, $item;
-	}
+}
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( 'done_barcodes' => \@done_barcodes );
