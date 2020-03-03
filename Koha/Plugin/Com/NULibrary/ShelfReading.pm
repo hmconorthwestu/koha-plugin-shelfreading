@@ -302,7 +302,6 @@ sub inventory2 {
 	}
 	
 	
-	
 	# push ( @barcodes, ( $item ) );
 
 	$template->param( 'barcodes' => \@barcodes );
