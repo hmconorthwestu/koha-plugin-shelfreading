@@ -242,7 +242,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = CGI::Session->load("items");
+	my $s = $cgi->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 	}
@@ -282,7 +282,7 @@ sub inventory2 {
 		
 #		$session->param('items', \@barcodes);
 
-	my $s = CGI::Session->load("items");
+	my $s = $cgi->load("items");
 	if ( $s->is_expired ) {
 		$template->param( 'expired_session' => $s );
 		$s = CGI::Session->new();
