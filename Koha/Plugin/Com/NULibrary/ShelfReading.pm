@@ -239,19 +239,9 @@ sub inventory1 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = $cgi->load("items");
-	if ( $s->is_expired ) {
-		$template->param( 'expired_session' => $s );
-	}
-	if ( $s->is_empty ) {
-		$template->param( 'empty_session' => $s );
-		$template->param( 'session_id' => $cgi->cookie() );
-	} else {
-		$template->param( 'session_id' => $cgi->cookie() );
-	}
+	$template->param( 'session_id' => $cgi->cookie() );
 
     $self->output_html( $template->output() );
 }
@@ -282,19 +272,7 @@ sub inventory2 {
 		
 #		$session->param('items', \@barcodes);
 
-	my $s = $cgi->load("items");
-	if ( $s->is_expired ) {
-		$template->param( 'expired_session' => $s );
-		$s = CGI::Session->new();
-	} 
-	if ( $s->is_empty ) {
-		$template->param( 'empty_session' => $s );
 		$template->param( 'session_id' => $cgi->cookie() );
-		
-	} else {
-		$template->param( 'session_id' => $cgi->cookie() );
-	}
-	
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };

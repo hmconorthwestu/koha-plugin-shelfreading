@@ -32,9 +32,6 @@
 [% IF empty_session %]
 	<p>session empty</p>
 	 <p>[% session_id %]</p>
-	
-	
-	
 [% END %]
 [% IF session_id %]
 	<p>session is active</p>
