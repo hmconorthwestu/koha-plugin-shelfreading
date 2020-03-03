@@ -295,7 +295,6 @@ sub inventory2 {
 		$template->param( 'session_id' => $cgi->cookie() );
 	}
 	
-
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
