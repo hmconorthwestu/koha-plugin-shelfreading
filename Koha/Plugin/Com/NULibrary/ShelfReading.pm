@@ -308,7 +308,6 @@ sub inventory2 {
 }
 
 
-
 ## API methods
 # If your plugin implements API routes, then the 'api_routes' method needs
 # to be implemented, returning valid OpenAPI 2.0 paths serialized as a hashref.
