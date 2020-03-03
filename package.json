@@ -1,7 +1,7 @@
 {
   "name": "koha-plugin-shelfreading",
-  "version": "1.0.54",
-  "previous_version": "1.0.53",
+  "version": "1.0.55",
+  "previous_version": "1.0.54",
   "description": "Koha Shelf Reading Plugin",
   "devDependencies": {
     "gulp": "^3.9.1",
