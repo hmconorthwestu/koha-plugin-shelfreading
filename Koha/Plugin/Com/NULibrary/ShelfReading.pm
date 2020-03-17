@@ -278,7 +278,6 @@ sub inventory2 {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
 	
-	
 	# push ( @barcodes, ( $item ) );
 
 	$template->param( 'barcodes' => \@barcodes );
@@ -286,7 +285,6 @@ sub inventory2 {
 
     $self->output_html( $template->output() );
 }
-
 
 
 ## API methods
