@@ -75,23 +75,6 @@ sub new {
     return $self;
 }
 
-## The existance of a 'report' subroutine means the plugin is capable
-## of running a report. This example report can output a list of patrons
-## either as HTML or as a CSV file. Technically, you could put all your code
-## in the report method, but that would be a really poor way to write code
-## for all but the simplest reports
-##sub report {
-##    my ( $self, $args ) = @_;
-##    my $cgi = $self->{'cgi'};
-
-##    unless ( $cgi->param('output') ) {
-##        $self->report_step1();
-##    }
-##    else {
-##        $self->report_step2();
-##    }
-##}
-
 ## The existance of a 'tool' subroutine means the plugin is capable
 ## of running a tool. The difference between a tool and a report is
 ## primarily semantic, but in general any plugin that modifies the
@@ -146,69 +129,6 @@ sub intranet_js {
     |;
 }
 
-## This method allows you to add new html elements to the catalogue toolbar.
-## You'll want to return a string of raw html here, most likely a button or other
-## toolbar element of some form. See bug 20968 for more details.
-## sub intranet_catalog_biblio_enhancements_toolbar_button {
-##    my ( $self ) = @_;
-##
-##    return q|
-##       <a class="btn btn-default btn-sm" onclick="alert('Peace and long life');">
-##          <i class="fa fa-hand-spock-o" aria-hidden="true"></i>
-##          Live long and prosper
-##        </a>
-##    |;
-##}
-
-## If your tool is complicated enough to needs it's own setting/configuration
-## you will want to add a 'configure' method to your plugin like so.
-## Here I am throwing all the logic into the 'configure' method, but it could
-## be split up like the 'report' method is.
-## sub configure {
-##    my ( $self, $args ) = @_;
-##    my $cgi = $self->{'cgi'};
-##
-##    unless ( $cgi->param('save') ) {
-##        my $template = $self->get_template({ file => 'configure.tt' });
-
-        ## Grab the values we already have for our settings, if any exist
-##        $template->param(
-##            enable_opac_payments => $self->retrieve_data('enable_opac_payments'),
-##            foo             => $self->retrieve_data('foo'),
-##            bar             => $self->retrieve_data('bar'),
-##           last_upgraded   => $self->retrieve_data('last_upgraded'),
-##        );
-##
-##        $self->output_html( $template->output() );
-##    }
-##    else {
-##        $self->store_data(
-##            {
-##                enable_opac_payments => $cgi->param('enable_opac_payments'),
-##                foo                => $cgi->param('foo'),
-##                bar                => $cgi->param('bar'),
-##                last_configured_by => C4::Context->userenv->{'number'},
-##            }
-##        );
-##        $self->go_home();
-##    }
-##}
-
-## This is the 'install' method. Any database tables or other setup that should
-## be done when the plugin if first installed should be executed in this method.
-## The installation method should always return true if the installation succeeded
-## or false if it failed.
-## sub install() {
-##    my ( $self, $args ) = @_;
-##
-##    my $table = $self->get_qualified_table_name('mytable');
-##
-##    return C4::Context->dbh->do( "
-##        CREATE TABLE IF NOT EXISTS $table (
-##            `borrowernumber` INT( 11 ) NOT NULL
-##        ) ENGINE = INNODB;
-##    " );
-## }
 
 ## This is the 'upgrade' method. It will be triggered when a newer version of a
 ## plugin is installed over an existing older version of a plugin
@@ -241,7 +161,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	$template->param( 'session_id' => $cgi->cookie() );
+	$template->param( 'session_id' => CGI::Session->load("items") );
 
     $self->output_html( $template->output() );
 }
@@ -272,7 +192,7 @@ sub inventory2 {
 		
 #		$session->param('items', \@barcodes);
 
-		$template->param( 'session_id' => $cgi->cookie() );
+		$template->param( 'session_id' => CGI::Session->load("items") );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
