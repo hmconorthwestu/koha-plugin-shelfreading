@@ -188,8 +188,7 @@ sub inventory2 {
 		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
 
-		push @barcodes, $item;
-		
+		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
 
 		$template->param( 'session_id' => CGI::Session->load("items") );
