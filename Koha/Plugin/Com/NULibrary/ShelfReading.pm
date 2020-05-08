@@ -191,7 +191,9 @@ sub inventory2 {
 		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
 
-		$template->param( 'session_id' => CGI::Session->load("items") );
+		my @s = CGI::Session->load("items");
+
+		$template->param( 'session_id' => \@s );	
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };

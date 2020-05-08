@@ -42,7 +42,9 @@
 [% END %]
 [% IF session_id %]
 	<p>session id</p>
-	 <p>[% session_id %]</p>
+	 <p>[% session_id.id %]</p>
+	 <p>[% session_id.name %]</p>
+	 <p>[% session_id.value %]</p>
 	
 	
 	
