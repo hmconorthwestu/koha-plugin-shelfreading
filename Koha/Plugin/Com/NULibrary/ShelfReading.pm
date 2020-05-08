@@ -190,7 +190,6 @@ sub inventory2 {
 
 		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
-
 		my @s = CGI::Session->load("items");
 
 		$template->param( 'session_id' => \@s );	
