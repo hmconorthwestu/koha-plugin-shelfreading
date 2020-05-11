@@ -161,7 +161,9 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	$template->param( 'session_id' => CGI::Session->load("items") );
+
+	my $s = $cgi->load('items');
+	$template->param( 'session_id' => $s->id() );
 
     $self->output_html( $template->output() );
 }
@@ -169,6 +171,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
+	my $items = $args->{'items'};
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -190,9 +193,9 @@ sub inventory2 {
 
 		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
-		my @s = CGI::Session->load("items");
 
-		$template->param( 'session_id' => \@s );	
+		my $s = $cgi->load('items');
+		$template->param( 'session_id' => $s->id() );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
