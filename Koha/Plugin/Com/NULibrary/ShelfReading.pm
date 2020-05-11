@@ -84,12 +84,12 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-	my $s = CGI::Session->load("items");
+	my $s = $self->load("items");
 	if ( $s->is_expired ) {
-		my $s = CGI::Session->new("items");
+		my $s = $self->new("items");
 	}
 	if ( $s->is_empty ) {
-		my $s = CGI::Session->new("items");
+		my $s = $self->new("items");
 	}
 	
     unless ( $cgi->param('bc') ) {
@@ -161,9 +161,8 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-
-	my $s = $cgi->load('items');
-	$template->param( 'session_id' => $s->id() );
+	my $s = $self->('items');
+	$template->param( 'session_id' => $s->id('items') );
 
     $self->output_html( $template->output() );
 }
@@ -194,8 +193,8 @@ sub inventory2 {
 		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
 
-		my $s = $cgi->load('items');
-		$template->param( 'session_id' => $s->id() );
+		my $s = $self->('items');
+		$template->param( 'session_id' => $s->id('items') );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
