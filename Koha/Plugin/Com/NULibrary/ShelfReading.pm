@@ -84,14 +84,8 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-	my $s = $self->load("items");
-	if ( $s->is_expired ) {
-		my $s = $self->new("items");
-	}
-	if ( $s->is_empty ) {
-		my $s = $self->new("items");
-	}
-	
+	my $s = $self->new("items");
+
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
     }
