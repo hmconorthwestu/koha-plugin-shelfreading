@@ -55,7 +55,7 @@ our $metadata = {
     maximum_version => undef,
     version         => $VERSION,
     description     => 'This plugin implements inventory features '
-      . 'for shelf reading as items are scanned. ',
+      . 'for shelf reading as barcodes are scanned. ',
 };
 
 ## This is the minimum code required for a plugin's 'new' method
@@ -84,7 +84,7 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-	my $s = $self->new('items');
+	my $s = $self->new('itemss');
 
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
@@ -155,8 +155,8 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = $self->('items');
-	$template->param( 'session_id' => $s->id('items') );
+	my $s = $self->('itemss');
+	$template->param( 'session_id' => $s->id('itemss') );
 
     $self->output_html( $template->output() );
 }
@@ -164,7 +164,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $args->{'items'};
+	my $items = $args->{'itemss'};
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -187,8 +187,8 @@ sub inventory2 {
 		push @barcodes, $item;	
 #		$session->param('items', \@barcodes);
 
-		my $s = $self->('items');
-		$template->param( 'session_id' => $s->id('items') );
+		my $s = $self->('itemss');
+		$template->param( 'session_id' => $s->id('itemss') );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
