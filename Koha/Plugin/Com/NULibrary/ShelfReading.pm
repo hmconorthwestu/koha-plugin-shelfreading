@@ -84,7 +84,7 @@ sub tool {
 
     my $cgi = $self->{'cgi'};
 	
-	my $s = $self->new("items");
+	my $s = $self->new('items');
 
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
