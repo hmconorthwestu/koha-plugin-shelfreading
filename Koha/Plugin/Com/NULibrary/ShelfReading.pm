@@ -153,10 +153,10 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	if ($cgi->param('itemss')) {
-		my $s = $cgi->param('itemss');
+	if ($self->('barcodes')) {
+		my $s = $self->('barcodes');
 		
-		$template->param( 'session_id' => $s->id('itemss') );
+		$template->param( 'session_id' => $s->id('barcodes') );
 	}
 
     $self->output_html( $template->output() );
@@ -165,14 +165,13 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $cgi->param{'itemss'};
+	my $items = $self->{'barcodes'};
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my @barcodes;
 	my @errorloop;
 
-	my $bc = $cgi->param('bc');
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
@@ -187,13 +186,14 @@ sub inventory2 {
 
 		push @barcodes, $item;	
 
-		$template->param( 'session_id' => $s->id('itemss') );
+		$template->param( 'session_id' => $s->id('barcodes') );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
 	
 	# push ( @barcodes, ( $item ) );
+	$self->param( 'barcodes' => \@barcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
