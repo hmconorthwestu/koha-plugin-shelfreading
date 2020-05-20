@@ -152,9 +152,10 @@ sub inventory1 {
     my $cgi = $self->{'cgi'};
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
+	
+	my $s = $self->('barcodes');
 
-	if ($self->('barcodes')) {
-		my $s = $self->('barcodes');
+	if ($s) {
 		
 		$template->param( 'session_id' => $s->id('barcodes') );
 	}
