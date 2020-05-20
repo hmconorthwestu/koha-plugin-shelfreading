@@ -153,7 +153,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 	
-	my $s = $self->('barcodes');
+	my $s = $self->{'barcodes'};
 
 	if ($s) {
 		
