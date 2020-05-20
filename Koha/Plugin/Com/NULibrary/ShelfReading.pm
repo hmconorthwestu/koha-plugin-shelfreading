@@ -185,8 +185,13 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 
 		push @barcodes, $item;	
+		
+		if ($self->('barcodes')) {
+			my $s = $self->('barcodes');
+			
+			$template->param( 'session_id' => $s->id('barcodes') );
+		}
 
-		$template->param( 'session_id' => $s->id('barcodes') );
 		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
