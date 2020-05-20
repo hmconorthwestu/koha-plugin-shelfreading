@@ -83,8 +83,6 @@ sub tool {
     my ( $self, $args ) = @_;
 
     my $cgi = $self->{'cgi'};
-	
-	my $s = $self->new('itemss');
 
     unless ( $cgi->param('bc') ) {
         $self->inventory1();
@@ -155,8 +153,11 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 
-	my $s = $self->('itemss');
-	$template->param( 'session_id' => $s->id('itemss') );
+	if ($cgi->param('itemss')) {
+		my $s = $cgi->param('itemss');
+		
+		$template->param( 'session_id' => $s->id('itemss') );
+	}
 
     $self->output_html( $template->output() );
 }
@@ -164,7 +165,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $args->{'itemss'};
+	my $items = $cgi->param{'itemss'};
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -185,9 +186,7 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 
 		push @barcodes, $item;	
-#		$session->param('items', \@barcodes);
 
-		my $s = $self->('itemss');
 		$template->param( 'session_id' => $s->id('itemss') );
 		
 	} else {
