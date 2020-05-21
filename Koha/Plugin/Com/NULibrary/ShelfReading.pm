@@ -187,10 +187,10 @@ sub inventory2 {
 
 		push @barcodes, $item;	
 		
-		if ($self->{'barcodes'}) {
-			my $s = $self->{'barcodes'};
+		if ($items) {
+			my $s = $items;
 			
-			$template->param( 'session_id' => $s->id('barcodes') );
+			$template->param( 'session_id' => $s->id() );
 		}
 
 		
@@ -199,7 +199,7 @@ sub inventory2 {
 	}
 	
 	# push ( @barcodes, ( $item ) );
-	$self->param( 'barcodes' => \@barcodes );
+	$self->save_param( 'barcodes' => \@barcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
