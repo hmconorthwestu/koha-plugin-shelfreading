@@ -193,7 +193,6 @@ sub inventory2 {
 			$template->param( 'session_id' => $s->id() );
 		}
 
-		
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
 	}
