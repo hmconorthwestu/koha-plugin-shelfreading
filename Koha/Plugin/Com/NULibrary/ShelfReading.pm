@@ -198,7 +198,7 @@ sub inventory2 {
 	}
 	
 	# push ( $items, ( $item ) );
-	$items->save_param( 'barcodes' , \@barcodes );
+	$items->save_param( 'barcodes' => \@barcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
