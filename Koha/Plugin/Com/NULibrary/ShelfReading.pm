@@ -173,7 +173,7 @@ sub inventory2 {
 	my @barcodes;
 	
 	if ($items) {
-		@barcodes = $cgi->load_param( 'barcodes' );;
+		@barcodes = $cgi->param( 'barcodes' );;
 	} 
 	my @errorloop;
 
