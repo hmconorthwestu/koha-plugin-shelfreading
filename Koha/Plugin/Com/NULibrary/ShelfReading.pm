@@ -153,7 +153,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 	
-	my $s = $self->{'barcodes'};
+	my $s = $cgi->load_param( 'barcodes' );;
 
 	if ($s) {
 		
@@ -166,11 +166,15 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $self->{'barcodes'};
+	my $items = $cgi->load_param( 'barcodes' );;
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
+	if ($items) {
+		my @barcodes = $cgi->load_param( 'barcodes' );;
+	} else {
 	my @barcodes;
+	}
 	my @errorloop;
 
 	# set date to log in datelastseen column
@@ -186,12 +190,6 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 
 		push @barcodes, $item;	
-		
-		if ($items) {
-			my $s = $items;
-			
-			$template->param( 'session_id' => $s->id() );
-		}
 
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
