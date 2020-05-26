@@ -198,7 +198,7 @@ sub inventory2 {
 	}
 	
 	# push ( $items, ( $item ) );
-	$cgi->save_param( 'barcodes' => \@barcodes );
+	$cgi->param( 'barcodes' => \@barcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
