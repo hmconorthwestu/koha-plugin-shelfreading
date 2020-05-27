@@ -166,7 +166,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $cgi->load_param( 'barcodes' );;
+	my $items = $cgi->param( 'barcodes' );;
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
