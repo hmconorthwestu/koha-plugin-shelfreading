@@ -166,14 +166,14 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $cgi->param( 'barcodes' );;
+	my $items = $cgi->param( 'barcodes' );
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my @barcodes;
 	
 	if ($items) {
-		@barcodes = $cgi->param( 'barcodes' );;
+		push @barcodes, $cgi->param( 'barcodes' );
 	} 
 	my @errorloop;
 
