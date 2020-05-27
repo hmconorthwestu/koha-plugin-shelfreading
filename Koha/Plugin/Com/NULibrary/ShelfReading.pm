@@ -167,6 +167,7 @@ sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 	my @barcodes = $cgi->param( 'barcodes' );
+	my %barcodes = $cgi->param( 'barcodes' );
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -176,7 +177,8 @@ sub inventory2 {
 	#}
 
 	$items = @barcodes;
-
+	
+	print "Barcode hash is : %barcodes\n";
 	print "Barcodes are : @barcodes\n";
 	print "Scalar of barcodes (items) : $items\n";
 	sleep 15;
