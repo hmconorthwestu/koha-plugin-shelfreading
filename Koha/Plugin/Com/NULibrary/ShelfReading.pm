@@ -176,7 +176,7 @@ sub inventory2 {
 	#    push @barcodes, $i;
 	#}
 
-	$items = @barcodes;
+	my $items = @barcodes;
 	
 	print "Barcode hash is : %barcodes\n";
 	print "Barcodes are : @barcodes\n";
