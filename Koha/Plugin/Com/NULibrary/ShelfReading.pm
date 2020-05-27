@@ -166,14 +166,14 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my $items = $cgi->param( 'barcodes' );
+	my @barcodes = $cgi->param( 'barcodes' );
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
-	my @barcodes;
-	foreach my $i (keys %{ $items }) {
-	    push @barcodes, $i;
-	}
+	#my @barcodes;
+	#foreach my $i ($items) {
+	#    push @barcodes, $i;
+	#}
 	
 
 	my @errorloop;
