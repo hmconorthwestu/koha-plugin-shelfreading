@@ -174,7 +174,12 @@ sub inventory2 {
 	#foreach my $i ($items) {
 	#    push @barcodes, $i;
 	#}
-	
+
+	$items = @barcodes;
+
+	print "Barcodes are : @barcodes\n";
+	print "Scalar of barcodes (items) : $items\n";
+	sleep 15;
 
 	my @errorloop;
 
