@@ -153,7 +153,7 @@ sub inventory1 {
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
 	
-	my $s = $cgi->load_param( 'barcodes' );;
+	my $s = $cgi->param( 'barcodes' );;
 
 	if ($s) {
 		
