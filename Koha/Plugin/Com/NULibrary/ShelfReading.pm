@@ -171,10 +171,11 @@ sub inventory2 {
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
 	my @barcodes;
+	foreach my $i (keys %{ $items }) {
+	    push @barcodes, $i;
+	}
 	
-	if ($items) {
-		push @barcodes, $cgi->param( 'barcodes' );
-	} 
+
 	my @errorloop;
 
 	# set date to log in datelastseen column
