@@ -27,9 +27,7 @@
         <input type="hidden" name="method" value="[% METHOD %]"/>
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <input name="bc" type="submit" value="Submit" class="button" />
-		[% IF barcodes %]
-			<input type="hidden" name="barcodes" value="[% barcodes %]"/>
-		[% END %]
+		
 		</fieldset>
     </form>
 </div>
