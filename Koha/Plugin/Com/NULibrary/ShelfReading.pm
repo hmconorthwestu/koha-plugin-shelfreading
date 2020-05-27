@@ -172,6 +172,8 @@ sub inventory2 {
 	
 	if ($cgi->param( 'barcodes' )) {	
 		@barcodes = $cgi->param( 'barcodes' );
+		$test = "param(barcodes) does exist";
+		$template->param( 'test' => $test );
 	}	
 	
 	my @errorloop;
