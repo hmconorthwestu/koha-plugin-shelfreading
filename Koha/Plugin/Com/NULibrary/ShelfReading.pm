@@ -166,10 +166,14 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my @barcodes = $cgi->param( 'barcodes' );
-	my %barcodes = $cgi->param( 'barcodes' );
+	
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
+	
+	if ($cgi->param( 'barcodes' )) {
+	
+	my @barcodes = $cgi->param( 'barcodes' );
+	my %barcodes = $cgi->param( 'barcodes' );
 	
 	#my @barcodes;
 	#foreach my $i ($items) {
@@ -182,7 +186,7 @@ sub inventory2 {
 	print "Barcodes are : @barcodes\n";
 	print "Scalar of barcodes (items) : $items\n";
 	sleep 15;
-
+}
 	my @errorloop;
 
 	# set date to log in datelastseen column
