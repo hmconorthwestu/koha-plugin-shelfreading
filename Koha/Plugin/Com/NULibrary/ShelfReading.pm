@@ -170,9 +170,9 @@ sub inventory2 {
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
-	if ($cgi->param( 'barcodes' )) {	
-		@barcodes = $cgi->param( 'barcodes' );
-		$test = "param(barcodes) does exist";
+	if ($cgi->cookie( 'barcodes' )) {	
+		@barcodes = $cgi->cookie( 'barcodes' );
+		$test = "cookie (barcodes) does exist";
 		$template->param( 'test' => $test );
 	}	
 	
@@ -197,7 +197,7 @@ sub inventory2 {
 	}
 	
 	# push ( $items, ( $item ) );
-	$cgi->param( 'barcodes' => \@barcodes );
+	$cgi->cookie( 'barcodes' => \@barcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
