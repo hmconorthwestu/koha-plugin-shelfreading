@@ -172,7 +172,7 @@ sub inventory2 {
 	
 	if ($cgi->cookie( 'barcodes' )) {	
 		@barcodes = $cgi->cookie( 'barcodes' );
-		$test = "cookie (barcodes) does exist";
+		my $test = "cookie (barcodes) does exist";
 		$template->param( 'test' => $test );
 	}	
 	
