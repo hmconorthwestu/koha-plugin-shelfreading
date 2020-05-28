@@ -166,15 +166,15 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my @barcodes;
+	my @barcodes = $cgi->cookie( 'barcodes' );
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
-	if ($cgi->cookie( 'barcodes' )) {	
-		@barcodes = $cgi->cookie( 'barcodes' );
-		my $test = "cookie (barcodes) does exist";
-		$template->param( 'test' => $test );
-	}	
+	#if ($cgi->cookie( 'barcodes' )) {	
+	#	@barcodes = $cgi->cookie( 'barcodes' );
+	#	my $test = "cookie (barcodes) does exist";
+	#	$template->param( 'test' => $test );
+	#}	
 	
 	my @errorloop;
 

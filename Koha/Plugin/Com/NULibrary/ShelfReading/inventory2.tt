@@ -11,7 +11,7 @@
 </div>
 
 [% IF test %]
-<p>[% test %]</p>
+<p>test = [% test %]</p>
 [% END %]
 
 <div id="doc3">
