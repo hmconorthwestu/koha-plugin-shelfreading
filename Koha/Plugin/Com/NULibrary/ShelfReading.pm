@@ -198,6 +198,9 @@ sub inventory2 {
 	
 	# push ( $items, ( $item ) );
 	$cgi->cookie( 'barcodes' => \@barcodes );
+	
+	my @test = $cgi;
+	$template->param( 'test' => \@test );	
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);

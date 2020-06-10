@@ -12,6 +12,13 @@
 
 [% IF test %]
 <p>test = [% test %]</p>
+	[% FOREACH t IN test %]
+		<p>t = [% t %]</p>
+		<p>barcode = [% t.barcode %]</p>
+		<p>barcodes = [% t.barcodes %]</p>
+		<p>0 = [% t.0 %]</p>
+		<p>1 = [% t.1 %]</p>
+	[% END %]
 [% END %]
 
 <div id="doc3">
