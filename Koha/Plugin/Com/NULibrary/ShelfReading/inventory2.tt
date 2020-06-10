@@ -11,18 +11,19 @@
 </div>
 
 <p>barcodes = [% barcodes %]</p>
+[% FOREACH p IN barcodes %]  
+	<p>p = [% p %]</p>
+	<p>barcode = p.barcode</p>
+	<p>item = p.item</p>
+[% END %]
 
 [% IF test %]
 <p>test = [% test %]</p>
 	[% FOREACH t IN test %]
-		[% FOREACH p IN t.cookie %]     
-			[% p %] => [% t.cookie(p) %]   
-		[% END %]
-		[% FOREACH p IN t.param('bc') %]  
-			<p>param'bc' = [% p %]</p>
-		[% END %]
 		[% FOREACH p IN t.param('barcodes') %]  
 			<p>param'barcodes' = [% p %]</p>
+			<p>barcode = p.barcode</p>
+			<p>item = p.item</p>
 		[% END %]
 	[% END %]
 [% END %]
@@ -45,7 +46,7 @@
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <input name="bc" type="submit" value="Submit" class="button" />
 		[% IF barcodes %]
-			<input type="hidden" name="barcodes" value="[% barcodes %]"/>
+			<input type="hidden" name="oldBarcode" value="[% barcodes %]"/>
 		[% END %]
 		</fieldset>
     </form>

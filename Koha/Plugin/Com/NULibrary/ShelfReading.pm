@@ -159,7 +159,14 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my @barcodes = $cgi->param( 'barcodes' );
+	my @oldBarcodes = $cgi->param( 'oldBarcodes' );
+	
+	my @barcodes;
+	
+	foreach $b (@oldBarcodes) {
+		my @oldBarcode = $b;
+		push @barcodes, \@oldBarcode;	
+	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -174,16 +181,18 @@ sub inventory2 {
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
-	my $item = Koha::Items->find({barcode => $bc});
-	if ( $item ) {
-		$item = $item->unblessed;
+	my @item = Koha::Items->find({barcode => $bc});
+	if ( @item ) {
+		@item = @item->unblessed;
 		# Modify date last seen for scanned items, remove lost status
-		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, $item->{'itemnumber'} );
+		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, @item->{'itemnumber'} );
 		# update item hash accordingly
-		$item->{itemlost} = 0;
-		$item->{datelastseen} = $datelastseen;
+		@item->{itemlost} = 0;
+		@item->{datelastseen} = $datelastseen;
+		
+		push @barcodes, \@item;
 
-		push @barcodes, $item;	
+		@barcodes = (\@oldBarcode, \@newBarcode);	
 
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
