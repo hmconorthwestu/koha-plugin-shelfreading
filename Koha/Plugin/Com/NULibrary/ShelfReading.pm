@@ -165,8 +165,7 @@ sub inventory2 {
 	
 	foreach $b (@oldBarcodes) {
 		my @oldBarcode;
-		push @barcodes, \@oldBarcode;
-		
+		push @barcodes, \@oldBarcode;		
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
@@ -204,8 +203,8 @@ sub inventory2 {
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
 	
-	my @test = $cgi;
-	$template->param( 'test' => \@test );	
+	# my @test = $cgi;
+	$template->param( 'test' => \@oldBarcodes );	
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
