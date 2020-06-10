@@ -152,13 +152,6 @@ sub inventory1 {
     my $cgi = $self->{'cgi'};
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
-	
-	my $s = $cgi->param( 'barcodes' );;
-
-	if ($s) {
-		
-		$template->param( 'session_id' => $s->id('barcodes') );
-	}
 
     $self->output_html( $template->output() );
 }
@@ -166,7 +159,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my @barcodes = $cgi->cookie( 'barcodes' );
+	my @barcodes = $cgi->param( 'barcodes' );
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
 	
@@ -197,7 +190,7 @@ sub inventory2 {
 	}
 	
 	# push ( $items, ( $item ) );
-	$cgi->cookie( 'barcodes' => \@barcodes );
+	# $cgi->cookie( 'barcodes' => \@barcodes );
 	
 	my @test = $cgi;
 	$template->param( 'test' => \@test );	

@@ -10,6 +10,8 @@
 <h1>Shelf Reading</h1>
 </div>
 
+<p>barcodes = [% barcodes %]</p>
+
 [% IF test %]
 <p>test = [% test %]</p>
 	[% FOREACH t IN test %]
@@ -19,7 +21,7 @@
 		[% FOREACH p IN t.param('bc') %]  
 			<p>param'bc' = [% p %]</p>
 		[% END %]
-		[% FOREACH p IN t.cookie('barcodes') %]  
+		[% FOREACH p IN t.param('barcodes') %]  
 			<p>param'barcodes' = [% p %]</p>
 		[% END %]
 	[% END %]
