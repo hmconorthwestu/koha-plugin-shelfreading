@@ -192,7 +192,7 @@ sub inventory2 {
 		
 		push @barcodes, \@item;
 
-		@barcodes = (\@oldBarcode, \@newBarcode);	
+		# @barcodes = (\@oldBarcode, \@newBarcode);	
 
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
