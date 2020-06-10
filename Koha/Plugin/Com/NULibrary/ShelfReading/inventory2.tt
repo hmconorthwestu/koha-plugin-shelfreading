@@ -13,11 +13,14 @@
 [% IF test %]
 <p>test = [% test %]</p>
 	[% FOREACH t IN test %]
-		[% FOREACH p IN t.param %]     
-			[% p %] => [% t.param(p) %]   
+		[% FOREACH p IN t.cookie %]     
+			[% p %] => [% t.cookie(p) %]   
 		[% END %]
 		[% FOREACH p IN t.param('bc') %]  
 			<p>param'bc' = [% p %]</p>
+		[% END %]
+		[% FOREACH p IN t.cookie('barcodes') %]  
+			<p>param'barcodes' = [% p %]</p>
 		[% END %]
 	[% END %]
 [% END %]
