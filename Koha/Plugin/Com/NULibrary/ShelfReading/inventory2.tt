@@ -14,13 +14,11 @@
 <p>test = [% test %]</p>
 	[% FOREACH t IN test %]
 		[% FOREACH p IN t.param %]     
-			# returns list of param keys
 			[% p %] => [% t.param(p) %]   
-			# fetch each param value
 		[% END %]
-		<p>barcodes = [% t.barcodes %]</p>
-		<p>0 = [% t.0 %]</p>
-		<p>1 = [% t.1 %]</p>
+		[% FOREACH p IN t.param('bc') %]  
+			<p>param'bc' = [% p %]</p>
+		[% END %]
 	[% END %]
 [% END %]
 
