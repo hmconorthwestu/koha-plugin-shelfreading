@@ -164,8 +164,9 @@ sub inventory2 {
 	my @barcodes;
 	
 	foreach $b (@oldBarcodes) {
-		my @oldBarcode = $b;
-		push @barcodes, \@oldBarcode;	
+		my @oldBarcode;
+		push @barcodes, \@oldBarcode;
+		
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
@@ -181,18 +182,20 @@ sub inventory2 {
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
-	my @item = Koha::Items->find({barcode => $bc});
-	if ( @item ) {
-		@item = @item->unblessed;
+	my $item = Koha::Items->find({barcode => $bc});
+	if ( $item ) {
+		$item = $item->unblessed;
 		# Modify date last seen for scanned items, remove lost status
-		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, @item->{'itemnumber'} );
+		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, $item->{'itemnumber'} );
 		# update item hash accordingly
-		@item->{itemlost} = 0;
-		@item->{datelastseen} = $datelastseen;
+		$item->{itemlost} = 0;
+		$item->{datelastseen} = $datelastseen;
+		
+		my @item = $item;
 		
 		push @barcodes, \@item;
 
-		# @barcodes = (\@oldBarcode, \@newBarcode);	
+		#@barcodes = (\@oldBarcode, \@newBarcode);	
 
 	} else {
 		push @errorloop, { barcode => $barcode, ERR_BARCODE => 1 };
