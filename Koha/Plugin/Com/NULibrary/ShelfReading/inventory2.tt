@@ -37,11 +37,13 @@
 	[% IF barcodes %]
 	<p>template 2 </p>
 		[% FOREACH b IN barcodes %]
-		<p>barcode: [% b.barcode %]</p>
-		<p>itemnumber: [% b.itemnumber %]</p>
-		<p>onloan: [% b.onloan %]</p>
-		<p>withdrawn: [% b.withdrawn %]</p>
-		<p>datelastseen: [% b.datelastseen %]</p>
+			[% FOREACH ib IN b %]
+			<p>barcode: [% ib.barcode %]</p>
+			<p>itemnumber: [% ib.itemnumber %]</p>
+			<p>onloan: [% ib.onloan %]</p>
+			<p>withdrawn: [% ib.withdrawn %]</p>
+			<p>datelastseen: [% ib.datelastseen %]</p>
+			[% END %]
 		[% END %]
 	[% END %]
 	
