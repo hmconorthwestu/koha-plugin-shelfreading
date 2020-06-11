@@ -197,7 +197,7 @@ sub inventory2 {
 		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
 		
-		my @item = $item;
+		push my @item, $item;
 		
 		push @barcodes, \@item;
 
