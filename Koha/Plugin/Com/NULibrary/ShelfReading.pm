@@ -12,7 +12,7 @@ use CGI qw ( -utf8 );
 use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my $barcode = $input->param('barcode');
+my @oldBarcodes = $input->param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 use C4::Auth;
@@ -159,7 +159,7 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	my @oldBarcodes = $cgi->param( 'oldBarcodes' );
+	#my @oldBarcodes = $cgi->param( 'oldBarcodes' );
 	
 	my @barcodes;
 	
