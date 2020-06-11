@@ -164,8 +164,15 @@ sub inventory2 {
 	my @barcodes;
 	
 	foreach $b (@oldBarcodes) {
+		if (ref $b eq ref {}) {
+			foreach $c ($b){
+				my @oldBarcode = $c;
+				push @barcodes, \@oldBarcode;
+			}
+		} else {
 		my @oldBarcode = $b;
-		push @barcodes, \@oldBarcode;		
+		push @barcodes, \@oldBarcode;
+		}		
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
