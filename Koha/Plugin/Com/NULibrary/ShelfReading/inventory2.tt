@@ -15,21 +15,11 @@
 	<p>p = [% p %]</p>
 	<p>barcode = [% p.barcode %]</p>
 	<p>item = [% p.item %]</p>
+	<p>item.barcode = [% p.item.barcode %]</p>
 	[% FOREACH pb IN p %]  
 	<p>pb = [% pb %]</p>
-	<p>barcode = [% pb.barcode %]</p>
-	<p>item = [% pb.item %]</p>	
-	[% END %]
-[% END %]
-
-[% IF test %]
-<p>test = [% test %]</p>
-	[% FOREACH t IN test %]
-		[% FOREACH p IN t.param('barcodes') %]  
-			<p>param'barcodes' = [% p %]</p>
-			<p>barcode = p.barcode</p>
-			<p>item = p.item</p>
-		[% END %]
+	<p>pb.barcode = [% pb.barcode %]</p>
+	<p>pb.item = [% pb.item %]</p>	
 	[% END %]
 [% END %]
 

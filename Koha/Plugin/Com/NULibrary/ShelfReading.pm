@@ -165,10 +165,9 @@ sub inventory2 {
 	
 	foreach $b (@oldBarcodes) {
 		if (ref $b eq ref {}) {
-			foreach my $c ($b){
-				my @oldBarcode = $c;
-				push @barcodes, \@oldBarcode;
-			}
+			my $maxkey = max keys %$b;
+			my @oldBarcode = @{$b}{0 .. $maxkey};
+			push @barcodes, \@oldBarcode;
 		} else {
 		my @oldBarcode = $b;
 		push @barcodes, \@oldBarcode;
