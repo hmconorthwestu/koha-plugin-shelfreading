@@ -20,6 +20,12 @@
 	<p>pb = [% pb %]</p>
 	<p>pb.barcode = [% pb.barcode %]</p>
 	<p>pb.item = [% pb.item %]</p>	
+		[% FOREACH pbc IN pb %]  
+	<p>pbc = [% pbc %]</p>
+	<p>pbc.barcode = [% pbc.barcode %]</p>
+	<p>pbc.item = [% pbc.item %]</p>
+	<p>pbc.item.barcode = [% pbc.item.barcode %]</p>	
+	[% END %]
 	[% END %]
 [% END %]
 
