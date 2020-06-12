@@ -169,8 +169,7 @@ sub inventory2 {
 			push @barcodes, \@oldBarcode;
 		} else {
 			foreach my $c ($b) {
-				my %c = $c;
-				my @oldBarcode = %c->{item};
+				my @oldBarcode = $c->{item};
 				push @barcodes, \@oldBarcode;
 			}
 		}		
