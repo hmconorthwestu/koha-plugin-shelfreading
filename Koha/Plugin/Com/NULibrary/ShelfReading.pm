@@ -165,11 +165,11 @@ sub inventory2 {
 	
 	foreach $b (@oldBarcodes) {
 		if (ref $b eq ref {}) {
-			my @oldBarcode = $b;
+			my @oldBarcode = $b->{item};
 			push @barcodes, \@oldBarcode;
 		} else {
 			foreach my $c ($b) {
-				my @oldBarcode = $c;
+				my @oldBarcode = $c->{item};
 				push @barcodes, \@oldBarcode;
 			}
 		}		
