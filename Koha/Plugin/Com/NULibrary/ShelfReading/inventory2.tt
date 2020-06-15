@@ -16,15 +16,21 @@
 	<p>barcode = [% p.barcode %]</p>
 	<p>item = [% p.item %]</p>
 	<p>item.item.barcode = [% p.item.item.barcode %]</p>
+	<p>p.0 = [% p.0 %]</p>
+			<p>p.1 = [% p.1 %]</p>
 	[% FOREACH pb IN p %]  
 	<p>pb = [% pb %]</p>
 	<p>pb.barcode = [% pb.barcode %]</p>
 	<p>pb.item = [% pb.item %]</p>	
 	<p>pb.item.item.barcode = [% pb.item.item.barcode %]</p>
+			<p>pb.0 = [% pb.0 %]</p>
+			<p>pb.1 = [% pb.1 %]</p>
 		[% FOREACH c in pb.item %]	
 			<p>c = [% c %]</p>
 			<p>c.barcode = [% c.barcode %]</p>
 			<p>c.item = [% c.item %]</p>
+			<p>c.0 = [% c.0 %]</p>
+			<p>c.1 = [% c.1 %]</p>
 		[% END %]
 	[% END %]
 [% END %]
