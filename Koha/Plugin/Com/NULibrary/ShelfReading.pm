@@ -199,8 +199,8 @@ sub inventory2 {
 		# Modify date last seen for scanned items, remove lost status
 		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, %item{'itemnumber'} );
 		# update item hash accordingly
-		%item{itemlost} = 0;
-		%item{datelastseen} = $datelastseen;
+		%item->{itemlost} = 0;
+		%item->{datelastseen} = $datelastseen;
 		
 		#push my @item, $item;
 		
