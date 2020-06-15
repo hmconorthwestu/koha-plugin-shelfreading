@@ -203,9 +203,9 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 		
 		#push my @item, $item;
-		#my @item = $item;
+		my @item = $item;
 		
-		push @barcodes, $item;
+		push @barcodes, \@item;
 
 		#@barcodes = (\@oldBarcode, \@newBarcode);	
 
