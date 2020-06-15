@@ -25,7 +25,7 @@
 	<p>pb.item.item.barcode = [% pb.item.item.barcode %]</p>
 			<p>pb.0 = [% pb.0 %]</p>
 			<p>pb.1 = [% pb.1 %]</p>
-		[% FOREACH c in pb.item %]	
+		[% FOREACH c in pb %]	
 			<p>c = [% c %]</p>
 			<p>c.barcode = [% c.barcode %]</p>
 			<p>c.item = [% c.item %]</p>
