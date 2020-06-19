@@ -22,9 +22,11 @@
 	<p>pb = [% pb %]</p>
 	<p>pb.barcode = [% pb.barcode %]</p>
 	<p>pb.item = [% pb.item %]</p>	
-	<p>pb.item.item.barcode = [% pb.item.item.barcode %]</p>
+	<p>pb.item.barcode = [% pb.item.barcode %]</p>
 			<p>pb.0 = [% pb.0 %]</p>
 			<p>pb.1 = [% pb.1 %]</p>
+			<p>pb.item.0 = [% pb.item.0 %]</p>
+			<p>pb.item.1 = [% pb.item.1 %]</p>
 		[% FOREACH c in pb %]	
 			<p>c = [% c %]</p>
 			<p>c.barcode = [% c.barcode %]</p>
