@@ -218,14 +218,14 @@ sub inventory2 {
 		#@barcodes = (\@oldBarcode, \@newBarcode);	
 
 	} else {
-		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
+		push @errorloop, { barcode => $oldBarcodes, ERR_BARCODE => 1 };
 	}
 	
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
 	
 	# my @test = $cgi;
-	$template->param( 'test' => \@oldBarcodes );	
+	# $template->param( 'test' => \@oldBarcodes );	
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
