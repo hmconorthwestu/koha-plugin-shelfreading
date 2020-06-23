@@ -195,12 +195,10 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 		$item->{itemcallnumber} = $item->{itemcallnumber};
 		
-		#push my @item, $item;
-		#my @item = $item;
+		#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
+		$item->{correct} = 0;
 		
 		push @barcodes, $item;
-
-		#@barcodes = (\@oldBarcode, \@newBarcode);	
 
 	} else {
 		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
