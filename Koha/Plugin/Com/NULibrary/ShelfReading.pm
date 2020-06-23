@@ -12,7 +12,7 @@ use CGI qw ( -utf8 );
 use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my $oldBarcodes = $input->param('oldBarcodes');
+my $oldBarcodes = $input->param('POSTDATA');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 use C4::Auth;
@@ -162,12 +162,14 @@ sub inventory2 {
 	
 	my @barcodes;
 	
-	foreach $b ($oldBarcodes) {
+	my $count = 0;
+	foreach $b ($oldBarcodes->{oldBarcodes}->{$count}) {
 		my $item = Koha::Items->find({barcode => $b});
 		if ( $item ) {
 			$item = $item->unblessed;
 			push @barcodes, $item;
 		}
+		$count = $count + 1;
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });

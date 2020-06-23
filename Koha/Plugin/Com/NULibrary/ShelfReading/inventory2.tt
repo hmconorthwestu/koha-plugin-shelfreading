@@ -14,28 +14,11 @@
 [% FOREACH p IN barcodes %]  
 	<p>p = [% p %]</p>
 	[% p.size %] p size and contents: [% p.item.join(', ') %]
-	<p>barcode = [% p.barcode %]</p>
-	<p>item = [% p.item %]</p>
+	<p>p.barcode = [% p.barcode %]</p>
+	<p>p.item = [% p.item %]</p>
 	<p>p.0 = [% p.0 %]</p>
 	<p>p.1 = [% p.1 %]</p>
-	[% FOREACH pb IN p %]  
-	<p>pb = [% pb %]</p>
-	<p>p.barcode = [% p.barcode %]</p>
-	<p>pb.item = [% pb.item %]</p>	
-	<p>pb.item.barcode = [% pb.item.barcode %]</p>
-	[% pb.size %] pb size and contents: [% pb.item.join(', ') %]
-	<p>pb.0 = [% pb.0 %]</p>
-	<p>pb.1 = [% pb.1 %]</p>
-	<p>pb.item.0 = [% pb.item.0 %]</p>
-	<p>pb.item.1 = [% pb.item.1 %]</p>
-		[% FOREACH c in pb %]	
-			<p>c = [% c %]</p>
-			[% c.size %] c size and contents: [% c.join(', ') %]
-			<p>c.barcode = [% c.barcode %]</p>
-			<p>c.item = [% c.item %]</p>
-			<p>c.0 = [% c.0 %]</p>
-			<p>c.1 = [% c.1 %]</p>
-		[% END %]
+	<p>p.item.barcode = [% p.item.barcode %]
 	[% END %]
 [% END %]
 
