@@ -193,6 +193,7 @@ sub inventory2 {
 		# update item hash accordingly
 		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
+		$item->{itemcallnumber} = $item->{itemcallnumber};
 		
 		#push my @item, $item;
 		#my @item = $item;

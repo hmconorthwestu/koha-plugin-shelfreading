@@ -10,17 +10,6 @@
 <h1>Shelf Reading</h1>
 </div>
 
-<p>barcodes = [% barcodes %]</p>
-[% FOREACH p IN barcodes %]  
-	<p>p = [% p %]</p>
-	[% p.size %] p size and contents: [% p.item.join(', ') %]
-	<p>p.barcode = [% p.barcode %]</p>
-	<p>p.item = [% p.item %]</p>
-	<p>p.0 = [% p.0 %]</p>
-	<p>p.1 = [% p.1 %]</p>
-	<p>p.item.barcode = [% p.item.barcode %]
-[% END %]
-
 <div id="doc3">
 	[% IF barcodes %]
 	<p>template 2 </p>
@@ -30,6 +19,7 @@
 			<p>onloan: [% b.onloan %]</p>
 			<p>withdrawn: [% b.withdrawn %]</p>
 			<p>datelastseen: [% b.datelastseen %]</p>
+			<p>itemcallnumber: [% b.itemcallnumber %]</p>
 		[% END %]
 	[% END %]
 	
