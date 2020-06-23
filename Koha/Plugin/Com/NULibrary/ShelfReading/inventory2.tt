@@ -20,7 +20,7 @@
 	<p>p.1 = [% p.1 %]</p>
 	[% FOREACH pb IN p %]  
 	<p>pb = [% pb %]</p>
-	<p>p.$pb.barcode = [% p.$pb.barcode %]</p>
+	<p>p.barcode = [% p.barcode %]</p>
 	<p>pb.item = [% pb.item %]</p>	
 	<p>pb.item.barcode = [% pb.item.barcode %]</p>
 	[% pb.size %] pb size and contents: [% pb.item.join(', ') %]
@@ -42,14 +42,12 @@
 <div id="doc3">
 	[% IF barcodes %]
 	<p>template 2 </p>
-		[% FOREACH b IN barcodes %]
-			[% FOREACH ib IN b %]
-			<p>barcode: [% ib.barcode %]</p>
-			<p>itemnumber: [% ib.itemnumber %]</p>
-			<p>onloan: [% ib.onloan %]</p>
-			<p>withdrawn: [% ib.withdrawn %]</p>
-			<p>datelastseen: [% ib.datelastseen %]</p>
-			[% END %]
+		[% FOREACH b IN barcodes %]		
+			<p>barcode: [% b.barcode %]</p>
+			<p>itemnumber: [% b.itemnumber %]</p>
+			<p>onloan: [% b.onloan %]</p>
+			<p>withdrawn: [% b.withdrawn %]</p>
+			<p>datelastseen: [% b.datelastseen %]</p>
 		[% END %]
 	[% END %]
 	

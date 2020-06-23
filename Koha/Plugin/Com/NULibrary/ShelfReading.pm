@@ -163,29 +163,11 @@ sub inventory2 {
 	my @barcodes;
 	
 	foreach $b ($oldBarcodes) {
-		if (ref $b eq ref {}) {
-			my $item = Koha::Items->find({barcode => $b});
-			if ( $item ) {
-				$item = $item->unblessed;
-				push @barcodes, $item;
-			}
-		} else {
-			foreach my $c ($b) {
-				if (ref $c eq ref {}) {
-					my $item = Koha::Items->find({barcode => $c});
-					if ( $item ) {
-						$item = $item->unblessed;
-						push @barcodes, $item;
-					}
-				} else {
-					my $item = Koha::Items->find({barcode => $c});
-					if ( $item ) {
-						$item = $item->unblessed;
-						push @barcodes, $item;
-					}
-				}
-			}
-		}		
+		my $item = Koha::Items->find({barcode => $b});
+		if ( $item ) {
+			$item = $item->unblessed;
+			push @barcodes, $item;
+		}
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
