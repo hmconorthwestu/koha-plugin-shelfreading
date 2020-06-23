@@ -12,14 +12,20 @@
 
 <div id="doc3">
 	[% IF barcodes %]
-	<p>template 2 </p>
-		[% FOREACH b IN barcodes %]		
+	[% barcodes.0.barcode %]
+	[% barcodes.0.ccode %]
+	[% barcodes.1.ccode %]
+		[% FOREACH b IN barcodes %]	
+			<div class="[% IF b.barcode == '33' %]fancy[% END %]>	
 			<p>barcode: [% b.barcode %]</p>
 			<p>itemnumber: [% b.itemnumber %]</p>
 			<p>onloan: [% b.onloan %]</p>
 			<p>withdrawn: [% b.withdrawn %]</p>
 			<p>datelastseen: [% b.datelastseen %]</p>
 			<p>itemcallnumber: [% b.itemcallnumber %]</p>
+			<p>homebranch: [% b.homebranch %]</p>
+			<p>ccode: [% b.ccode %]</p>
+			<div>
 		[% END %]
 	[% END %]
 	
