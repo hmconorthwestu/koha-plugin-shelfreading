@@ -20,7 +20,7 @@
 	<p>p.1 = [% p.1 %]</p>
 	[% FOREACH pb IN p %]  
 	<p>pb = [% pb %]</p>
-	<p>pb.barcode = [% pb.barcode %]</p>
+	<p>p.$pb.barcode = [% p.$pb.barcode %]</p>
 	<p>pb.item = [% pb.item %]</p>	
 	<p>pb.item.barcode = [% pb.item.barcode %]</p>
 	[% pb.size %] pb size and contents: [% pb.item.join(', ') %]
@@ -59,7 +59,12 @@
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <input name="bc" type="submit" value="Submit" class="button" />
 		[% IF barcodes %]
-			<input type="hidden" name="oldBarcodes" value="[% barcodes %]"/>
+			[% count = 0 %]
+			[% FOREACH p IN barcodes %] 
+				<input type="hidden" name="oldBarcodes[[% count %]]" value="[% p.barcode %]"/>
+				[% count = count + 1 %]
+			[% END %]
+			[% count %]
 		[% END %]
 		</fieldset>
     </form>

@@ -12,7 +12,7 @@ use CGI qw ( -utf8 );
 use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my @oldBarcodes = $input->param('oldBarcodes');
+my $oldBarcodes = $input->param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 use C4::Auth;
@@ -159,22 +159,30 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	#my @oldBarcodes = $cgi->param( 'oldBarcodes' );
 	
 	my @barcodes;
 	
-	foreach $b (@oldBarcodes) {
+	foreach $b ($oldBarcodes) {
 		if (ref $b eq ref {}) {
-			my @oldBarcode = $b->{item};
-			push @barcodes, \@oldBarcode;
+			my $item = Koha::Items->find({barcode => $b});
+			if ( $item ) {
+				$item = $item->unblessed;
+				push @barcodes, $item;
+			}
 		} else {
 			foreach my $c ($b) {
 				if (ref $c eq ref {}) {
-					my @oldBarcode = $c->{item};
-					push @barcodes, \@oldBarcode;
+					my $item = Koha::Items->find({barcode => $c});
+					if ( $item ) {
+						$item = $item->unblessed;
+						push @barcodes, $item;
+					}
 				} else {
-					my @oldBarcode = $c;
-					push @barcodes, \@oldBarcode;
+					my $item = Koha::Items->find({barcode => $c});
+					if ( $item ) {
+						$item = $item->unblessed;
+						push @barcodes, $item;
+					}
 				}
 			}
 		}		
@@ -203,9 +211,9 @@ sub inventory2 {
 		$item->{datelastseen} = $datelastseen;
 		
 		#push my @item, $item;
-		my @item = $item;
+		#my @item = $item;
 		
-		push @barcodes, \@item;
+		push @barcodes, $item;
 
 		#@barcodes = (\@oldBarcode, \@newBarcode);	
 
