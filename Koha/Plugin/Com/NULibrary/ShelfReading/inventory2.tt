@@ -39,12 +39,9 @@
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <input name="bc" type="submit" value="Submit" class="button" />
 		[% IF barcodes %]
-			[% count = 0 %]
 			[% FOREACH p IN barcodes %] 
-				<input type="hidden" name="oldBarcodes[[% count %]]" value="[% p.barcode %]"/>
-				[% count = count + 1 %]
+				<input type="hidden" name="oldBarcodes" value="[% p.barcode %]"/>
 			[% END %]
-			[% count %]
 		[% END %]
 		</fieldset>
     </form>
