@@ -198,6 +198,10 @@ sub inventory2 {
 		#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
 		$item->{correct} = 0;
 		
+		if ($item->{barcode} == '33') {
+			$item->{correct} = 1;
+		}
+		
 		push @barcodes, $item;
 
 	} else {

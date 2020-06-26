@@ -16,7 +16,7 @@
 	[% barcodes.0.ccode %]
 	[% barcodes.1.ccode %]
 		[% FOREACH b IN barcodes %]	
-			<div class="[% IF b.barcode == '33' %]fancy[% ELSEIF b.withdrawn == 0 %]orange[% ELSEIF b.homebranch != b.0.homebranch %]red[% END %]">	
+			<div class="[% IF b.correct == 1 %]fancy[% ELSE %]green[% END %]">	
 			<p>barcode: [% b.barcode %]</p>
 			<p>itemnumber: [% b.itemnumber %]</p>
 			<p>onloan: [% b.onloan %]</p>
