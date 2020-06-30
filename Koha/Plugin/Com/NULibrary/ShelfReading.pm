@@ -203,7 +203,8 @@ sub inventory2 {
 	}
 	
 	#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
-	for ( my $i = 0; $i < @barcodes; $i++ ) {
+	my @sortbarcodes = @barcodes;
+	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $barcodes[$i];
 
 		if ($item->{onloan}) {
@@ -214,12 +215,14 @@ sub inventory2 {
             my $previous_item = $barcodes[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
+				push @barcodes, $item;
             }
         }
-        unless ( $i == scalar(@barcodes) ) {
+        unless ( $i == scalar(@sortbarcodes) ) {
             my $next_item = $barcodes[ $i + 1 ];
             if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
+				push @barcodes, $item;
             }
         }
 	}

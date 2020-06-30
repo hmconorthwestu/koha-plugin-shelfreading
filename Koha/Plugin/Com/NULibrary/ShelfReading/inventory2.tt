@@ -21,7 +21,7 @@
 			<p>datelastseen: [% b.datelastseen %]</p>
 			<p>itemcallnumber: [% b.itemcallnumber %]</p>
 			<p>homebranch: [% b.homebranch %]</p>
-			<p>correct: [% b.correct %]</p>
+			<p>call no sort: [% b.cn_sort %]</p>
 			</div>
 		[% END %]
 	[% END %]
