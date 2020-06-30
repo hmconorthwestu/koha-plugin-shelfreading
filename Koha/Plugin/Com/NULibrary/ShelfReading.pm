@@ -193,21 +193,37 @@ sub inventory2 {
 		# update item hash accordingly
 		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
-		$item->{itemcallnumber} = $item->{itemcallnumber};
-		
-		#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
-		$item->{correct} = 0;
-		
-		if ($item->{barcode} == '33') {
-			$item->{correct} = 1;
-		}
+		$item->{itemcallnumber} = $item->{itemcallnumber};		
+		# $item->{correct} = 0;
 		
 		push @barcodes, $item;
-
+		
 	} else {
 		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
 	}
 	
+	#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
+	for ( my $i = 0; $i < @barcodes; $i++ ) {
+		my $item = $barcodes[$i];
+
+		if ($item->{onloan}) {
+			$item->{problems}->{onloan} = 1;
+		}
+		
+		 unless ( $i == 0 ) {
+            my $previous_item = $barcodes[ $i - 1 ];
+            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
+                $item->{problems}->{out_of_order} = 1;
+            }
+        }
+        unless ( $i == scalar(@barcodes) ) {
+            my $next_item = $barcodes[ $i + 1 ];
+            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+                $item->{problems}->{out_of_order} = 1;
+            }
+        }
+	}
+	#end of checks
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
 	

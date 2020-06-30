@@ -12,11 +12,8 @@
 
 <div id="doc3">
 	[% IF barcodes %]
-	[% barcodes.0.barcode %]
-	[% barcodes.0.ccode %]
-	[% barcodes.1.ccode %]
 		[% FOREACH b IN barcodes %]	
-			<div class="[% IF b.correct == 1 %]fancy[% ELSE %]green[% END %]">	
+			<div class="[% IF b.problems == 1 %]fancy[% ELSE %]green[% END %]">	
 			<p>barcode: [% b.barcode %]</p>
 			<p>itemnumber: [% b.itemnumber %]</p>
 			<p>onloan: [% b.onloan %]</p>
@@ -25,7 +22,7 @@
 			<p>itemcallnumber: [% b.itemcallnumber %]</p>
 			<p>homebranch: [% b.homebranch %]</p>
 			<p>correct: [% b.correct %]</p>
-			<div>
+			</div>
 		[% END %]
 	[% END %]
 	
