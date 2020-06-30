@@ -205,24 +205,24 @@ sub inventory2 {
 	#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
 	my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-		my $item = $barcodes[$i];
+		my $item = $sortbarcodes[$i];
 
 		if ($item->{onloan}) {
 			$item->{problems}->{onloan} = 1;
 		}
 		
 		 unless ( $i == 0 ) {
-            my $previous_item = $barcodes[ $i - 1 ];
+            my $previous_item = $sortbarcodes[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
-				push @barcodes, $item;
+				additemtobarcodes($item,$barcodes);
             }
         }
         unless ( $i == scalar(@sortbarcodes) ) {
-            my $next_item = $barcodes[ $i + 1 ];
+            my $next_item = $sortbarcodes[ $i + 1 ];
             if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
-				push @barcodes, $item;
+				additemtobarcodes($item,$barcodes);
             }
         }
 	}
@@ -240,6 +240,12 @@ sub inventory2 {
 }
 
 
+sub additemtobarcodes {
+    my ( $item, $barcodes ) = @_;
+    my $itemno = $item->{itemnumber};
+    # since the script appends to $item, we can just overwrite the hash entry
+    $barcodes->{$itemno} = $item;
+}
 ## API methods
 # If your plugin implements API routes, then the 'api_routes' method needs
 # to be implemented, returning valid OpenAPI 2.0 paths serialized as a hashref.
