@@ -12,8 +12,8 @@
 
 <div id="doc3">
 	[% IF barcodes %]
-		[% FOREACH b IN barcodes %]	
-			<div class="[% IF b.problems == 1 %]fancy[% ELSE %]green[% END %]">	
+		[% FOREACH b IN barcodes %]
+			<div class="[% IF b.problems.out_of_order == 1 %]fancy[% ELSE %]green[% END %]">	
 			<p>barcode: [% b.barcode %]</p>
 			<p>itemnumber: [% b.itemnumber %]</p>
 			<p>onloan: [% b.onloan %]</p>
@@ -25,12 +25,12 @@
 			</div>
 		[% END %]
 	[% END %]
-	
+
 	<form method="post">
 		<input type="hidden" name="class" value="[% CLASS %]"/>
         <input type="hidden" name="method" value="[% METHOD %]"/>
 		[% IF barcodes %]
-			[% FOREACH p IN barcodes %] 
+			[% FOREACH p IN barcodes %]
 				<input type="hidden" name="oldBarcodes" value="[% p.barcode %]"/>
 			[% END %]
 		[% END %]
@@ -44,18 +44,18 @@
 [% IF empty_session %]
 	<p>session empty</p>
 	 <p>[% session_id %]</p>
-	
-	
-	
+
+
+
 [% END %]
 [% IF session_id %]
 	<p>session id</p>
 	 <p>[% session_id.id %]</p>
 	 <p>[% session_id.name %]</p>
 	 <p>[% session_id.value %]</p>
-	
-	
-	
+
+
+
 [% END %]
 [% IF session_items %]
 	<p>session items exist</p>

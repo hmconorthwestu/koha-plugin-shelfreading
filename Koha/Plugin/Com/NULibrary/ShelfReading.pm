@@ -159,9 +159,9 @@ sub inventory1 {
 sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
-	
+
 	my @barcodes;
-	
+
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
 		my $item = Koha::Items->find({barcode => $b});
@@ -173,13 +173,13 @@ sub inventory2 {
 	}
 
     my $template = $self->get_template({ file => 'inventory2.tt' });
-	
-	#if ($cgi->cookie( 'barcodes' )) {	
+
+	#if ($cgi->cookie( 'barcodes' )) {
 	#	@barcodes = $cgi->cookie( 'barcodes' );
 	#	my $test = "cookie (barcodes) does exist";
 	#	$template->param( 'test' => $test );
-	#}	
-	
+	#}
+
 	my @errorloop;
 
 	# set date to log in datelastseen column
@@ -193,15 +193,15 @@ sub inventory2 {
 		# update item hash accordingly
 		$item->{itemlost} = 0;
 		$item->{datelastseen} = $datelastseen;
-		$item->{itemcallnumber} = $item->{itemcallnumber};		
+		$item->{itemcallnumber} = $item->{itemcallnumber};
 		# $item->{correct} = 0;
-		
+
 		push @barcodes, $item;
-		
+
 	} else {
 		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
 	}
-	
+
 	#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
 	my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
@@ -210,7 +210,7 @@ sub inventory2 {
 		if ($item->{onloan}) {
 			$item->{problems}->{onloan} = 1;
 		}
-		
+
 		 unless ( $i == 0 ) {
             my $previous_item = $sortbarcodes[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
@@ -229,9 +229,9 @@ sub inventory2 {
 	#end of checks
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
-	
+
 	# my @test = $cgi;
-	# $template->param( 'test' => \@oldBarcodes );	
+	# $template->param( 'test' => \@oldBarcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
@@ -241,10 +241,10 @@ sub inventory2 {
 
 
 sub additemtobarcodes {
-    my ( $item, $barcodes ) = @_;
+    my ( $item, @barcodes ) = @_;
     my $itemno = $item->{itemnumber};
     # since the script appends to $item, we can just overwrite the hash entry
-    $barcodes->{$itemno} = $item;
+    @barcodes->{$itemno} = $item;
 }
 ## API methods
 # If your plugin implements API routes, then the 'api_routes' method needs
@@ -264,7 +264,7 @@ sub additemtobarcodes {
 
 #sub api_namespace {
 #    my ( $self ) = @_;
-    
+
 #    return 'kitchensink';
 #}
 
