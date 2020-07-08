@@ -22,7 +22,7 @@
 			<p>itemcallnumber: [% b.itemcallnumber %]</p>
 			<p>homebranch: [% b.homebranch %]</p>
 			<p>call no sort: [% b.cn_sort %]</p>
-      [% IF b.problems.location %]<p>[% b.problems.location %]</p>[% END %]
+      [% IF b.locationproblem %]<p>Problem: [% b.locationproblem %]</p>[% END %]
 			</div>
 		[% END %]
 	[% END %]
