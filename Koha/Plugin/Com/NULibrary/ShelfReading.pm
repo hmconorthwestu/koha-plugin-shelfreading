@@ -215,17 +215,17 @@ sub inventory2 {
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
       my $firstitem = $sortbarcodes[0];
-      if ($item->{homebranch} eq $firstitem->{homebranch}) {
+      if ($item->{homebranch} ne $firstitem->{homebranch}) {
         $item->{locationproblem} = "Wrong branch library";
       }
-      if ($item->{holdingbranch} eq $firstitem->{holdingbranch}) {
-        $item->{locationproblem} .= "Wrong branch library";
+      if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
+        $item->{locationproblem} = "Wrong branch library";
       }
-      if ($item->{ccode} eq $firstitem->{ccode}) {
-        $item->{locationproblem} .= "Wrong collection";
+      if ($item->{ccode} ne $firstitem->{ccode}) {
+        $item->{locationproblem} = "Wrong collection";
       }
-      if ($item->{location} eq $firstitem->{location}) {
-        $item->{locationproblem} .= "Wrong shelving location";
+      if ($item->{location} ne $firstitem->{location}) {
+        $item->{locationproblem} = "Wrong shelving location";
       }
       additemtobarcodes($item,@barcodes);
     }
