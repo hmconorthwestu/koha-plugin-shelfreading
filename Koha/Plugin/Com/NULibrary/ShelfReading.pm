@@ -214,7 +214,7 @@ sub inventory2 {
 		}
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
-      $firstitem = $sortbarcodes[0];
+      my $firstitem = $sortbarcodes[0];
       if ($item->{homebranch} != $firstitem-{homebranch}) {
         $item->{problems}->{location} = "Wrong branch library";
         additemtobarcodes($item,@barcodes);
