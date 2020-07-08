@@ -241,10 +241,10 @@ sub inventory2 {
 
 
 sub additemtobarcodes {
-    my ( $item, @barcodes ) = @_;
+    my ( $item, $barcodes ) = @_;
     my $itemno = $item->{itemnumber};
     # since the script appends to $item, we can just overwrite the hash entry
-    @barcodes->{$itemno} = $item;
+    $barcodes->{$itemno} = $item;
 }
 ## API methods
 # If your plugin implements API routes, then the 'api_routes' method needs
