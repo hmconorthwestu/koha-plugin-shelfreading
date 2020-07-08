@@ -215,22 +215,19 @@ sub inventory2 {
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
       my $firstitem = $sortbarcodes[0];
-      if ($item->{homebranch} != $firstitem->{homebranch}) {
+      if ($item->{homebranch} eq $firstitem->{homebranch}) {
         $item->{locationproblem} = "Wrong branch library";
-        additemtobarcodes($item,@barcodes);
       }
-      if ($item->{holdingbranch} != $firstitem->{holdingbranch}) {
-        $item->{locationproblem} = "Wrong branch library";
-        additemtobarcodes($item,@barcodes);
+      if ($item->{holdingbranch} eq $firstitem->{holdingbranch}) {
+        $item->{locationproblem} .= "Wrong branch library";
       }
-      if ($item->{ccode} != $firstitem->{ccode}) {
-        $item->{locationproblem} = "Wrong collection";
-        additemtobarcodes($item,@barcodes);
+      if ($item->{ccode} eq $firstitem->{ccode}) {
+        $item->{locationproblem} .= "Wrong collection";
       }
-      if ($item->{location} != $firstitem->{location}) {
-        $item->{locationproblem} = "Wrong shelving location";
-        additemtobarcodes($item,@barcodes);
+      if ($item->{location} eq $firstitem->{location}) {
+        $item->{locationproblem} .= "Wrong shelving location";
       }
+      additemtobarcodes($item,@barcodes);
     }
 
     # item sort - doesn't go after previous item
