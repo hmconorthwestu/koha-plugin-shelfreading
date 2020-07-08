@@ -202,29 +202,52 @@ sub inventory2 {
 		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
 	}
 
-	#ADD checks here for onloan, wrong homebranch, wrong ccode, cn_sort out of order
+	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn cn_sort out of order
 	my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
 
+    # item checked out/on loan
 		if ($item->{onloan}) {
 			$item->{problems}->{onloan} = 1;
+      additemtobarcodes($item,@barcodes);
 		}
+    # compare to first item - check for wrong branch, wrong holding branch, wrong collection
+    unless ( $i == 0 ) {
+      $firstitem = $sortbarcodes[0];
+      if ($item->{homebranch} != $firstitem-{homebranch}) {
+        $item->{problems}->{location} = "Wrong branch library";
+        additemtobarcodes($item,@barcodes);
+      }
+      if ($item->{holdingbranch} != $firstitem-{holdingbranch}) {
+        $item->{problems}->{location} = "Wrong branch library";
+        additemtobarcodes($item,@barcodes);
+      }
+      if ($item->{ccode} != $firstitem-{ccode}) {
+        $item->{problems}->{location} = "Wrong collection";
+        additemtobarcodes($item,@barcodes);
+      }
+      if ($item->{location} != $firstitem-{location}) {
+        $item->{problems}->{location} = "Wrong shelving location";
+        additemtobarcodes($item,@barcodes);
+      }
+    }
 
+    # item sort - doesn't go after previous item
 		 unless ( $i == 0 ) {
             my $previous_item = $sortbarcodes[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
                 $item->{problems}->{out_of_order} = 1;
-				additemtobarcodes($item,@barcodes);
+        				additemtobarcodes($item,@barcodes);
             }
         }
-        unless ( $i == scalar(@sortbarcodes) ) {
-            my $next_item = $sortbarcodes[ $i + 1 ];
-            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-                $item->{problems}->{out_of_order} = 1;
-				additemtobarcodes($item,@barcodes);
-            }
-        }
+#        unless ( $i == scalar(@sortbarcodes) ) {
+#            my $next_item = $sortbarcodes[ $i + 1 ];
+#            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+#                $item->{problems}->{out_of_order} = 1;
+#				additemtobarcodes($item,@barcodes);
+#            }
+#        }
 	}
 	#end of checks
 	# push ( $items, ( $item ) );
