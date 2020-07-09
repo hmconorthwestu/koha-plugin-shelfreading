@@ -13,7 +13,7 @@
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
-			<dt class="[% IF b.problems.out_of_order == 1 || b.locationproblem %]shelfreading-outoforder[% ELSE %]green[% END %]">[% b.itemcallnumber %]
+			<dt class="[% IF b.problems.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.locationproblem  %]shelfreading-locationproblem[% ELSE %]green[% END %]">[% b.itemcallnumber %]
       [% IF b.locationproblem %] - [% b.locationproblem %][% END %]
       [% IF b.onloan %] - item is checked out[% END %]
       [% IF b.withdrawn %] - item is withdrawn[% END %]
@@ -40,7 +40,7 @@
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <!-- <input name="bc" type="submit" value="Submit" class="button" /> -->
     </form>
-    
+    </br>
     <form method="post">
       <input type="hidden" name="class" value="[% CLASS %]"/>
       <input type="hidden" name="method" value="[% METHOD %]"/>
