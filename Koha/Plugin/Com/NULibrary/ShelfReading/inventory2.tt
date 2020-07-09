@@ -13,10 +13,10 @@
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
-			<dt class="[% IF b.problems.out_of_order == 1 %]shelfreading-outoforder[% ELSE %]green[% END %]">[% b.itemcallnumber %]
+			<dt class="[% IF b.problems.out_of_order == 1 || b.locationproblem %]shelfreading-outoforder[% ELSE %]green[% END %]">[% b.itemcallnumber %]
       [% IF b.locationproblem %] - [% b.locationproblem %][% END %]
-      [% IF b.onloan%] - item is checked out[% END %]
-      [% IF b.withdrawn%] - item is withdrawn[% END %]
+      [% IF b.onloan %] - item is checked out[% END %]
+      [% IF b.withdrawn %] - item is withdrawn[% END %]
       <dd>barcode: [% b.barcode %]</dd>
       <dd>title</dd>
       <dd>author</dd>
