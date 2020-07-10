@@ -202,39 +202,45 @@ sub inventory2 {
 		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
 	}
 
-	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn cn_sort out of order
+	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
 	my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
 
     # item checked out/on loan
 		if ($item->{onloan}) {
-			$item->{problems}->{onloan} = 1;
+			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
 		}
+
+    if ($item->{withdrawn}) {
+			$item->{problem} = "item is withdrawn";
+      additemtobarcodes($item,@barcodes);
+		}
+
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
       my $firstitem = $sortbarcodes[0];
       if ($item->{homebranch} ne $firstitem->{homebranch}) {
-        $item->{locationproblem} = "Wrong branch library";
+        $item->{problem} = "Wrong branch library";
       }
       if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
-        $item->{locationproblem} = "Wrong branch library";
+        $item->{problem} = "Wrong branch library";
       }
       if ($item->{ccode} ne $firstitem->{ccode}) {
-        $item->{locationproblem} = "Wrong collection";
+        $item->{problem} = "Wrong collection";
       }
       if ($item->{location} ne $firstitem->{location}) {
-        $item->{locationproblem} = "Wrong shelving location";
+        $item->{problem} = "Wrong shelving location";
       }
       additemtobarcodes($item,@barcodes);
     }
 
-    # item sort - doesn't go after previous item
+    # item sort - add error message if cn_sort isn't greater than previous item
 		 unless ( $i == 0 ) {
             my $previous_item = $sortbarcodes[ $i - 1 ];
             if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
-                $item->{problems}->{out_of_order} = 1;
+                $item->{out_of_order} = 1;
         				additemtobarcodes($item,@barcodes);
             }
         }

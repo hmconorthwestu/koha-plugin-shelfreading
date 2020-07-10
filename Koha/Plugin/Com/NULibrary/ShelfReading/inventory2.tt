@@ -13,18 +13,23 @@
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
-			<dt class="[% IF b.problems.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.locationproblem  %]shelfreading-locationproblem[% ELSE %]green[% END %]">[% b.itemcallnumber %]
-      [% IF b.locationproblem %] - [% b.locationproblem %][% END %]
-      [% IF b.onloan %] - item is checked out[% END %]
-      [% IF b.withdrawn %] - item is withdrawn[% END %]
-      <dd>barcode: [% b.barcode %]</dd>
-      <dd>title</dd>
-      <dd>author</dd>
-      <dd>[% b.homebranch %]</dd>
-      <dd>[% b.holdingbranch %]</dd>
-      <dd>[% b.ccode %]</dd>
-      <dd>[% b.location %]</dd>
-      <dd>[% b.cn_sort %]</dd>
+			<dt class="[% IF b.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.problem %]shelfreading-problem[% ELSE %]correct[% END %]">[% b.itemcallnumber %]
+      [% IF b.problem %] - [% b.problem %][% END %]
+        <dd>barcode: [% b.barcode %]
+        </br>
+        title
+        </br>
+        author
+        </br>
+        [% b.homebranch %]
+        </br>
+        [% b.holdingbranch %]
+        </br>
+        [% b.ccode %]
+        </br>
+        [% b.location %]
+        </br>
+        [% b.cn_sort %]</dd>
       </dt>
 		[% END %]
 	[% END %]
