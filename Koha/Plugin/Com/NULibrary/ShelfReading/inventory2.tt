@@ -13,9 +13,9 @@
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
-			<dt class="[% IF b.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.problem %]shelfreading-problem[% ELSE %]correct[% END %]">[% b.itemcallnumber %]
+			<dt class="NU_dt [% IF b.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.problem %]shelfreading-problem[% ELSE %]correct[% END %]">[% b.itemcallnumber %]
       [% IF b.problem %] - [% b.problem %][% END %]
-        <dd>barcode: [% b.barcode %]
+        <dd class="NU_dd">barcode: [% b.barcode %]
         </br>
         title
         </br>
@@ -32,6 +32,8 @@
         [% b.cn_sort %]</dd>
       </dt>
 		[% END %]
+  [% ELSE %]
+  <p>Start with the last book on the previous shelf.</p>
 	[% END %]
 
 	<form method="post">
@@ -45,7 +47,8 @@
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
         <!-- <input name="bc" type="submit" value="Submit" class="button" /> -->
     </form>
-    </br>
+    <br/>
+    <br/>
     <form method="post">
       <input type="hidden" name="class" value="[% CLASS %]"/>
       <input type="hidden" name="method" value="[% METHOD %]"/>

@@ -189,11 +189,10 @@ sub inventory2 {
 	if ( $item ) {
 		$item = $item->unblessed;
 		# Modify date last seen for scanned items, remove lost status
-		ModItem( { itemlost => 0, datelastseen => $datelastseen }, undef, $item->{'itemnumber'} );
-		# update item hash accordingly
-		$item->{itemlost} = 0;
-		$item->{datelastseen} = $datelastseen;
-		$item->{itemcallnumber} = $item->{itemcallnumber};
+    $item->set({ itemlost => 0, datelastseen => $datelastseen })->store;
+    # update item hash accordingly
+		# $item->{itemlost} = 0;
+  	#	$item->{datelastseen} = $datelastseen;
 		# $item->{correct} = 0;
 
 		push @barcodes, $item;
@@ -214,7 +213,11 @@ sub inventory2 {
 		}
 
     if ($item->{withdrawn}) {
-			$item->{problem} = "item is withdrawn";
+			$item->{problem} = "item is marked as withdrawn";
+      additemtobarcodes($item,@barcodes);
+		}
+    if ($item->{lost}) {
+			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
 		}
 
