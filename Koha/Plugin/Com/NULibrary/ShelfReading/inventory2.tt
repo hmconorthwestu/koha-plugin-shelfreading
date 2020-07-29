@@ -10,6 +10,7 @@
 <h1>Shelf Reading</h1>
 </div>
 
+<div id="NUPluginContent">
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
@@ -55,6 +56,7 @@
       <input type="submit" value="New Shelf >">
     </form>
 </dl>
+</div>
 [% IF expired_session %]
 	<p>session expired </p>
 [% END %]

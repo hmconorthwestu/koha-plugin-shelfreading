@@ -185,15 +185,15 @@ sub inventory2 {
 	# set date to log in datelastseen column
 	my $dt = dt_from_string();
 	my $datelastseen = $dt->ymd('-');
-	my $item = Koha::Items->find({barcode => $bc});
-	if ( $item ) {
-		my $item_unblessed = $item->unblessed;
+	my $kohaitem = Koha::Items->find({barcode => $bc});
+	if ( $kohaitem ) {
+		my $item_unblessed = $kohaitem->unblessed;
 		# Modify date last seen for scanned items, remove lost status
-    $item->set({ itemlost => 0, datelastseen => $datelastseen })->store;
+    $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
     # update item hash accordingly
-		# $item->{itemlost} = 0;
-  	#	$item->{datelastseen} = $datelastseen;
-		# $item->{correct} = 0;
+		$item->{itemlost} = 0;
+  	$item->{datelastseen} = $datelastseen;
+		$item->{correct} = 0;
 
 		push @barcodes, $item;
 
