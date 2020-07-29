@@ -187,7 +187,7 @@ sub inventory2 {
 	my $datelastseen = $dt->ymd('-');
 	my $item = Koha::Items->find({barcode => $bc});
 	if ( $item ) {
-		$item_unblessed = $item->unblessed;
+		my $item_unblessed = $item->unblessed;
 		# Modify date last seen for scanned items, remove lost status
     $item->set({ itemlost => 0, datelastseen => $datelastseen })->store;
     # update item hash accordingly
