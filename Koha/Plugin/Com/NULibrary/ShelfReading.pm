@@ -206,62 +206,63 @@ sub inventory2 {
   	} else {
   		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
   	}
-
-  	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
-  	my @sortbarcodes = @barcodes;
-  	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-  		my $item = $sortbarcodes[$i];
-
-      # item checked out/on loan
-  		if ($item->{onloan}) {
-  			$item->{problem} = "item is checked out";
-        additemtobarcodes($item,@barcodes);
-  		}
-
-      if ($item->{withdrawn}) {
-  			$item->{problem} = "item is marked as withdrawn";
-        additemtobarcodes($item,@barcodes);
-  		}
-      if ($item->{lost}) {
-  			$item->{problem} = "item is marked as lost";
-        additemtobarcodes($item,@barcodes);
-  		}
-
-      # compare to first item - check for wrong branch, wrong holding branch, wrong collection
-      unless ( $i == 0 ) {
-        my $firstitem = $sortbarcodes[0];
-        if ($item->{homebranch} ne $firstitem->{homebranch}) {
-          $item->{problem} = "Wrong branch library";
-        }
-        if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
-          $item->{problem} = "Wrong branch library";
-        }
-        if ($item->{ccode} ne $firstitem->{ccode}) {
-          $item->{problem} = "Wrong collection";
-        }
-        if ($item->{location} ne $firstitem->{location}) {
-          $item->{problem} = "Wrong shelving location";
-        }
-        additemtobarcodes($item,@barcodes);
-      }
-
-      # item sort - add error message if cn_sort isn't greater than previous item
-  		 unless ( $i == 0 ) {
-              my $previous_item = $sortbarcodes[ $i - 1 ];
-              if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
-                  $item->{out_of_order} = 1;
-          				additemtobarcodes($item,@barcodes);
-              }
-          }
-          unless ( $i == scalar(@sortbarcodes) ) {
-              my $next_item = $sortbarcodes[ $i + 1 ];
-              if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-                  $item->{problems}->{out_of_order} = 1;
-  				additemtobarcodes($item,@barcodes);
-              }
-          }
-  	}
   }
+
+	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
+	my @sortbarcodes = @barcodes;
+	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+		my $item = $sortbarcodes[$i];
+
+    # item checked out/on loan
+		if ($item->{onloan}) {
+			$item->{problem} = "item is checked out";
+      additemtobarcodes($item,@barcodes);
+		}
+
+    if ($item->{withdrawn}) {
+			$item->{problem} = "item is marked as withdrawn";
+      additemtobarcodes($item,@barcodes);
+		}
+    if ($item->{lost}) {
+			$item->{problem} = "item is marked as lost";
+      additemtobarcodes($item,@barcodes);
+		}
+
+    # compare to first item - check for wrong branch, wrong holding branch, wrong collection
+    unless ( $i == 0 ) {
+      my $firstitem = $sortbarcodes[0];
+      if ($item->{homebranch} ne $firstitem->{homebranch}) {
+        $item->{problem} = "Wrong branch library";
+      }
+      if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
+        $item->{problem} = "Wrong branch library";
+      }
+      if ($item->{ccode} ne $firstitem->{ccode}) {
+        $item->{problem} = "Wrong collection";
+      }
+      if ($item->{location} ne $firstitem->{location}) {
+        $item->{problem} = "Wrong shelving location";
+      }
+      additemtobarcodes($item,@barcodes);
+    }
+
+    # item sort - add error message if cn_sort isn't greater than previous item
+		 unless ( $i == 0 ) {
+            my $previous_item = $sortbarcodes[ $i - 1 ];
+            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
+                $item->{out_of_order} = 1;
+        				additemtobarcodes($item,@barcodes);
+            }
+        }
+        unless ( $i == scalar(@sortbarcodes) ) {
+            my $next_item = $sortbarcodes[ $i + 1 ];
+            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+                $item->{problems}->{out_of_order} = 1;
+				additemtobarcodes($item,@barcodes);
+            }
+        }
+	}
+
 	#end of checks
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
@@ -272,7 +273,7 @@ sub inventory2 {
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
 
-    $self->output_html( $template->output() );
+  $self->output_html( $template->output() );
 }
 
 
