@@ -162,6 +162,8 @@ sub inventory2 {
 
 	my @barcodes;
   my $duplicate;
+  my @errorloop;
+
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
@@ -172,7 +174,7 @@ sub inventory2 {
 		}
 		$count = $count + 1;
     if ($b == $bc) {
-      my $duplicate = 1;
+      $duplicate = 1;
     }
 	}
 
@@ -184,7 +186,6 @@ sub inventory2 {
 	#	$template->param( 'test' => $test );
 	#}
   unless ($duplicate == 1) {
-  	my @errorloop;
 
   	# set date to log in datelastseen column
   	my $dt = dt_from_string();
