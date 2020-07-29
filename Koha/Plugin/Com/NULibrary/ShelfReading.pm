@@ -161,6 +161,7 @@ sub inventory2 {
     my $cgi = $self->{'cgi'};
 
 	my @barcodes;
+  my $duplicate;
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
