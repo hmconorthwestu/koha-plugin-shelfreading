@@ -15,7 +15,7 @@
 <div id="NUPluginTitle">
 <h1>Shelf Reading</h1>
 </div>
-
+<div id="NUPluginContent">
 <div id="doc3">
     <form method="post">
 		<input type="hidden" name="class" value="[% CLASS %]"/>
@@ -24,7 +24,8 @@
         <input name="bc" type="submit" value="Submit" class="button" />
 		</fieldset>
     </form>
-</div> 
+</div>
+</div>
 
 [% IF expired_session %]
 	<p>session expired </p>
@@ -36,9 +37,9 @@
 [% IF session_id %]
 	<p>session is active</p>
 	 <p>[% session_id %]</p>
-	
-	
-	
+
+
+
 [% END %]
 [% IF session_items %]
 	<p>session items exist</p>
