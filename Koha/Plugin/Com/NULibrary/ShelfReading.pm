@@ -249,10 +249,10 @@ sub inventory2 {
     # item sort - add error message if cn_sort isn't greater than previous item
 		 unless ( $i == 0 ) {
             my $previous_item = $sortbarcodes[ $i - 1 ];
-            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
-                $item->{out_of_order} = 1;
-        				additemtobarcodes($item,@barcodes);
-            }
+#            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
+#                $item->{out_of_order} = 1;
+#        				additemtobarcodes($item,@barcodes);
+#            }
         }
 
           my $next_item = $sortbarcodes[ $i + 1 ];
