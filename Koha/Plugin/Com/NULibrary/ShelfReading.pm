@@ -254,13 +254,13 @@ sub inventory2 {
         				additemtobarcodes($item,@barcodes);
             }
         }
-        unless ( $i == scalar(@sortbarcodes) ) {
-            my $next_item = $sortbarcodes[ $i + 1 ];
-            if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-                $item->{problems}->{out_of_order} = 1;
-				additemtobarcodes($item,@barcodes);
-            }
-        }
+
+          my $next_item = $sortbarcodes[ $i + 1 ];
+          if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+              $item->{out_of_order} = 1;
+              additemtobarcodes($item,@barcodes);
+          }
+
 	}
 
 	#end of checks
