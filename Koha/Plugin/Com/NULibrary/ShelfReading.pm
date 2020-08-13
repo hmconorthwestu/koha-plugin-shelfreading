@@ -237,12 +237,16 @@ sub inventory2 {
       if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
         $item->{problem} = "Wrong branch library";
       }
-      if ($item->{ccode} ne $firstitem->{ccode}) {
-        $item->{problem} = "Wrong collection";
-      }
       if ($item->{location} ne $firstitem->{location}) {
         $item->{problem} = "Wrong shelving location";
       }
+      # only check collection if shelving location ($item->{location}) is empty
+      if ($item->{location} eq "") {
+        if ($item->{ccode} ne $firstitem->{ccode}) {
+          $item->{problem} = "Wrong collection";
+        }
+      }
+
       additemtobarcodes($item,@barcodes);
     }
 
