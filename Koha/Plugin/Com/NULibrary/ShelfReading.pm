@@ -9,38 +9,38 @@ use base qw(Koha::Plugins::Base);
 
 ## We will also need to include any Koha libraries we want to access
 use CGI qw ( -utf8 );
-use CGI::Session;
+#use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
 my @oldBarcodes = $input->param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
-use C4::Auth;
-use C4::Output;
-use C4::Biblio;
-use C4::Items;
+#use C4::Auth;
+#use C4::Output;
+#use C4::Biblio;
+#use C4::Items;
 use C4::Koha;
-use C4::Circulation;
-use C4::Reports::Guided;    #_get_column_defs
-use C4::Charset;
-use Koha::Biblios;
-use Koha::AuthorisedValues;
-use Koha::BiblioFrameworks;
-use Koha::ClassSources;
+#use C4::Circulation;
+#use C4::Reports::Guided;    #_get_column_defs
+#use C4::Charset;
+#use Koha::Biblios;
+#use Koha::AuthorisedValues;
+#use Koha::BiblioFrameworks;
+#use Koha::ClassSources;
 use Koha::Items;
-use List::MoreUtils qw( none );
+#use List::MoreUtils qw( none );
 
 # use Koha::Patron;
-use Koha::DateUtils;
+#use Koha::DateUtils;
 # use Koha::Libraries;
 # use Koha::Patron::Categories;
 # use Koha::Account;
 # use Koha::Account::Lines;
 # use MARC::Record;
-use Cwd qw(abs_path);
-use Mojo::JSON qw(decode_json);;
-use URI::Escape qw(uri_unescape);
-use LWP::UserAgent;
+#use Cwd qw(abs_path);
+#use Mojo::JSON qw(decode_json);;
+#use URI::Escape qw(uri_unescape);
+#use LWP::UserAgent;
 
 ## Here we set our plugin version
 our $VERSION = "{VERSION}";
