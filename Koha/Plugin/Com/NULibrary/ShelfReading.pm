@@ -279,9 +279,9 @@ sub inventory2 {
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
   my $end = time();
-  my $time = "Execution Time: %0.02f s\n, $end - $start";
+  my $time = "Execution Time: %0.02f s\n", $end - $start;
   my $enda = time();
-  my $timea = "Execution Time: %0.02f s\n, $end - $starta";
+  my $timea = "Execution Time: %0.02f s\n", $end - $starta;
 
   $template->param('time' => $time);
     $template->param('timea' => $timea);
