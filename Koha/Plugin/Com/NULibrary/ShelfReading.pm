@@ -31,7 +31,7 @@ use Koha::Items;
 #use List::MoreUtils qw( none );
 
 # use Koha::Patron;
-#use Koha::DateUtils;
+use Koha::DateUtils;
 # use Koha::Libraries;
 # use Koha::Patron::Categories;
 # use Koha::Account;
