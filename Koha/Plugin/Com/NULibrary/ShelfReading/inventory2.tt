@@ -57,34 +57,9 @@
     </form>
 </dl>
 </div>
-[% IF expired_session %]
-	<p>session expired </p>
-[% END %]
-[% IF empty_session %]
-	<p>session empty</p>
-	 <p>[% session_id %]</p>
+[% IF time %]
+<p>[% time %]</p>
 
-
-
-[% END %]
-[% IF session_id %]
-	<p>session id</p>
-	 <p>[% session_id.id %]</p>
-	 <p>[% session_id.name %]</p>
-	 <p>[% session_id.value %]</p>
-
-
-
-[% END %]
-[% IF session_items %]
-	<p>session items exist</p>
-	[% FOREACH b IN session_items %]
-		<p>barcode: [% b.barcode %]</p>
-		<p>itemnumber: [% b.itemnumber %]</p>
-		<p>onloan: [% b.onloan %]</p>
-		<p>withdrawn: [% b.withdrawn %]</p>
-		<p>datelastseen: [% b.datelastseen %]</p>
-		[% END %]
 [% END %]
 
 [% INCLUDE 'intranet-bottom.inc' %]

@@ -41,6 +41,7 @@ use Koha::DateUtils;
 #use Mojo::JSON qw(decode_json);;
 #use URI::Escape qw(uri_unescape);
 #use LWP::UserAgent;
+use Time::HiRes qw( time );
 
 ## Here we set our plugin version
 our $VERSION = "{VERSION}";
@@ -157,6 +158,7 @@ sub inventory1 {
 }
 
 sub inventory2 {
+    my $start = time();
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
@@ -276,6 +278,9 @@ sub inventory2 {
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
+  my $end = time();
+
+  $template->param('time' => "'Execution Time: %0.02f s\n', $end - $start");
 
   $self->output_html( $template->output() );
 }
