@@ -61,5 +61,9 @@
 <p>[% time %]</p>
 
 [% END %]
+[% IF timea %]
+<p>[% timea %]</p>
+
+[% END %]
 
 [% INCLUDE 'intranet-bottom.inc' %]

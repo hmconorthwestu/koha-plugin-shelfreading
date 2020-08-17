@@ -42,7 +42,7 @@ use Koha::DateUtils;
 #use URI::Escape qw(uri_unescape);
 #use LWP::UserAgent;
 use Time::HiRes qw( time );
-
+my $starta = time();
 ## Here we set our plugin version
 our $VERSION = "{VERSION}";
 
@@ -279,8 +279,12 @@ sub inventory2 {
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
   my $end = time();
+  my $time = "Execution Time: %0.02f s\n, $end - $start";
+  my $enda = time();
+  my $timea = "Execution Time: %0.02f s\n, $end - $starta";
 
-  $template->param('time' => "'Execution Time: %0.02f s\n', $end - $start");
+  $template->param('time' => $time);
+    $template->param('timea' => $timea);
 
   $self->output_html( $template->output() );
 }
