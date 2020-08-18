@@ -229,6 +229,10 @@ sub inventory2 {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
 		}
+    if ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+      $item->{problem} = "item missing sorting call number";
+      additemtobarcodes($item,@barcodes);
+    }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
@@ -279,9 +283,9 @@ sub inventory2 {
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@errorloop ) if (@errorloop);
   my $end = time();
-  my $time = "Execution Time: %0.02f s\n", $end - $start;
+  my $time = $end - $start;
   my $enda = time();
-  my $timea = "Execution Time: %0.02f s\n", $end - $starta;
+  my $timea = $end - $starta;
 
   $template->param('time' => $time);
     $template->param('timea' => $timea);
