@@ -196,7 +196,7 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item->itemnumber = "") {
+      if ($item->itemnumber = "" || $item->{itemnumber} eq "undef") {
         $item->{problem} = "item does not exist";
       } else {
     		# Modify date last seen for scanned items, remove lost status
