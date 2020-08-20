@@ -198,7 +198,7 @@ sub inventory2 {
   		my $item = $kohaitem->unblessed;
       if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
         $item->{problem} = "item does not exist";
-
+        push @barcodes, $item;
       } else {
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
@@ -207,11 +207,11 @@ sub inventory2 {
       	$item->{datelastseen} = $datelastseen;
     		$item->{correct} = 0;
 
-
     		push @barcodes, $item;
       }
   	} else {
       $item->{problem} = "item not found";
+      push @barcodes, $item;
   	}
   }
 
