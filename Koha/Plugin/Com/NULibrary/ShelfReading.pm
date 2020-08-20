@@ -196,7 +196,7 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" ) {
+      if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
         $item->{problem} = "item does not exist";
 
       } else {
