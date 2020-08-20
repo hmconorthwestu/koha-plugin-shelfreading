@@ -196,17 +196,20 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-  		# Modify date last seen for scanned items, remove lost status
-      $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
-      # update item hash accordingly
-  		$item->{itemlost} = 0;
-    	$item->{datelastseen} = $datelastseen;
-  		$item->{correct} = 0;
+      if ($item->itemnumber = "") {
+        $item->{problem} = "item does not exist";
+      } else {
+    		# Modify date last seen for scanned items, remove lost status
+        $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
+        # update item hash accordingly
+    		$item->{itemlost} = 0;
+      	$item->{datelastseen} = $datelastseen;
+    		$item->{correct} = 0;
 
-  		push @barcodes, $item;
 
+    		push @barcodes, $item;
+      }
   	} else {
-  		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
       $item->{problem} = "item not found";
   	}
   }
