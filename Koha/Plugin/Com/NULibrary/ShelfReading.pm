@@ -207,6 +207,7 @@ sub inventory2 {
 
   	} else {
   		push @errorloop, { barcode => @oldBarcodes, ERR_BARCODE => 1 };
+      $item->{problem} = "item not found";
   	}
   }
 
