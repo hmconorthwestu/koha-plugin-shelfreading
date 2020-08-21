@@ -174,7 +174,7 @@ sub inventory2 {
     } else {
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-        if ($item eq "undef" || $kohaitem eq "undef") {
+        if ($item eq "undef") {
           $item->{itemcallnumber} = $bc;
           $item->{itemnumber} = $bc;
           $item->{barcode} = $bc;
