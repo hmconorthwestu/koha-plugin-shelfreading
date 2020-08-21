@@ -224,28 +224,24 @@ sub inventory2 {
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
 
-    # catch non-existent items so they don't disappear from shelfreading
-    if ($item->{problem} eq "item not found") {
-      $item->{problem} = "item not in system";
-      additemtobarcodes($item,@barcodes);
-		}
-
-    # item checked out/on loan
+      # item checked out/on loan
 		if ($item->{onloan}) {
 			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
-		}
-
-    if ($item->{withdrawn}) {
+		} elsif ($item->{withdrawn}) {
 			$item->{problem} = "item is marked as withdrawn";
       additemtobarcodes($item,@barcodes);
-		}
-    if ($item->{lost}) {
+		} elsif ($item->{lost}) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-		}
-    if ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
       $item->{problem} = "item missing sorting call number";
+      additemtobarcodes($item,@barcodes);
+    }
+
+    # catch non-existent items so they don't disappear from shelfreading
+    elsif ($item->{problem} eq "item not found") {
+      $item->{problem} = "item not in system";
       additemtobarcodes($item,@barcodes);
     }
 
@@ -267,7 +263,7 @@ sub inventory2 {
           $item->{problem} = "Wrong collection";
         }
       }
-      if ($item->{problem} eq "item not found") {
+      if ($item->{problem} eq "item not in system") {
         $item->{problem} = "item not in system";
   		}
 
