@@ -174,7 +174,7 @@ sub inventory2 {
     } else {
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-        if ($item eq "undef") {
+        if ($item eq "undef" || $kohaitem eq "undef") {
           $item->{itemcallnumber} = $bc;
           $item->{itemnumber} = $bc;
           $item->{barcode} = $bc;
@@ -203,12 +203,9 @@ sub inventory2 {
   	my $datelastseen = $dt->ymd('-');
   	my $kohaitem = Koha::Items->find({barcode => $bc});
     my $item;
-    if ( $kohaitem eq "undef") {
-      my @errorloop = "bad item";
-    }
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item eq "undef") {
+      if ($item eq "undef" || $kohaitem eq "undef") {
         $item->{itemcallnumber} = $bc;
         $item->{itemnumber} = $bc;
         $item->{barcode} = $bc;
