@@ -196,20 +196,21 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
+      if ($item->{itemnumber}) {
+
+        # Modify date last seen for scanned items, remove lost status
+        $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
+        # update item hash accordingly
+        $item->{itemlost} = 0;
+        $item->{datelastseen} = $datelastseen;
+
+        push @barcodes, $item;
+      } else {
         $item->{itemcallnumber} = $bc;
         $item->{itemnumber} = $bc;
         $item->{barcode} = $bc;
         $item->{problem} = "item not found";
         push @barcodes, $item;
-      } else {
-        # Modify date last seen for scanned items, remove lost status
-        $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
-        # update item hash accordingly
-    		$item->{itemlost} = 0;
-      	$item->{datelastseen} = $datelastseen;
-
-    		push @barcodes, $item;
       }
   	} else {
       $item->{itemnumber} = $bc;
@@ -234,14 +235,12 @@ sub inventory2 {
 		} elsif ($item->{lost}) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
-      $item->{problem} = "item missing sorting call number";
-      additemtobarcodes($item,@barcodes);
-    }
-
-    # catch non-existent items so they don't disappear from shelfreading
-    elsif ($item->{problem} eq "item not found") {
+		} elsif ($item->{problem} eq "item not found") {
+      # catch non-existent items so they don't disappear from shelfreading
       $item->{problem} = "item not in system";
+      additemtobarcodes($item,@barcodes);
+    } elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+      $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
     }
 
@@ -263,7 +262,7 @@ sub inventory2 {
           $item->{problem} = "Wrong collection";
         }
       }
-      if ($item->{problem} eq "item not in system") {
+      if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
         $item->{problem} = "item not in system";
   		}
 
