@@ -236,12 +236,13 @@ sub inventory2 {
 		} elsif ($item->{lost}) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-		} elsif ($item->{problem} eq "item not found") {
+		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+      $item->{problem} = "item missing sorting call number";
+      additemtobarcodes($item,@barcodes);
+    }
+    if ($item->{problem} eq "item not found") {
       # catch non-existent items so they don't disappear from shelfreading
       $item->{problem} = "item not in system";
-      additemtobarcodes($item,@barcodes);
-    } elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
-      $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
     }
 
@@ -263,7 +264,7 @@ sub inventory2 {
           $item->{problem} = "Wrong collection";
         }
       }
-      if ($item->{problem} eq "item not in system") {
+      if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
         $item->{problem} = "item not in Koha";
   		}
 
