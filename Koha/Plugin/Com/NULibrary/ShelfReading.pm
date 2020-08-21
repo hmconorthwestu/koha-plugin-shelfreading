@@ -196,7 +196,13 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-
+      if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
+        $item->{itemcallnumber} = $bc;
+        $item->{itemnumber} = $bc;
+        $item->{barcode} = $bc;
+        $item->{problem} = "item not found";
+        push @barcodes, $item;
+      } else {
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
@@ -204,7 +210,7 @@ sub inventory2 {
       	$item->{datelastseen} = $datelastseen;
 
     		push @barcodes, $item;
-
+      }
   	} else {
       $item->{itemnumber} = $bc;
       $item->{barcode} = $bc;
@@ -261,6 +267,9 @@ sub inventory2 {
           $item->{problem} = "Wrong collection";
         }
       }
+      if ($item->{problem} eq "item not found") {
+        $item->{problem} = "item not in system";
+  		}
 
       additemtobarcodes($item,@barcodes);
     }
