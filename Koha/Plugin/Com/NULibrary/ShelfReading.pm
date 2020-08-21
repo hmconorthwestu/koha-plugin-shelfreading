@@ -202,11 +202,12 @@ sub inventory2 {
         # update item hash accordingly
     		$item->{itemlost} = 0;
       	$item->{datelastseen} = $datelastseen;
-    		$item->{correct} = 0;
 
     		push @barcodes, $item;
 
   	} else {
+      $item->{itemnumber} = $bc;
+      $item->{barcode} = $bc;
       $item->{problem} = "item not found";
       push @barcodes, $item;
   	}
@@ -217,9 +218,9 @@ sub inventory2 {
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
 
-    # non-existent item check
-    if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
-      $item->{problem} = "item does not exist";
+    # catch non-existent items so they don't disappear from shelfreading
+    if ($item->{problem} eq "item not found") {
+      $item->{problem} = "item not in system";
       additemtobarcodes($item,@barcodes);
 		}
 
