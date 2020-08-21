@@ -169,18 +169,27 @@ sub inventory2 {
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
-		my $item = Koha::Items->find({barcode => $b});
-		if ( $item ) {
-			$item = $item->unblessed;
-			push @barcodes, $item;
-		}
-		$count = $count + 1;
     if ($b == $bc) {
       $duplicate = 1;
+    } else {
+  		my $item = Koha::Items->find({barcode => $b});
+  		if ( $item ) {
+        if ($item->{itemnumber}) {
+          $item = $item->unblessed;
+    			push @barcodes, $item;
+        } else {
+          $item->{itemcallnumber} = $bc;
+          $item->{itemnumber} = $bc;
+          $item->{barcode} = $bc;
+          $item->{problem} = "item not found";
+          push @barcodes, $item;
+        }
+  		}
+  		$count = $count + 1;
     }
 	}
 
-    my $template = $self->get_template({ file => 'inventory2.tt' });
+  my $template = $self->get_template({ file => 'inventory2.tt' });
 
 	#if ($cgi->cookie( 'barcodes' )) {
 	#	@barcodes = $cgi->cookie( 'barcodes' );
@@ -197,7 +206,6 @@ sub inventory2 {
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
       if ($item->{itemnumber}) {
-
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
@@ -212,11 +220,6 @@ sub inventory2 {
         $item->{problem} = "item not found";
         push @barcodes, $item;
       }
-  	} else {
-      $item->{itemnumber} = $bc;
-      $item->{barcode} = $bc;
-      $item->{problem} = "item not found";
-      push @barcodes, $item;
   	}
   }
 
@@ -262,8 +265,8 @@ sub inventory2 {
           $item->{problem} = "Wrong collection";
         }
       }
-      if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
-        $item->{problem} = "item not in system";
+      if ($item->{problem} eq "item not in system") {
+        $item->{problem} = "item not in Koha";
   		}
 
       additemtobarcodes($item,@barcodes);
