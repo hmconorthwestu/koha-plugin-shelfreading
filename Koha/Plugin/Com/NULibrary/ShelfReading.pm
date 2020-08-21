@@ -174,14 +174,13 @@ sub inventory2 {
     } else {
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-        if ($item eq "undef") {
-          $item->{itemcallnumber} = $bc;
-          $item->{itemnumber} = $bc;
-          $item->{barcode} = $bc;
-          $item->{problem} = "item not found";
-          push @barcodes, $item;
-        } else {
           $item = $item->unblessed;
+          unless ($item->{itemnumber}) {
+            $item->{itemcallnumber} = $bc;
+            $item->{itemnumber} = $bc;
+            $item->{barcode} = $bc;
+            $item->{problem} = "item not found";
+          }
           push @barcodes, $item;
         }
   		}
@@ -205,19 +204,19 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item eq "undef" || $kohaitem eq "undef") {
-        $item->{itemcallnumber} = $bc;
-        $item->{itemnumber} = $bc;
-        $item->{barcode} = $bc;
-        $item->{problem} = "item not found";
-        push @barcodes, $item;
-      } else {
+      if ($item->{itemnumber}) {
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
         $item->{itemlost} = 0;
         $item->{datelastseen} = $datelastseen;
 
+        push @barcodes, $item;
+      } else {
+        $item->{itemcallnumber} = $bc;
+        $item->{itemnumber} = $bc;
+        $item->{barcode} = $bc;
+        $item->{problem} = "item not found";
         push @barcodes, $item;
       }
   	}
