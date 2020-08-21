@@ -218,7 +218,13 @@ sub inventory2 {
 
         push @barcodes, $item;
       }
-  	}
+  	} else {
+      $item->{itemcallnumber} = $bc;
+      $item->{itemnumber} = $bc;
+      $item->{barcode} = $bc;
+      $item->{problem} = "item not found";
+    push @barcodes, $item;
+    }
   }
 
 	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
