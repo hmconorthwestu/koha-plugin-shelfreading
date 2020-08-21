@@ -174,19 +174,18 @@ sub inventory2 {
     } else {
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-          $item = $item->unblessed;
-          unless ($item->{itemnumber}) {
-            $item->{itemcallnumber} = $bc;
-            $item->{itemnumber} = $bc;
-            $item->{barcode} = $bc;
-            $item->{problem} = "item not found";
-          }
-          push @barcodes, $item;
+        $item = $item->unblessed;
+        unless ($item->{itemnumber}) {
+          $item->{itemcallnumber} = $bc;
+          $item->{itemnumber} = $bc;
+          $item->{barcode} = $bc;
+          $item->{problem} = "item not found";
         }
-  		}
-  		$count = $count + 1;
-    }
-	}
+        push @barcodes, $item;
+      }
+		}
+  	$count = $count + 1;
+  }
 
   my $template = $self->get_template({ file => 'inventory2.tt' });
 
