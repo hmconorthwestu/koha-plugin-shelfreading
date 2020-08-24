@@ -14,7 +14,7 @@
 <dl>
 	[% IF barcodes %]
 		[% FOREACH b IN barcodes %]
-			<dt class="NU_dt [% IF b.problem %]shelfreading-problem[% ELSIF b.out_of_order == 1 %]shelfreading-outoforder[% ELSE %]correct[% END %]">[% b.itemcallnumber %]
+			<dt class="NU_dt [% IF b.out_of_order == 1 %]shelfreading-outoforder[% ELSIF b.problem %]shelfreading-problem[% ELSE %]correct[% END %]">[% b.itemcallnumber %]
       [% IF b.problem %] - [% b.problem %][% END %]
         <dd class="NU_dd">barcode: [% b.barcode %]
         </br>
