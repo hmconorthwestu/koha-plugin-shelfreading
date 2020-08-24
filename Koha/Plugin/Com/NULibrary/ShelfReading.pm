@@ -228,51 +228,53 @@ sub inventory2 {
   }
 
 	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
-	my @sortbarcodes = @barcodes;
+
+  my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
-
-      # item checked out/on loan
-		if ($item->{onloan}) {
-			$item->{problem} = "item is checked out";
-      additemtobarcodes($item,@barcodes);
-		} elsif ($item->{withdrawn}) {
-			$item->{problem} = "item is marked as withdrawn";
-      additemtobarcodes($item,@barcodes);
-		} elsif ($item->{lost}) {
-			$item->{problem} = "item is marked as lost";
-      additemtobarcodes($item,@barcodes);
-		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
-      $item->{problem} = "item missing sorting call number";
-      additemtobarcodes($item,@barcodes);
-    }
     if ($item->{problem} eq "item not found") {
       # catch non-existent items so they don't disappear from shelfreading
       $item->{problem} = "item not in system";
       additemtobarcodes($item,@barcodes);
-    }
+    } else {
+        # item checked out/on loan
+  		if ($item->{onloan}) {
+  			$item->{problem} = "item is checked out";
+        additemtobarcodes($item,@barcodes);
+  		} elsif ($item->{withdrawn}) {
+  			$item->{problem} = "item is marked as withdrawn";
+        additemtobarcodes($item,@barcodes);
+  		} elsif ($item->{lost}) {
+  			$item->{problem} = "item is marked as lost";
+        additemtobarcodes($item,@barcodes);
+  		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+        $item->{problem} = "item missing sorting call number";
+        additemtobarcodes($item,@barcodes);
+      }
 
-    # compare to first item - check for wrong branch, wrong holding branch, wrong collection
-    unless ( $i == 0 ) {
-      my $firstitem = $sortbarcodes[0];
-      if ($item->{homebranch} ne $firstitem->{homebranch}) {
-        $item->{problem} = "Wrong branch library";
-      }
-      if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
-        $item->{problem} = "Wrong branch library";
-      }
-      if ($item->{location} ne $firstitem->{location}) {
-        $item->{problem} = "Wrong shelving location";
-      }
-      # only check collection if shelving location ($item->{location}) is empty
-      if ($item->{location} eq "") {
-        if ($item->{ccode} ne $firstitem->{ccode}) {
-          $item->{problem} = "Wrong collection";
+
+      # compare to first item - check for wrong branch, wrong holding branch, wrong collection
+      unless ( $i == 0 ) {
+        my $firstitem = $sortbarcodes[0];
+        if ($item->{homebranch} ne $firstitem->{homebranch}) {
+          $item->{problem} = "Wrong branch library";
         }
+        if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
+          $item->{problem} = "Wrong branch library";
+        }
+        if ($item->{location} ne $firstitem->{location}) {
+          $item->{problem} = "Wrong shelving location";
+        }
+        # only check collection if shelving location ($item->{location}) is empty
+        if ($item->{location} eq "") {
+          if ($item->{ccode} ne $firstitem->{ccode}) {
+            $item->{problem} = "Wrong collection";
+          }
+        }
+        if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
+          $item->{problem} = "item not in Koha";
+    		}
       }
-      if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
-        $item->{problem} = "item not in Koha";
-  		}
 
       additemtobarcodes($item,@barcodes);
     }
