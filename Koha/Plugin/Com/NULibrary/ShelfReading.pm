@@ -163,7 +163,6 @@ sub inventory2 {
     my $cgi = $self->{'cgi'};
 
 	my @barcodes;
-  my @sortbarcodes;
   my $duplicate;
   my @errorloop;
 
@@ -218,8 +217,6 @@ sub inventory2 {
         $item->{datelastseen} = $datelastseen;
 
         push @barcodes, $item;
-        # only add found barcodes to $sortbarcodes
-        push @sortbarcodes, $item;
       }
   	} else {
       $item->{itemcallnumber} = $bc;
@@ -230,6 +227,9 @@ sub inventory2 {
     }
   }
 
+	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
+
+  my @sortbarcodes = @barcodes;
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
     if ($item->{problem} eq "item not found") {
