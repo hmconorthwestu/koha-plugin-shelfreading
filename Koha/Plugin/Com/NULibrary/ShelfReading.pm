@@ -179,8 +179,14 @@ sub inventory2 {
           $item->{itemcallnumber} = $bc;
           $item->{itemnumber} = $bc;
           $item->{barcode} = $bc;
-          $item->{problem} = "item not found";
+          $item->{problem} = "itemnumber not found";
         }
+        push @barcodes, $item;
+      } else {
+        $item->{itemcallnumber} = $bc;
+        $item->{itemnumber} = $bc;
+        $item->{barcode} = $bc;
+        $item->{problem} = "item not found";
         push @barcodes, $item;
       }
 		}
@@ -207,7 +213,7 @@ sub inventory2 {
         $item->{itemcallnumber} = $bc;
         $item->{itemnumber} = $bc;
         $item->{barcode} = $bc;
-        $item->{problem} = "item not found";
+        $item->{problem} = "itemnumber not found";
         push @barcodes, $item;
       } else {
         # Modify date last seen for scanned items, remove lost status
@@ -251,6 +257,11 @@ sub inventory2 {
       $item->{problem} = "item not in system";
       additemtobarcodes($item,@barcodes);
     }
+    if ($item->{problem} eq "itemnumber not found") {
+      # catch non-existent items so they don't disappear from shelfreading
+      $item->{problem} = "itemnumber not in system";
+      additemtobarcodes($item,@barcodes);
+    }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
@@ -272,6 +283,9 @@ sub inventory2 {
       }
       if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
         $item->{problem} = "item not in Koha";
+  		}
+      if ($item->{problem} eq "itemnumber not in system") {
+        $item->{problem} = "itemnumber not in Koha";
   		}
 
       additemtobarcodes($item,@barcodes);
