@@ -302,46 +302,19 @@ my @sortedbarcodes = map  { $_->[0] }
 
 my @move;
 
-unless( @sortbarcodes ~~ @sortedbarcodes && @sortedbarcodes ~~ @sortbarcodes ) {
-  @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
-}
+@move = shelf_sort(@sortbarcodes, @sortedbarcodes);
 
-for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-  my $item = $sortbarcodes[$i];
-  foreach my $to_move ( @move ) {
-    if ( $item->{cn_sort} eq $to_move ) {
-      $item->{out_of_order} = 1;
-      additemtobarcodes($item,@barcodes);
+if ( defined(@move) ) {
+  for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+    my $item = $sortbarcodes[$i];
+    foreach my $to_move ( @move ) {
+      if ( $item->{cn_sort} eq $to_move ) {
+        $item->{out_of_order} = 1;
+        additemtobarcodes($item,@barcodes);
+      }
     }
   }
 }
-
-# end of sorts
-
-#    }
-
-    #check sortbarcodes against sortedbarcodes, add error if mismatch
-
-#		 unless ( $i == 0 ) {
-#            my $previous_item = $sortbarcodes[ $i - 1 ];
-#            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
-#                $item->{out_of_order} = 1;
-#        				additemtobarcodes($item,@barcodes);
-#            }
-#        }
-
-#          my $next_item = $sortbarcodes[ $i + 1 ];
-#          if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-#              $item->{out_of_order} = 1;
-#              additemtobarcodes($item,@barcodes);
-#          }
-
-
-	# push ( $items, ( $item ) );
-	# $cgi->cookie( 'barcodes' => \@barcodes );
-
-	# my @test = $cgi;
-	# $template->param( 'test' => \@oldBarcodes );
 
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( error => \@errorloop ) if (@errorloop);
