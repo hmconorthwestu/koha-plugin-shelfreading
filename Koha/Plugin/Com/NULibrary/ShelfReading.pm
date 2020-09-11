@@ -273,18 +273,19 @@ sub inventory2 {
         additemtobarcodes($item,@barcodes);
         # remove item from sorting
         splice(@sortbarcodes, $i, 1);
-      } elsif (!defined($item->{location}) || !defined($firstitem->{location}) || $item->{location} ne $firstitem->{location}) {
-        $item->{problem} = "Wrong shelving location";
-        additemtobarcodes($item,@barcodes);
-        # remove item from sorting
-        splice(@sortbarcodes, $i, 1);
-      } elsif (!defined($item->{location}) || $item->{location} eq "") {
-        # only check collection if shelving location ($item->{location}) is empty
+      } elsif ( !defined($firstitem->{location}) || (!defined($firstitem->{location}) && !defined($item->{location}) ) || $item->{location} eq "" ) {
         if ($item->{ccode} ne $firstitem->{ccode}) {
           $item->{problem} = "Wrong collection";
           additemtobarcodes($item,@barcodes);
           # remove item from sorting
           splice(@sortbarcodes, $i, 1);
+        }
+      } elsif ( defined($firstitem->{location}) && !defined($item->{location} || $item->{location} ne $firstitem->{location} ) ) {
+        # only check collection if shelving location ($item->{location}) is empty
+        $item->{problem} = "Wrong shelving location";
+        additemtobarcodes($item,@barcodes);
+        # remove item from sorting
+        splice(@sortbarcodes, $i, 1);
         }
       }
     }
