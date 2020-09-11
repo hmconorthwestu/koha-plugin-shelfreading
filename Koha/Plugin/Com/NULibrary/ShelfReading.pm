@@ -295,16 +295,29 @@ sub inventory2 {
   # item sort - created sorted array of non-error items
 #  my @sortedbarcodes =  sort { $a->{cn_sort} <=> $b->{cn_sort} } @sortbarcodes;
 my $timea;
+ # sorting formula from https://www.perlmonks.org/?node_id=560304
 my @sortedbarcodes = map  { $_->[0] }
              sort { $a->[1] cmp $b->[1] }
              map  { [ $_, $_->{cn_sort} ] }
              @sortbarcodes;
 
+ my @cnsort;
+ my @cnsorted;
+
+ # create arrays of unsorted and sorted call numbers
+ while ( my ($key, $value) = each @sortedbarcodes ) {
+   push(@cnsorted,$value->{cn_sort});
+ }
+ while ( my ($key, $value) = each @sortbarcodes ) {
+   push(@cnsort,$value->{cn_sort});
+ }
+
 my @move;
+unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+  @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
+}
 
-@move = shelf_sort(@sortbarcodes, @sortedbarcodes);
-
-if ( defined(@move) ) {
+if ( @move ) {
   for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
     my $item = $sortbarcodes[$i];
     foreach my $to_move ( @move ) {
@@ -330,21 +343,7 @@ if ( defined(@move) ) {
 }
 
 sub shelf_sort {
-  my (@sortbarcodes, @sortedbarcodes) = @_;
-  # sorting formula from https://www.perlmonks.org/?node_id=560304
-
-
-  my @cnsort;
-  my @cnsorted;
-  my $ct = scalar(@cnsort);
-
-  # create arrays of unsorted and sorted call numbers
-  while ( my ($key, $value) = each @sortedbarcodes ) {
-    push(@cnsorted,$value->{cn_sort});
-  }
-  while ( my ($key, $value) = each @sortbarcodes ) {
-    push(@cnsort,$value->{cn_sort});
-  }
+  my (@cnsort, @cnsorted) = @_;
 
 # hashes to hold data for calculations
   my %chunk;
