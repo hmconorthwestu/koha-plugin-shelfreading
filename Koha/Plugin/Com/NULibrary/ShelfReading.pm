@@ -314,7 +314,7 @@ my @sortedbarcodes = map  { $_->[0] }
 
 my @move;
 unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
-  @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
+  @move = shelf_sort(@cnsort, @cnsorted);
 }
 
 if ( @move ) {
