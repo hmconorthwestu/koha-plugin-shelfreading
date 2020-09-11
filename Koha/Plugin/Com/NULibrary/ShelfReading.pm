@@ -27,8 +27,10 @@ use C4::Koha;
 #use Koha::AuthorisedValues;
 #use Koha::BiblioFrameworks;
 #use Koha::ClassSources;
+# to get item details:
 use Koha::Items;
 #use List::MoreUtils qw( none );
+use List::Util qw(first);
 
 # use Koha::Patron;
 use Koha::DateUtils;
@@ -42,9 +44,13 @@ use Koha::DateUtils;
 #use URI::Escape qw(uri_unescape);
 #use LWP::UserAgent;
 use Time::HiRes qw( time );
+# to compare sorted and unsorted lists:
+use Array::Utils qw(:all);
+use Data::Dumper;
+
 my $starta = time();
 ## Here we set our plugin version
-our $VERSION = "{VERSION}";
+our $VERSION = "v1.0.201";
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -163,31 +169,29 @@ sub inventory2 {
     my $cgi = $self->{'cgi'};
 
 	my @barcodes;
+  my @sortbarcodes;
   my $duplicate;
   my @errorloop;
-
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
     if ($b == $bc) {
       $duplicate = 1;
-    } else {
+    }
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-        if ($item eq "undef") {
-          $item->{itemcallnumber} = $bc;
-          $item->{itemnumber} = $bc;
-          $item->{barcode} = $bc;
-          $item->{problem} = "item not found";
-          push @barcodes, $item;
-        } else {
-          $item = $item->unblessed;
-          push @barcodes, $item;
-        }
-  		}
-  		$count = $count + 1;
-    }
-	}
+        $item = $item->unblessed;
+        push @sortbarcodes, $item;
+        push @barcodes, $item;
+      } else {
+        $item->{itemcallnumber} = $b;
+        $item->{itemnumber} = $b;
+        $item->{barcode} = $b;
+        $item->{problem} = "item not found";
+        push @barcodes, $item;
+      }
+  	$count = $count + 1;
+  }
 
   my $template = $self->get_template({ file => 'inventory2.tt' });
 
@@ -203,96 +207,129 @@ sub inventory2 {
   	my $datelastseen = $dt->ymd('-');
   	my $kohaitem = Koha::Items->find({barcode => $bc});
     my $item;
-    if ( $kohaitem eq "undef") {
-      my @errorloop = "bad item";
-    }
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-      if ($item eq "undef") {
-        $item->{itemcallnumber} = $bc;
-        $item->{itemnumber} = $bc;
-        $item->{barcode} = $bc;
-        $item->{problem} = "item not found";
-        push @barcodes, $item;
-      } else {
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
         $item->{itemlost} = 0;
         $item->{datelastseen} = $datelastseen;
-
+        push @sortbarcodes, $item;
         push @barcodes, $item;
-      }
-  	}
+  	} else {
+      $item->{itemcallnumber} = $bc;
+      $item->{itemnumber} = $bc;
+      $item->{barcode} = $bc;
+      $item->{problem} = "item not found";
+      push @barcodes, $item;
+    }
   }
 
-	#ADD checks here for onloan, wrong homebranch, wrong ccode, withdrawn (don't need), cn_sort out of order
-	my @sortbarcodes = @barcodes;
+# check item branches, location, collection, and sorting
+#	my @sortbarcodes = @barcodes;
+
+# find first valid item to be reference point for branch/location/collection
+
+#  FIRSTITEM: for ( my $f = 0; $f < @sortbarcodes; $f++ ) {
+#   if ( $firstitem->{problem} eq "item not found") {
+     # make the next item first
+#      $firstitem = $sortbarcodes[$f + 1];
+#    } else {
+      # exit loop as soon as $firstitem is valid
+#      last FIRSTITEM;
+#    }
+#  }
+
+
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
+    my $firstitem = $sortbarcodes[0];
 
-      # item checked out/on loan
-		if ($item->{onloan}) {
+    if ($item->{onloan}) {
 			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
 		} elsif ($item->{withdrawn}) {
 			$item->{problem} = "item is marked as withdrawn";
+      # remove item from sorting
+      splice(@sortbarcodes, $i, 1);
       additemtobarcodes($item,@barcodes);
 		} elsif ($item->{lost}) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-		} elsif ($item->{problem} eq "item not found") {
-      # catch non-existent items so they don't disappear from shelfreading
-      $item->{problem} = "item not in system";
-      additemtobarcodes($item,@barcodes);
-    } elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
       $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
     }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
-      my $firstitem = $sortbarcodes[0];
+#      my $firstitem = $sortbarcodes[0];
       if ($item->{homebranch} ne $firstitem->{homebranch}) {
         $item->{problem} = "Wrong branch library";
-      }
-      if ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
+        additemtobarcodes($item,@barcodes);
+        # remove item from sorting
+        splice(@sortbarcodes, $i, 1);
+      } elsif ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
         $item->{problem} = "Wrong branch library";
-      }
-      if ($item->{location} ne $firstitem->{location}) {
+        additemtobarcodes($item,@barcodes);
+        # remove item from sorting
+        splice(@sortbarcodes, $i, 1);
+      } elsif ($item->{location} ne $firstitem->{location}) {
         $item->{problem} = "Wrong shelving location";
-      }
-      # only check collection if shelving location ($item->{location}) is empty
-      if ($item->{location} eq "") {
+        additemtobarcodes($item,@barcodes);
+        # remove item from sorting
+        splice(@sortbarcodes, $i, 1);
+      } elsif ($item->{location} eq "") {
+        # only check collection if shelving location ($item->{location}) is empty
         if ($item->{ccode} ne $firstitem->{ccode}) {
           $item->{problem} = "Wrong collection";
+          additemtobarcodes($item,@barcodes);
+          # remove item from sorting
+          splice(@sortbarcodes, $i, 1);
         }
       }
-      if ($item->{problem} eq "item not in system") {
-        $item->{problem} = "item not in Koha";
-  		}
+    }
+  }
+#end of checks
 
+  #Need to check MENDING status (and/or shelving location?)
+  # item sort - created sorted array of non-error items
+#  my @sortedbarcodes =  sort { $a->{cn_sort} <=> $b->{cn_sort} } @sortbarcodes;
+my $timea;
+
+my @move = shelf_sort(@sortbarcodes);
+
+for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+  my $item = $sortbarcodes[$i];
+  foreach my $to_move ( @move ) {
+    if ( $item->{cn_sort} eq $to_move ) {
+      $item->{out_of_order} = 1;
       additemtobarcodes($item,@barcodes);
     }
+  }
+}
 
-    # item sort - add error message if cn_sort isn't greater than previous item
-		 unless ( $i == 0 ) {
-            my $previous_item = $sortbarcodes[ $i - 1 ];
+# end of sorts
+
+#    }
+
+    #check sortbarcodes against sortedbarcodes, add error if mismatch
+
+#		 unless ( $i == 0 ) {
+#            my $previous_item = $sortbarcodes[ $i - 1 ];
 #            if ( $previous_item && $item->{cn_sort} lt $previous_item->{cn_sort} ) {
 #                $item->{out_of_order} = 1;
 #        				additemtobarcodes($item,@barcodes);
 #            }
-        }
+#        }
 
-          my $next_item = $sortbarcodes[ $i + 1 ];
-          if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
-              $item->{out_of_order} = 1;
-              additemtobarcodes($item,@barcodes);
-          }
+#          my $next_item = $sortbarcodes[ $i + 1 ];
+#          if ( $next_item && $item->{cn_sort} gt $next_item->{cn_sort} ) {
+#              $item->{out_of_order} = 1;
+#              additemtobarcodes($item,@barcodes);
+#          }
 
-	}
 
-	#end of checks
 	# push ( $items, ( $item ) );
 	# $cgi->cookie( 'barcodes' => \@barcodes );
 
@@ -304,14 +341,122 @@ sub inventory2 {
   my $end = time();
   my $time = $end - $start;
   my $enda = time();
-  my $timea = $end - $starta;
+#  my $timea = $end - $starta;
 
   $template->param('time' => $time);
-    $template->param('timea' => $timea);
+  $template->param('timea' => $timea);
 
   $self->output_html( $template->output() );
 }
 
+sub shelf_sort {
+  my (@sortbarcodes) = @_;
+  # sorting formula from https://www.perlmonks.org/?node_id=560304
+  my @sortedbarcodes = map  { $_->[0] }
+               sort { $a->[1] cmp $b->[1] }
+               map  { [ $_, $_->{cn_sort} ] }
+               @sortbarcodes;
+
+  my @cnsort;
+  my @cnsorted;
+  my $ct = scalar(@cnsort);
+
+  # create arrays of unsorted and sorted call numbers
+  while ( my ($key, $value) = each @sortedbarcodes ) {
+    push(@cnsorted,$value->{cn_sort});
+  }
+  while ( my ($key, $value) = each @sortbarcodes ) {
+    push(@cnsort,$value->{cn_sort});
+  }
+
+# hashes to hold data for calculations
+  my %chunk;
+  my %chunks;
+  my @move;
+  my $chunk_key = 0;
+
+  until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+    while (my ($k, $v) = each @cnsort) {
+      # find the given item's position in the sorted array
+      my $foundkey = first { $cnsorted[$_] eq $v } 0..$#cnsorted;
+      # calculate distance from where item is in sorted array
+      my $d = $foundkey - $k;
+      if ( defined $chunks{$chunk_key} ) {
+        if ( defined $chunk{d} ) {
+          unless ( $chunk{d} eq $d ) {
+            # if an item is a different distance from correct than the previous item, start a new chunk
+            $chunk_key++;
+            %chunk = ();
+          }
+        }
+      }
+      # save keys for all items in this chunk
+      push @{$chunk{'i'}},$k;
+      # record distance first key is from where it should be
+      $chunk{d} = $d;
+      # record key of first item in chunk
+      $chunk{f} = $chunk{i}[0];
+      # count how many items in chunk
+      my @testd = exists( $chunk{'i'} ) ? @{ $chunk{'i'} } : ();
+      $chunk{s} = scalar(@testd);
+      # add the chunk to a hash of chunks
+      $chunks{$chunk_key} = {%chunk};
+    }
+
+    # find the greatest distance number
+    my $chunk_dist = 0;
+    while ( my ($k, $v) = each %chunks ) {
+      if ( $chunks{$k}{d} > $chunk_dist) {
+        $chunk_dist = $chunks{$k}{d};
+      }
+    }
+
+    # find the key of the chunk with the greatest distance number
+    my $chunk_move = 0;
+    while ( my ($k, $v) = each %chunks ) {
+      if ( $chunks{$k}{d} eq $chunk_dist) {
+        $chunk_move = $k;
+        for my $i ( @{$chunks{$k}{i}} ) {
+          push @move, @cnsort[$i];
+        }
+      }
+    }
+
+    # change the f value of the greatest distance chunk, to f + d (distance)
+    $chunks{$chunk_move}{f} = $chunks{$chunk_move}{f} + $chunks{$chunk_move}{d};
+
+    # adjust f values up or down so there are no duplicate f values and chunks land in correct order by f values
+    if ($chunks{$chunk_move}{d} > 0 ) {
+      while ( my ($k, $v) = each %chunks ) {
+        if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f}) {
+          $chunks{$k}{f} = $chunks{$k}{f}-1;
+        }
+      }
+    } elsif ($chunks{$chunk_move}{d} < 0 ) {
+      while ( my ($k, $v) = each %chunks ) {
+        if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f} ) {
+          $chunks{$k}{f} = $chunks{$k}{f}+1;
+        }
+      }
+    }
+
+    my @prev = @cnsort;
+    @cnsort = ();
+    # sort chunks by f value, into correct order
+    foreach my $sorted ( sort { $chunks{$a}{f} <=> $chunks{$b}{f} } keys %chunks ) {
+      for my $i ( @{$chunks{$sorted}{i}} ) {
+        # create new cnsort array with keys as values in correct order
+        push @cnsort, $i;
+      }
+    }
+    while (my ($k, $v) = each @cnsort) {
+      # substitute correct call number values in for key values
+      @cnsort[$k] = @prev[$v];
+    }
+  }
+  # return call numbers of items to move
+  return @move;
+}
 
 sub additemtobarcodes {
     my ( $item, $barcodes ) = @_;
