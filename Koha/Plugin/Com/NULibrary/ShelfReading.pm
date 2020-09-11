@@ -181,7 +181,6 @@ sub inventory2 {
   		my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
         $item = $item->unblessed;
-<<<<<<< HEAD
         push @sortbarcodes, $item;
         push @barcodes, $item;
       } else {
@@ -191,23 +190,6 @@ sub inventory2 {
         $item->{problem} = "item not found";
         push @barcodes, $item;
       }
-=======
-        if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
-          $item->{itemcallnumber} = $bc;
-          $item->{itemnumber} = $bc;
-          $item->{barcode} = $bc;
-          $item->{problem} = "itemnumber not found";
-        }
-        push @barcodes, $item;
-      } else {
-        $item->{itemcallnumber} = $bc;
-        $item->{itemnumber} = $bc;
-        $item->{barcode} = $bc;
-        $item->{problem} = "item not found";
-        push @barcodes, $item;
-      }
-		}
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
   	$count = $count + 1;
   }
 
@@ -227,16 +209,6 @@ sub inventory2 {
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
-<<<<<<< HEAD
-=======
-      if ($item->{itemnumber} eq "undef" || $item->{itemnumber} eq "" || $item->{itemnumber} < 1 ) {
-        $item->{itemcallnumber} = $bc;
-        $item->{itemnumber} = $bc;
-        $item->{barcode} = $bc;
-        $item->{problem} = "itemnumber not found";
-        push @barcodes, $item;
-      } else {
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
@@ -244,20 +216,12 @@ sub inventory2 {
         $item->{datelastseen} = $datelastseen;
         push @sortbarcodes, $item;
         push @barcodes, $item;
-<<<<<<< HEAD
-=======
-      }
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
   	} else {
       $item->{itemcallnumber} = $bc;
       $item->{itemnumber} = $bc;
       $item->{barcode} = $bc;
       $item->{problem} = "item not found";
-<<<<<<< HEAD
       push @barcodes, $item;
-=======
-    push @barcodes, $item;
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
     }
   }
 
@@ -294,19 +258,6 @@ sub inventory2 {
       additemtobarcodes($item,@barcodes);
 		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
       $item->{problem} = "item missing sorting call number";
-<<<<<<< HEAD
-=======
-      additemtobarcodes($item,@barcodes);
-    }
-    if ($item->{problem} eq "item not found") {
-      # catch non-existent items so they don't disappear from shelfreading
-      $item->{problem} = "item not in system";
-      additemtobarcodes($item,@barcodes);
-    }
-    if ($item->{problem} eq "itemnumber not found") {
-      # catch non-existent items so they don't disappear from shelfreading
-      $item->{problem} = "itemnumber not in system";
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
       additemtobarcodes($item,@barcodes);
     }
 
@@ -337,18 +288,9 @@ sub inventory2 {
           splice(@sortbarcodes, $i, 1);
         }
       }
-<<<<<<< HEAD
     }
   }
 #end of checks
-=======
-      if ($item->{problem} eq "item not in system" || $item->{problem} eq "item not found") {
-        $item->{problem} = "item not in Koha";
-  		}
-      if ($item->{problem} eq "itemnumber not in system") {
-        $item->{problem} = "itemnumber not in Koha";
-  		}
->>>>>>> d693420ba8b1909ea6e09efc83ea4058010d9106
 
   #Need to check MENDING status (and/or shelving location?)
   # item sort - created sorted array of non-error items
