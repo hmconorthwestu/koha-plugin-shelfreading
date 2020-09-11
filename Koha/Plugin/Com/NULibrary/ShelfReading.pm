@@ -286,7 +286,6 @@ sub inventory2 {
         additemtobarcodes($item,@barcodes);
         # remove item from sorting
         splice(@sortbarcodes, $i, 1);
-        }
       }
     }
   }
