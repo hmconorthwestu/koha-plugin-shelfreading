@@ -296,8 +296,14 @@ sub inventory2 {
   # item sort - created sorted array of non-error items
 #  my @sortedbarcodes =  sort { $a->{cn_sort} <=> $b->{cn_sort} } @sortbarcodes;
 my $timea;
+my @sortedbarcodes = map  { $_->[0] }
+             sort { $a->[1] cmp $b->[1] }
+             map  { [ $_, $_->{cn_sort} ] }
+             @sortbarcodes;
 
-my @move = shelf_sort(@sortbarcodes);
+unless( @sortbarcodes ~~ @sortedbarcodes && @sortedbarcodes ~~ @sortbarcodes ) {
+  my @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
+}
 
 for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
   my $item = $sortbarcodes[$i];
@@ -350,12 +356,9 @@ for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 }
 
 sub shelf_sort {
-  my (@sortbarcodes) = @_;
+  my (@sortbarcodes, @sortedbarcodes) = @_;
   # sorting formula from https://www.perlmonks.org/?node_id=560304
-  my @sortedbarcodes = map  { $_->[0] }
-               sort { $a->[1] cmp $b->[1] }
-               map  { [ $_, $_->{cn_sort} ] }
-               @sortbarcodes;
+
 
   my @cnsort;
   my @cnsorted;
