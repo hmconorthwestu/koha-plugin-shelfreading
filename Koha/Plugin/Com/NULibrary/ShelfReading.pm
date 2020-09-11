@@ -301,8 +301,10 @@ my @sortedbarcodes = map  { $_->[0] }
              map  { [ $_, $_->{cn_sort} ] }
              @sortbarcodes;
 
+my @move;
+
 unless( @sortbarcodes ~~ @sortedbarcodes && @sortedbarcodes ~~ @sortbarcodes ) {
-  my @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
+  @move = shelf_sort(@sortbarcodes, @sortedbarcodes);
 }
 
 for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
