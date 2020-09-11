@@ -292,8 +292,6 @@ sub inventory2 {
 #end of checks
 
   #Need to check MENDING status (and/or shelving location?)
-  # item sort - created sorted array of non-error items
-#  my @sortedbarcodes =  sort { $a->{cn_sort} <=> $b->{cn_sort} } @sortbarcodes;
 my $timea;
  # sorting formula from https://www.perlmonks.org/?node_id=560304
 my @sortedbarcodes = map  { $_->[0] }
