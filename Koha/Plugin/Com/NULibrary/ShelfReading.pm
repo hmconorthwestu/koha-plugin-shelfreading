@@ -46,7 +46,6 @@ use Koha::DateUtils;
 use Time::HiRes qw( time );
 # to compare sorted and unsorted lists:
 use Array::Utils qw(:all);
-use Data::Dumper;
 
 my $starta = time();
 ## Here we set our plugin version
