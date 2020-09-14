@@ -224,47 +224,34 @@ sub inventory2 {
     }
   }
 
-# check item branches, location, collection, and sorting
-#	my @sortbarcodes = @barcodes;
+# check item branches, location, collection, checked out, lost, missing sort call number
 
-# find first valid item to be reference point for branch/location/collection
-
-#  FIRSTITEM: for ( my $f = 0; $f < @sortbarcodes; $f++ ) {
-#   if ( $firstitem->{problem} eq "item not found") {
-     # make the next item first
-#      $firstitem = $sortbarcodes[$f + 1];
-#    } else {
-      # exit loop as soon as $firstitem is valid
-#      last FIRSTITEM;
-#    }
-#  }
-
-
+# start of checks - need to add mending and/or processing
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
 		my $item = $sortbarcodes[$i];
     my $firstitem = $sortbarcodes[0];
 
-    if ($item->{onloan}) {
+    if ( $item->{onloan} ) {
 			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
-		} elsif ($item->{withdrawn}) {
+		} elsif ( $item->{withdrawn} ) {
 			$item->{problem} = "item is marked as withdrawn";
       additemtobarcodes($item,@barcodes);
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
-		} elsif ($item->{lost}) {
+		} elsif ( $item->{lost} ) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
-		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
+		} elsif ( $item->{cn_sort} eq "" || $item->{cn_sort} eq "undef" ) {
       $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
-    } elseif ( $item->{problem} eq "item not found" ) {
+    } elsif ( $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
@@ -273,7 +260,7 @@ sub inventory2 {
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
 #      my $firstitem = $sortbarcodes[0];
-      if ($item->{homebranch} ne $firstitem->{homebranch}) {
+      if ( $item->{homebranch} ne $firstitem->{homebranch} ) {
         $item->{problem} = "Wrong branch library";
         additemtobarcodes($item,@barcodes);
         # remove item from sorting
@@ -318,9 +305,8 @@ sub inventory2 {
       }
     }
   }
-#end of checks
+# end of checks
 
-  #Need to check MENDING status (and/or shelving location?)
 my $timea;
  # sorting formula from https://www.perlmonks.org/?node_id=560304
 my @sortedbarcodes = map  { $_->[0] }
