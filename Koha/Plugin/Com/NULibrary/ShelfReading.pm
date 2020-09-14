@@ -282,8 +282,8 @@ sub inventory2 {
       }
     }
     if ( $firstitem->{problem} ) {
-      $firstitem->{problem} eq $firstitem->{problem} . " - start a new shelf with a error-free item";
-      additemtobarcodes($item,@barcodes);
+      $firstitem->{problem} .= " - start a new shelf with a error-free item";
+      additemtobarcodes($firstitem,@barcodes);
     }
     # problem - this will also remove first item
     if ( $item->{problem} ) {
@@ -294,38 +294,38 @@ sub inventory2 {
 # end of checks
 
 my $timea;
-$timea .= "scalar of sort barcodes is ";
-$timea .= scalar(@sortbarcodes);
+if ( scalar(@sortbarcodes) > 0 ) {
 
- # sorting formula from https://www.perlmonks.org/?node_id=560304
-my @sortedbarcodes = map  { $_->[0] }
-             sort { $a->[1] cmp $b->[1] }
-             map  { [ $_, $_->{cn_sort} ] }
-             @sortbarcodes;
+  # sorting formula from https://www.perlmonks.org/?node_id=560304
+  my @sortedbarcodes = map  { $_->[0] }
+               sort { $a->[1] cmp $b->[1] }
+               map  { [ $_, $_->{cn_sort} ] }
+               @sortbarcodes;
 
- my @cnsort;
- my @cnsorted;
+   my @cnsort;
+   my @cnsorted;
 
- # create arrays of unsorted and sorted call numbers
- while ( my ($key, $value) = each @sortedbarcodes ) {
-   push(@cnsorted,$value->{cn_sort});
- }
- while ( my ($key, $value) = each @sortbarcodes ) {
-   push(@cnsort,$value->{cn_sort});
- }
+   # create arrays of unsorted and sorted call numbers
+   while ( my ($key, $value) = each @sortedbarcodes ) {
+     push(@cnsorted,$value->{cn_sort});
+   }
+   while ( my ($key, $value) = each @sortbarcodes ) {
+     push(@cnsort,$value->{cn_sort});
+   }
 
-my @move;
-unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
-  @move = shelf_sort(@cnsort, @cnsorted);
-}
+  my @move;
+  unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+    @move = shelf_sort(@cnsort, @cnsorted);
+  }
 
-if ( @move ) {
-  for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-    my $item = $sortbarcodes[$i];
-    foreach my $to_move ( @move ) {
-      if ( $item->{cn_sort} eq $to_move ) {
-        $item->{out_of_order} = 1;
-        additemtobarcodes($item,@barcodes);
+  if ( @move ) {
+    for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+      my $item = $sortbarcodes[$i];
+      foreach my $to_move ( @move ) {
+        if ( $item->{cn_sort} eq $to_move ) {
+          $item->{out_of_order} = 1;
+          additemtobarcodes($item,@barcodes);
+        }
       }
     }
   }
