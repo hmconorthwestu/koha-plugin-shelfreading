@@ -273,19 +273,38 @@ sub inventory2 {
         additemtobarcodes($item,@barcodes);
         # remove item from sorting
         splice(@sortbarcodes, $i, 1);
-      } elsif ( !defined($firstitem->{location}) || (!defined($firstitem->{location}) && !defined($item->{location}) ) || $item->{location} eq "" ) {
-        if ($item->{ccode} ne $firstitem->{ccode}) {
-          $item->{problem} = "Wrong collection";
+      } elsif ( defined($item->{location}) ) {
+        if ( defined($firstitem->{location}) ) {
+          if ( $firstitem->{location} ne $item->{location} ) {
+              # both items have locations but they don't match
+            $item->{problem} = "Wrong shelving location";
+            additemtobarcodes($item,@barcodes);
+            # remove item from sorting
+            splice(@sortbarcodes, $i, 1);
+          }
+        } else {
+          # item has a location but firstitem doesn't
+          $item->{problem} = "Wrong shelving location";
           additemtobarcodes($item,@barcodes);
           # remove item from sorting
           splice(@sortbarcodes, $i, 1);
         }
-      } elsif ( defined($firstitem->{location}) && !defined($item->{location} || $item->{location} ne $firstitem->{location} ) ) {
-        # only check collection if shelving location ($item->{location}) is empty
-        $item->{problem} = "Wrong shelving location";
-        additemtobarcodes($item,@barcodes);
-        # remove item from sorting
-        splice(@sortbarcodes, $i, 1);
+      } elsif ( !defined($item->{location}) ) {
+        if ( defined($firstitem->{location}) ) {
+            # firstitem has a shelving location but current item doesn't
+            $item->{problem} = "Wrong shelving location";
+            additemtobarcodes($item,@barcodes);
+            # remove item from sorting
+            splice(@sortbarcodes, $i, 1);
+        } else {
+          # neither item has a location. Compare ccodes
+          if ( $item->{ccode} ne $firstitem->{ccode} ) {
+            $item->{problem} = "Wrong collection";
+            additemtobarcodes($item,@barcodes);
+            # remove item from sorting
+            splice(@sortbarcodes, $i, 1);
+          }
+        }
       }
     }
   }
