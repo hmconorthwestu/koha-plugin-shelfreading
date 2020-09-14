@@ -281,11 +281,12 @@ sub inventory2 {
         }
       }
     }
+    if ( $firstitem->{problem} ) {
+      $firstitem->{problem} eq $firstitem->{problem} . " - start a new shelf with a error-free item";
+      additemtobarcodes($item,@barcodes);
+    }
     # problem - this will also remove first item
     if ( $item->{problem} ) {
-      if ( $firstitem->{problem} ) {
-        $item->{problem} eq $item->{problem} . "- start a new shelf with a error-free item";
-      }
       # remove problem items from sorting
       splice(@sortbarcodes, $i, 1);
     }
@@ -293,6 +294,7 @@ sub inventory2 {
 # end of checks
 
 my $timea;
+$timea .= "scalar of sort barcodes is ";
 $timea .= scalar(@sortbarcodes);
 
  # sorting formula from https://www.perlmonks.org/?node_id=560304
