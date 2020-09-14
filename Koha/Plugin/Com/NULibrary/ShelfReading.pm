@@ -246,6 +246,11 @@ sub inventory2 {
     } elsif ( $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
     }
+    if ( $firstitem->{problem} ) {
+      $firstitem->{problem} .= " - start a new shelf with a error-free item";
+      additemtobarcodes($firstitem,@barcodes);
+      last;
+    }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
@@ -281,11 +286,6 @@ sub inventory2 {
         }
       }
     }
-    if ( $firstitem->{problem} ) {
-      $firstitem->{problem} .= " - start a new shelf with a error-free item";
-      additemtobarcodes($firstitem,@barcodes);
-    }
-    # problem - this will also remove first item
     if ( $item->{problem} ) {
       # remove problem items from sorting
       splice(@sortbarcodes, $i, 1);
