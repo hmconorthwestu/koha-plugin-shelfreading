@@ -234,80 +234,67 @@ sub inventory2 {
     if ( $item->{onloan} ) {
 			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
-      # remove item from sorting
-      splice(@sortbarcodes, $i, 1);
 		} elsif ( $item->{withdrawn} ) {
 			$item->{problem} = "item is marked as withdrawn";
       additemtobarcodes($item,@barcodes);
-      # remove item from sorting
-      splice(@sortbarcodes, $i, 1);
 		} elsif ( $item->{lost} ) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-      # remove item from sorting
-      splice(@sortbarcodes, $i, 1);
 		} elsif ( $item->{cn_sort} eq "" || $item->{cn_sort} eq "undef" ) {
       $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
-      # remove item from sorting
-      splice(@sortbarcodes, $i, 1);
     } elsif ( $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
-      # remove item from sorting
-      splice(@sortbarcodes, $i, 1);
     }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
-#      my $firstitem = $sortbarcodes[0];
       if ( $item->{homebranch} ne $firstitem->{homebranch} ) {
         $item->{problem} = "Wrong branch library";
         additemtobarcodes($item,@barcodes);
-        # remove item from sorting
-        splice(@sortbarcodes, $i, 1);
       } elsif ($item->{holdingbranch} ne $firstitem->{holdingbranch}) {
         $item->{problem} = "Wrong branch library";
         additemtobarcodes($item,@barcodes);
-        # remove item from sorting
-        splice(@sortbarcodes, $i, 1);
       } elsif ( defined($item->{location}) ) {
         if ( defined($firstitem->{location}) ) {
           if ( $firstitem->{location} ne $item->{location} ) {
               # both items have locations but they don't match
             $item->{problem} = "Wrong shelving location";
             additemtobarcodes($item,@barcodes);
-            # remove item from sorting
-            splice(@sortbarcodes, $i, 1);
           }
         } else {
           # item has a location but firstitem doesn't
           $item->{problem} = "Wrong shelving location";
           additemtobarcodes($item,@barcodes);
-          # remove item from sorting
-          splice(@sortbarcodes, $i, 1);
         }
       } elsif ( !defined($item->{location}) ) {
         if ( defined($firstitem->{location}) ) {
             # firstitem has a shelving location but current item doesn't
             $item->{problem} = "Wrong shelving location";
             additemtobarcodes($item,@barcodes);
-            # remove item from sorting
-            splice(@sortbarcodes, $i, 1);
         } else {
           # neither item has a location. Compare ccodes
           if ( $item->{ccode} ne $firstitem->{ccode} ) {
             $item->{problem} = "Wrong collection";
             additemtobarcodes($item,@barcodes);
-            # remove item from sorting
-            splice(@sortbarcodes, $i, 1);
           }
         }
       }
+    }
+    # problem - this will also remove first item
+    if ( $item->{problem} ) {
+      if ( $firstitem->{problem} ) {
+        $item->{problem} eq $item->{problem} . "- start a new shelf with a error-free item";
+      }
+      # remove problem items from sorting
+      splice(@sortbarcodes, $i, 1);
     }
   }
 # end of checks
 
 my $timea;
+$timea .= scalar(@sortbarcodes);
+
  # sorting formula from https://www.perlmonks.org/?node_id=560304
 my @sortedbarcodes = map  { $_->[0] }
              sort { $a->[1] cmp $b->[1] }
