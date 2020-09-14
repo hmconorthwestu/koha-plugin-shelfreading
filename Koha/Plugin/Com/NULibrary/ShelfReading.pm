@@ -247,17 +247,27 @@ sub inventory2 {
     if ($item->{onloan}) {
 			$item->{problem} = "item is checked out";
       additemtobarcodes($item,@barcodes);
-		} elsif ($item->{withdrawn}) {
-			$item->{problem} = "item is marked as withdrawn";
       # remove item from sorting
       splice(@sortbarcodes, $i, 1);
+		} elsif ($item->{withdrawn}) {
+			$item->{problem} = "item is marked as withdrawn";
       additemtobarcodes($item,@barcodes);
+      # remove item from sorting
+      splice(@sortbarcodes, $i, 1);
 		} elsif ($item->{lost}) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
+      # remove item from sorting
+      splice(@sortbarcodes, $i, 1);
 		} elsif ($item->{cn_sort} eq "" || $item->{cn_sort} eq "undef") {
       $item->{problem} = "item missing sorting call number";
       additemtobarcodes($item,@barcodes);
+      # remove item from sorting
+      splice(@sortbarcodes, $i, 1);
+    } elseif ( $item->{problem} eq "item not found" ) {
+      additemtobarcodes($item,@barcodes);
+      # remove item from sorting
+      splice(@sortbarcodes, $i, 1);
     }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
