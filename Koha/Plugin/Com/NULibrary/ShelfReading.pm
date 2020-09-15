@@ -320,12 +320,16 @@ if ( scalar(@sortbarcodes) > 0 ) {
   }
 
   if ( @move ) {
-    for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-      my $item = $sortbarcodes[$i];
-      foreach my $to_move ( @move ) {
-        if ( $item->{cn_sort} eq $to_move ) {
-          $item->{out_of_order} = 1;
-          additemtobarcodes($item,@barcodes);
+    if ( @move = "error" ) {
+      $timea .= "until loop not stopping";
+    } else {
+      for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+        my $item = $sortbarcodes[$i];
+        foreach my $to_move ( @move ) {
+          if ( $item->{cn_sort} eq $to_move ) {
+            $item->{out_of_order} = 1;
+            additemtobarcodes($item,@barcodes);
+          }
         }
       }
     }
@@ -353,8 +357,16 @@ sub shelf_sort {
   my %chunks;
   my @move;
   my $chunk_key = 0;
+  my $ct = scalar(@cnsort);
+  my $c = 0;
 
   until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+    $c++;
+    if ($c > $ct) {
+      my @move = "error";
+      return @move;
+      last;
+    }
     while (my ($k, $v) = each @cnsort) {
       # find the given item's position in the sorted array
       my $foundkey = first { $cnsorted[$_] eq $v } 0..$#cnsorted;
