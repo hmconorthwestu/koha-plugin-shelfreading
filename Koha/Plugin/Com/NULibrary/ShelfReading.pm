@@ -284,12 +284,11 @@ sub inventory2 {
           }
         }
       }
-    }
-
-    # problem - this will also remove first item
-    if ( $item->{problem} ) {
-      # remove problem items from sorting
-      splice(@sortbarcodes, $i, 1);
+      # problem - this will also remove first item
+      if ( $item->{problem} ) {
+        # remove problem items from sorting
+        splice(@sortbarcodes, $i, 1);
+      }
     }
   }
 # end of checks
