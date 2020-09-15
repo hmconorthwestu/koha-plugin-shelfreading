@@ -249,7 +249,6 @@ sub inventory2 {
     if ( $firstitem->{problem} ) {
       $firstitem->{problem} .= " - start a new shelf with a error-free item";
       additemtobarcodes($firstitem,@barcodes);
-      last;
     }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
@@ -286,6 +285,8 @@ sub inventory2 {
         }
       }
     }
+
+    # problem - this will also remove first item
     if ( $item->{problem} ) {
       # remove problem items from sorting
       splice(@sortbarcodes, $i, 1);
