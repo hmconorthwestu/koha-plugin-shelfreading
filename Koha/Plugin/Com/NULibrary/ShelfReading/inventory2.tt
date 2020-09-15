@@ -36,7 +36,7 @@
   [% ELSE %]
   <p>Start with the last book on the previous shelf.</p>
 	[% END %]
-  [% IF error = 'restart' %]
+  [% IF error == 'restart' %]
     <p class="NU_shelfreading_error">Error - start a new shelf</p>
   [% ELSE %]
   	<form method="post">
