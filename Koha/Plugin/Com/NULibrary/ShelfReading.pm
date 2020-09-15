@@ -170,7 +170,7 @@ sub inventory2 {
 	my @barcodes;
   my @sortbarcodes;
   my $duplicate;
-  my @errorloop;
+  my @error;
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
@@ -248,6 +248,7 @@ sub inventory2 {
     }
     if ( $firstitem->{problem} ) {
       $firstitem->{problem} .= " - start a new shelf with a error-free item";
+      @error = "restart";
       additemtobarcodes($firstitem,@barcodes);
     }
 
@@ -336,7 +337,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 }
 
 	$template->param( 'barcodes' => \@barcodes );
-	$template->param( error => \@errorloop ) if (@errorloop);
+	$template->param( error => \@error ) if (@error);
   my $end = time();
   my $time = $end - $start;
   my $enda = time();
