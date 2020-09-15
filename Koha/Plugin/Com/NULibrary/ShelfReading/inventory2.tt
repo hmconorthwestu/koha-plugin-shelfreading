@@ -36,12 +36,12 @@
   [% ELSE %]
   <p>Start with the last book on the previous shelf.</p>
 	[% END %]
-  	<form method="post">
-  		<input type="hidden" name="class" value="[% CLASS %]"/>
-      <input type="hidden" name="method" value="[% METHOD %]"/>
   [% IF error %]
     <p class="NU_shelfreading_error">Error - start a new shelf</p>
   [% ELSE %]
+  	<form method="post">
+  		<input type="hidden" name="class" value="[% CLASS %]"/>
+      <input type="hidden" name="method" value="[% METHOD %]"/>
   		[% IF barcodes %]
   			[% FOREACH p IN barcodes %]
   				<input type="hidden" name="oldBarcodes" value="[% p.barcode %]"/>
@@ -50,14 +50,14 @@
           <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
           <!-- <input name="bc" type="submit" value="Submit" class="button" /> -->
       </form>
-      <br/>
-      <br/>
+  <br/>
+  <br/>
   [% END %]
-    <form method="post">
-      <input type="hidden" name="class" value="[% CLASS %]"/>
-      <input type="hidden" name="method" value="[% METHOD %]"/>
-      <input type="submit" value="New Shelf >">
-    </form>
+  <form method="post">
+    <input type="hidden" name="class" value="[% CLASS %]"/>
+    <input type="hidden" name="method" value="[% METHOD %]"/>
+    <input type="submit" value="New Shelf >">
+  </form>
 </dl>
 </div>
 [% IF time %]
