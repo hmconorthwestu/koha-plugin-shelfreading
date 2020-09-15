@@ -36,12 +36,12 @@
   [% ELSE %]
   <p>Start with the last book on the previous shelf.</p>
 	[% END %]
-  [% IF error == 'restart' %]
-    <p class="NU_shelfreading_error">Error - start a new shelf</p>
-  [% ELSE %]
   	<form method="post">
   		<input type="hidden" name="class" value="[% CLASS %]"/>
       <input type="hidden" name="method" value="[% METHOD %]"/>
+  [% IF error %]
+    <p class="NU_shelfreading_error">Error - start a new shelf</p>
+  [% ELSE %]
   		[% IF barcodes %]
   			[% FOREACH p IN barcodes %]
   				<input type="hidden" name="oldBarcodes" value="[% p.barcode %]"/>

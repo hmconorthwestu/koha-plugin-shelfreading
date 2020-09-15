@@ -247,9 +247,7 @@ sub inventory2 {
       additemtobarcodes($item,@barcodes);
     }
     if ( $firstitem->{problem} ) {
-      $firstitem->{problem} .= " - start a new shelf with a error-free item";
       @error = "restart";
-      additemtobarcodes($firstitem,@barcodes);
     }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
@@ -321,6 +319,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
   if ( @move ) {
     if ( @move = "error" ) {
+      @error = "until loop not stopping";
       $timea .= "until loop not stopping";
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
