@@ -37,7 +37,7 @@
   <p>Start with the last book on the previous shelf.</p>
 	[% END %]
   [% IF error %]
-    <p class="NU_shelfreading_error">Error - start a new shelf [% error %]</p>
+    <p class="NU_shelfreading_error">Error - start a new shelf [% error.0 %]</p>
   [% ELSE %]
   	<form method="post">
   		<input type="hidden" name="class" value="[% CLASS %]"/>

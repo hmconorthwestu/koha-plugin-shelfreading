@@ -220,7 +220,7 @@ sub inventory2 {
       $item->{itemnumber} = $bc;
       $item->{barcode} = $bc;
       $item->{problem} = "item not found";
-      if (!@barcodes) {
+      if ( !@barcodes ) {
         # if this is the first item scanned, send restart Error
         @error = "restart - item not found";
       }
@@ -250,7 +250,7 @@ sub inventory2 {
     } elsif ( $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
     }
-    if ( $firstitem->{problem} ) {
+    if ( $i == 0 && $firstitem->{problem} ) {
       @error = "restart";
     }
 
