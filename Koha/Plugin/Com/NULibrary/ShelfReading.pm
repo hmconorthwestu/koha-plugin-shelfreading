@@ -222,7 +222,7 @@ sub inventory2 {
       $item->{problem} = "item not found";
       if (!@barcodes) {
         # if this is the first item scanned, send restart Error
-        @error = "restart";
+        @error = "restart - item not found";
       }
       push @barcodes, $item;
     }
