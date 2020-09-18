@@ -252,7 +252,7 @@ sub inventory2 {
     }
     if ( $i == 0 && $firstitem->{problem} ) {
       @error = "restart";
-    }
+   }
 
     # compare to first item - check for wrong branch, wrong holding branch, wrong collection
     unless ( $i == 0 ) {
@@ -319,10 +319,12 @@ if ( scalar(@sortbarcodes) > 0 ) {
   my @move;
   unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
     @move = shelf_sort(@cnsort, @cnsorted);
+	$timea .= "skipped shelf sort";
   }
 
   if ( @move ) {
-    if ( @move = "error" ) {
+  $timea .= "shelf sort done";
+    if ( @move eq "loop error" ) {
       @error = "until loop not stopping";
       $timea .= "until loop not stopping";
     } else {
@@ -340,7 +342,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 }
 
 	$template->param( 'barcodes' => \@barcodes );
-	$template->param( error => \@error ) if (@error);
+	$template->param( errorloop => \@error ) if (@error);
   my $end = time();
   my $time = $end - $start;
   my $enda = time();
@@ -360,13 +362,13 @@ sub shelf_sort {
   my %chunks;
   my @move;
   my $chunk_key = 0;
-  my $ct = scalar(@cnsort);
+  my $ct = scalar(@cnsort) * 2;
   my $c = 0;
 
   until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
     $c++;
-    if ($c > $ct) {
-      my @move = "error";
+    if ($c >= $ct) {
+      my @move = "loop error";
       return @move;
       last;
     }
