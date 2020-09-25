@@ -46,6 +46,8 @@ use Koha::DateUtils;
 use Time::HiRes qw( time );
 # to compare sorted and unsorted lists:
 use Array::Utils qw(:all);
+# for Testing
+use Data::Dumper;
 
 my $starta = time();
 ## Here we set our plugin version
@@ -245,7 +247,7 @@ sub inventory2 {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
 		} elsif ( $item->{cn_sort} eq "" || $item->{cn_sort} eq "undef" ) {
-      $item->{problem} = "item missing sorting call number";
+      $item->{problem} = "sort field missing - sort manually";
       additemtobarcodes($item,@barcodes);
     } elsif ( $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
@@ -307,38 +309,148 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
    my @cnsort;
    my @cnsorted;
+  my $lastadded;
 
-   # create arrays of unsorted and sorted call numbers
-   while ( my ($key, $value) = each @sortedbarcodes ) {
-     push(@cnsorted,$value->{cn_sort});
-   }
-   while ( my ($key, $value) = each @sortbarcodes ) {
-     push(@cnsort,$value->{cn_sort});
-   }
+  while ( my ($key, $value) = each @sortbarcodes ) {
+    # get all cnsort values into array, skip those with sequential duplicates
+    unless ($value->{cn_sort} eq $lastadded ) {
+      push(@cnsort,$value->{cn_sort});
+      $lastadded = $value->{cn_sort};
+    }
+  }
+     # build sorted array from cn_sort
+     @cnsorted = sort(@cnsort);
 
+ # begin shelf sort function that will not stop looping when copied into the shelf sort sub
   my @move;
   unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
-    @move = shelf_sort(@cnsort, @cnsorted);
-	$timea .= "skipped shelf sort";
-  }
+
+
+     # hashes to hold data for calculations
+	my %chunk = ();
+	my %chunks = ();
+	@move = ();
+	my $chunk_key = 0;
+	my $ct = scalar(@cnsort);
+	my $c = 0;
+
+	until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+	  %chunk = ();
+	  %chunks = ();
+	  $chunk_key = 0;
+	  $c++;
+		if ($c > $ct) {
+
+			last;
+		  }
+
+		  for my $item_key (0 .. $#cnsort) {
+			# find the given item's position in the sorted array
+			my $foundkey = first { $cnsorted[$_] eq $cnsort[$item_key] } 0..$#cnsorted;
+
+			# calculate distance from where item is in sorted array
+			my $d = $foundkey - $item_key;
+			if ( defined $chunks{$chunk_key} ) {
+			  if ( defined $chunk{d} ) {
+				unless ( $chunk{d} eq $d ) {
+				  # if an item is a different distance from correct than the previous item, start a new chunk
+				  $chunk_key++;
+				  %chunk = ();
+				}
+			  }
+			}
+
+			# save keys for all items in this chunk
+			push @{$chunk{i}},$item_key;
+
+			# record distance first key is from where it should be
+			$chunk{d} = $d;
+
+			# record key of first item in chunk
+			$chunk{f} = $chunk{i}[0];
+
+			# count how many items in chunk
+			my @testd = exists( $chunk{i} ) ? @{ $chunk{i} } : ();
+			$chunk{s} = scalar(@testd);
+
+			# add the chunk to a hash of chunks
+			$chunks{$chunk_key} = {%chunk};
+
+		  }
+
+		  # find the greatest distance number
+		  my $chunk_dist = 0;
+		  while ( my ($k, $v) = each %chunks ) {
+			if ( abs($chunks{$k}{d}) > $chunk_dist) {
+			  $chunk_dist = abs($chunks{$k}{d});
+			}
+		  }
+
+		  # find the key of the chunk with the greatest distance number
+		  my $chunk_move = 0;
+		  while ( my ($k, $v) = each %chunks ) {
+			if ( abs($chunks{$k}{d}) eq $chunk_dist) {
+			  $chunk_move = $k;
+
+			  for my $i ( @{$chunks{$k}{i}} ) {
+				push @move, @cnsort[$i];
+			  }
+			  			last;
+			}
+
+		  }
+
+		  # change the f value of the greatest distance chunk, to f + d (distance)
+		  $chunks{$chunk_move}{f} = $chunks{$chunk_move}{f} + $chunks{$chunk_move}{d};
+
+		  # adjust f values up or down so there are no duplicate f values and chunks land in correct order by f values
+		  if ($chunks{$chunk_move}{d} > 0 ) {
+			foreach my $k (sort keys %chunks ) {
+			  if ( $k != $chunk_move && $chunks{$k}{f} <= $chunks{$chunk_move}{f}) {
+				$chunks{$k}{f} = $chunks{$k}{f}-1;
+			  }
+			}
+		  } elsif ($chunks{$chunk_move}{d} < 0 ) {
+			foreach my $k (sort keys %chunks ) {
+			  if ( $k != $chunk_move && $chunks{$k}{f} >= $chunks{$chunk_move}{f} ) {
+				$chunks{$k}{f} = $chunks{$k}{f}+1;
+			  }
+			}
+		  }
+
+		  # copy call number array into a different array
+		  my @prev = @cnsort;
+		  # reset call number array
+		  @cnsort = ();
+		  # sort chunks by f value, into correct order
+		  foreach my $sorted ( sort { $chunks{$a}{f} <=> $chunks{$b}{f} } keys %chunks ) {
+  			my $test = $chunks{$sorted}{i};
+  			for my $i ( values @{$chunks{$sorted}{i}} ) {
+  		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
+  			  push @cnsort, @prev[$i];
+  			}
+		  }
+	  # this brackets ends until:
+	  }
+    my %seenmove;
+    @move = grep { ! $seenmove{ $_ }++ } @move;
+  # this bracket ends outer unless
+	}
 
   if ( @move ) {
-  $timea .= "shelf sort done";
     if ( @move eq "loop error" ) {
       @error = "until loop not stopping";
-      $timea .= "until loop not stopping";
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
         my $item = $sortbarcodes[$i];
-        foreach my $to_move ( @move ) {
-          if ( $item->{cn_sort} eq $to_move ) {
-            $item->{out_of_order} = 1;
-            additemtobarcodes($item,@barcodes);
-          }
-        }
-      }
+  		  if ( $item->{cn_sort} ~~ @move ) {
+    			$item->{out_of_order} = 1;
+    			additemtobarcodes($item,@barcodes);
+  		  }
+		  }
     }
   }
+# end handling if count of barcodes is > 0
 }
 
 	$template->param( 'barcodes' => \@barcodes );
@@ -357,98 +469,128 @@ if ( scalar(@sortbarcodes) > 0 ) {
 sub shelf_sort {
   my (@cnsort, @cnsorted) = @_;
 
-# hashes to hold data for calculations
-  my %chunk;
-  my %chunks;
-  my @move;
-  my $chunk_key = 0;
-  my $ct = scalar(@cnsort) * 2;
-  my $c = 0;
+  # hashes to hold data for calculations
+my %chunk = ();
+my %chunks = ();
+my @move = ();
+my $chunk_key = 0;
+my $ct = scalar(@cnsort);
+my $c = 0;
 
-  until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
-    $c++;
-    if ($c >= $ct) {
-      my @move = "loop error";
-      return @move;
-      last;
-    }
-    while (my ($k, $v) = each @cnsort) {
-      # find the given item's position in the sorted array
-      my $foundkey = first { $cnsorted[$_] eq $v } 0..$#cnsorted;
-      # calculate distance from where item is in sorted array
-      my $d = $foundkey - $k;
-      if ( defined $chunks{$chunk_key} ) {
-        if ( defined $chunk{d} ) {
-          unless ( $chunk{d} eq $d ) {
-            # if an item is a different distance from correct than the previous item, start a new chunk
-            $chunk_key++;
-            %chunk = ();
-          }
+until ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
+  %chunk = ();
+  %chunks = ();
+  $chunk_key = 0;
+  $c++;
+if ($c > $ct) {
+    @move = "error loop";
+    last;
+  }
+
+  for my $k (0 .. $#cnsort) {
+    # find the given item's position in the sorted array
+    my $foundkey = first { $cnsorted[$_] eq $cnsort[$k] } 0..$#cnsorted;
+
+    # calculate distance from where item is in sorted array
+    my $d = $foundkey - $k;
+    if ( defined $chunks{$chunk_key} ) {
+      if ( defined $chunk{d} ) {
+        unless ( $chunk{d} eq $d ) {
+          # if an item is a different distance from correct than the previous item, start a new chunk
+
+
+          $chunk_key++;
+          %chunk = ();
         }
       }
-      # save keys for all items in this chunk
-      push @{$chunk{'i'}},$k;
-      # record distance first key is from where it should be
-      $chunk{d} = $d;
-      # record key of first item in chunk
-      $chunk{f} = $chunk{i}[0];
-      # count how many items in chunk
-      my @testd = exists( $chunk{'i'} ) ? @{ $chunk{'i'} } : ();
-      $chunk{s} = scalar(@testd);
-      # add the chunk to a hash of chunks
-      $chunks{$chunk_key} = {%chunk};
     }
 
-    # find the greatest distance number
-    my $chunk_dist = 0;
+    # save keys for all items in this chunk
+    push @{$chunk{i}},$k;
+
+    # record distance first key is from where it should be
+    $chunk{d} = $d;
+
+    # record key of first item in chunk
+    $chunk{f} = $chunk{i}[0];
+
+    # count how many items in chunk
+    my @testd = exists( $chunk{i} ) ? @{ $chunk{i} } : ();
+    $chunk{s} = scalar(@testd);
+
+    # add the chunk to a hash of chunks
+    $chunks{$chunk_key} = {%chunk};
+
+  }
+
+
+  # find the greatest distance number
+  my $chunk_dist = 0;
+  while ( my ($k, $v) = each %chunks ) {
+    if ( abs($chunks{$k}{d}) > $chunk_dist) {
+      $chunk_dist = abs($chunks{$k}{d});
+
+    }
+  }
+
+  # find the key of the chunk with the greatest distance number
+  my $chunk_move = 0;
+  while ( my ($k, $v) = each %chunks ) {
+    if ( abs($chunks{$k}{d}) eq $chunk_dist) {
+      $chunk_move = $k;
+
+      for my $i ( @{$chunks{$k}{i}} ) {
+        push @move, @cnsort[$i];
+      }
+    }
+    last;
+  }
+
+  # change the f value of the greatest distance chunk, to f + d (distance)
+  $chunks{$chunk_move}{f} = $chunks{$chunk_move}{f} + $chunks{$chunk_move}{d};
+
+
+  # adjust f values up or down so there are no duplicate f values and chunks land in correct order by f values
+  if ($chunks{$chunk_move}{d} > 0 ) {
     while ( my ($k, $v) = each %chunks ) {
-      if ( $chunks{$k}{d} > $chunk_dist) {
-        $chunk_dist = $chunks{$k}{d};
+      if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f}) {
+        $chunks{$k}{f} = $chunks{$k}{f}-1;
+
       }
     }
-
-    # find the key of the chunk with the greatest distance number
-    my $chunk_move = 0;
+  } elsif ($chunks{$chunk_move}{d} < 0 ) {
     while ( my ($k, $v) = each %chunks ) {
-      if ( $chunks{$k}{d} eq $chunk_dist) {
-        $chunk_move = $k;
-        for my $i ( @{$chunks{$k}{i}} ) {
-          push @move, @cnsort[$i];
-        }
-      }
-    }
+      if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f} ) {
+        $chunks{$k}{f} = $chunks{$k}{f}+1;
 
-    # change the f value of the greatest distance chunk, to f + d (distance)
-    $chunks{$chunk_move}{f} = $chunks{$chunk_move}{f} + $chunks{$chunk_move}{d};
+      }
+    }
+  }
 
-    # adjust f values up or down so there are no duplicate f values and chunks land in correct order by f values
-    if ($chunks{$chunk_move}{d} > 0 ) {
-      while ( my ($k, $v) = each %chunks ) {
-        if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f}) {
-          $chunks{$k}{f} = $chunks{$k}{f}-1;
-        }
-      }
-    } elsif ($chunks{$chunk_move}{d} < 0 ) {
-      while ( my ($k, $v) = each %chunks ) {
-        if ( $k != $chunk_move && @$v{f} <= $chunks{$chunk_move}{f} ) {
-          $chunks{$k}{f} = $chunks{$k}{f}+1;
-        }
-      }
-    }
 
-    my @prev = @cnsort;
-    @cnsort = ();
-    # sort chunks by f value, into correct order
-    foreach my $sorted ( sort { $chunks{$a}{f} <=> $chunks{$b}{f} } keys %chunks ) {
-      for my $i ( @{$chunks{$sorted}{i}} ) {
-        # create new cnsort array with keys as values in correct order
-        push @cnsort, $i;
-      }
+  # copy call number array into a different array
+  my @prev = @cnsort;
+  # reset call number array
+  @cnsort = ();
+  # sort chunks by f value, into correct order
+  my @sortedorder;
+  foreach my $sorted ( sort { $chunks{$a}{f} <=> $chunks{$b}{f} } keys %chunks ) {
+    my $test = $chunks{$sorted}{i};
+
+    for my $i ( values @{$chunks{$sorted}{i}} ) {
+  # create new cnsort array with keys as values in correct order
+      push @cnsort, $i;
     }
-    while (my ($k, $v) = each @cnsort) {
-      # substitute correct call number values in for key values
-      @cnsort[$k] = @prev[$v];
-    }
+  }
+
+
+  for my $sortedkey (0 .. $#cnsort) {
+    # substitute correct call number values in for key values
+    my $value = $cnsort[$sortedkey];
+    @cnsort[$sortedkey] = @prev[$value];
+  }
+
+  # this brackets ends until:
   }
   # return call numbers of items to move
   return @move;
