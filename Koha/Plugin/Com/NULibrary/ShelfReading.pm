@@ -174,6 +174,7 @@ sub inventory2 {
   my @sortbarcodes;
   my $duplicate;
   my @error;
+  my $erroritems = 0;
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
@@ -190,6 +191,7 @@ sub inventory2 {
         $item->{itemnumber} = $b;
         $item->{barcode} = $b;
         $item->{problem} = "item not found";
+        $erroritems++;
         push @barcodes, $item;
       }
   	$count = $count + 1;
@@ -223,6 +225,7 @@ sub inventory2 {
       $item->{itemnumber} = $bc;
       $item->{barcode} = $bc;
       $item->{problem} = "item not found";
+      $erroritems++;
       if ( !@barcodes ) {
         # if this is the first item scanned, send restart Error
         @error = "restart - item not found";
@@ -292,13 +295,14 @@ sub inventory2 {
       }
       # problem - this will also remove first item
       if ( $item->{problem} ) {
+        $erroritems++;
         # remove problem items from sorting
         splice(@sortbarcodes, $i, 1);
       }
     }
   }
 # end of checks
-
+my $count_out_of_order;
 my $timea;
 if ( scalar(@sortbarcodes) > 0 ) {
 
@@ -310,8 +314,15 @@ if ( scalar(@sortbarcodes) > 0 ) {
     # get all cnsort values into array, skip those with sequential duplicates
     unless ($value->{itemcallnumber} eq $lastadded ) {
       my $callnumber = $value->{itemcallnumber};
-      my $callnumber = Library::CallNumber::LC->new($callnumber);
-      my $ncallnumber = $callnumber->normalize;
+      $timea .= $callnumber;
+      my $ncallnumber;
+      if ( $value->{cn_source} eq "lcc" ) {
+        my $callnumber = Library::CallNumber::LC->new($callnumber);
+        $ncallnumber = $callnumber->normalize;
+      } else {
+        $ncallnumber = $callnumber;
+      }
+      $timea .= $ncallnumber;
       push(@cnsort,$ncallnumber);
       $lastadded = $ncallnumber;
     }
@@ -428,22 +439,32 @@ if ( scalar(@sortbarcodes) > 0 ) {
 		  }
 	  # this brackets ends until:
 	  }
+    # Make move array values unique, by building new array and skipping adding values we've already seen
+    $timea .= Dumper(\@move);
     my %seenmove;
     @move = grep { ! $seenmove{ $_ }++ } @move;
   # this bracket ends outer unless
 	}
 
   if ( @move ) {
+    $count_out_of_order = scalar(@move);
+    $timea .= Dumper(\@move);
     if ( @move eq "loop error" ) {
       @error = "until loop not stopping";
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
         my $item = $sortbarcodes[$i];
         my $callnumber = $item->{itemcallnumber};
-        my $callnumber = Library::CallNumber::LC->new($callnumber);
-        my $ncallnumber = $callnumber->normalize;
+        my $ncallnumber;
+        if ( $item->{cn_source} eq "lcc" ) {
+          my $callnumber = Library::CallNumber::LC->new($callnumber);
+          $ncallnumber = $callnumber->normalize;
+        } else {
+          $ncallnumber = $callnumber;
+        }
   		  if ( $ncallnumber ~~ @move ) {
     			$item->{out_of_order} = 1;
+          $timea .= $ncallnumber;
     			additemtobarcodes($item,@barcodes);
   		  }
 		  }
@@ -452,8 +473,11 @@ if ( scalar(@sortbarcodes) > 0 ) {
 # end handling if count of barcodes is > 0
 }
 
+
 	$template->param( 'barcodes' => \@barcodes );
 	$template->param( errorloop => \@error ) if (@error);
+  $template->param( 'misshelved' => $count_out_of_order ) if ($count_out_of_order);
+  $template->param( 'erroritems' => $erroritems ) if ($erroritems);
   my $end = time();
   my $time = $end - $start;
   my $enda = time();

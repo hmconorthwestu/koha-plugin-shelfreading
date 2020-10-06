@@ -58,8 +58,17 @@
     <input type="hidden" name="method" value="[% METHOD %]"/>
     <input type="submit" value="New Shelf >">
   </form>
+  <br/>
+  [% IF misshelved %]
+    <dt class="NU_dt shelfreading-outoforder">[% misshelved %] item(s) out of order</dt>
+  [% END %]
+  [% IF erroritems %]
+    <dt class="NU_dt shelfreading-problem">[% erroritems %] item(s) with errors</dt>
+  [% END %]
 </dl>
 </div>
+
+
 [% IF time %]
 <p>[% time %]</p>
 
