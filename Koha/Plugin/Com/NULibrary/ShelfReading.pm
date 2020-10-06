@@ -48,6 +48,7 @@ use Time::HiRes qw( time );
 use Array::Utils qw(:all);
 # for Testing
 use Data::Dumper;
+use Library::CallNumber::LC;
 
 my $starta = time();
 ## Here we set our plugin version
@@ -246,7 +247,7 @@ sub inventory2 {
 		} elsif ( $item->{lost} ) {
 			$item->{problem} = "item is marked as lost";
       additemtobarcodes($item,@barcodes);
-		} elsif ( $item->{cn_sort} eq "" || $item->{cn_sort} eq "undef" ) {
+		} elsif ( $item->{itemcallnumber} eq "" || $item->{itemcallnumber} eq "undef" ) {
       $item->{problem} = "sort field missing - sort manually";
       additemtobarcodes($item,@barcodes);
     } elsif ( $item->{problem} eq "item not found" ) {
@@ -301,21 +302,18 @@ sub inventory2 {
 my $timea;
 if ( scalar(@sortbarcodes) > 0 ) {
 
-  # sorting formula from https://www.perlmonks.org/?node_id=560304
-  my @sortedbarcodes = map  { $_->[0] }
-               sort { $a->[1] cmp $b->[1] }
-               map  { [ $_, $_->{cn_sort} ] }
-               @sortbarcodes;
-
    my @cnsort;
    my @cnsorted;
   my $lastadded;
 
   while ( my ($key, $value) = each @sortbarcodes ) {
     # get all cnsort values into array, skip those with sequential duplicates
-    unless ($value->{cn_sort} eq $lastadded ) {
-      push(@cnsort,$value->{cn_sort});
-      $lastadded = $value->{cn_sort};
+    unless ($value->{itemcallnumber} eq $lastadded ) {
+      my $callnumber = $value->{itemcallnumber};
+      my $callnumber = Library::CallNumber::LC->new($callnumber);
+      my $ncallnumber = $callnumber->normalize;
+      push(@cnsort,$ncallnumber);
+      $lastadded = $ncallnumber;
     }
   }
      # build sorted array from cn_sort
@@ -325,8 +323,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   my @move;
   unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
 
-
-     # hashes to hold data for calculations
+  # hashes to hold data for calculations
 	my %chunk = ();
 	my %chunks = ();
 	@move = ();
@@ -340,7 +337,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
 	  $chunk_key = 0;
 	  $c++;
 		if ($c > $ct) {
-
 			last;
 		  }
 
@@ -443,7 +439,10 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
         my $item = $sortbarcodes[$i];
-  		  if ( $item->{cn_sort} ~~ @move ) {
+        my $callnumber = $item->{itemcallnumber};
+        my $callnumber = Library::CallNumber::LC->new($callnumber);
+        my $ncallnumber = $callnumber->normalize;
+  		  if ( $ncallnumber ~~ @move ) {
     			$item->{out_of_order} = 1;
     			additemtobarcodes($item,@barcodes);
   		  }
