@@ -18,9 +18,9 @@
       [% IF b.problem %] - [% b.problem %][% END %]
         <dd class="NU_dd">barcode: [% b.barcode %]
         </br>
-        title
+        [% b.title %]
         </br>
-        author
+        [% b.author %]
         </br>
         [% b.homebranch %]
         </br>
