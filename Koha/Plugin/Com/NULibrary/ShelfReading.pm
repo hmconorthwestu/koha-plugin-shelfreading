@@ -314,7 +314,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
     # get all cnsort values into array, skip those with sequential duplicates
     unless ($value->{itemcallnumber} eq $lastadded ) {
       my $callnumber = $value->{itemcallnumber};
-      $timea .= $callnumber;
       my $ncallnumber;
       if ( $value->{cn_source} eq "lcc" ) {
         my $callnumber = Library::CallNumber::LC->new($callnumber);
@@ -322,7 +321,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
       } else {
         $ncallnumber = $callnumber;
       }
-      $timea .= $ncallnumber;
       push(@cnsort,$ncallnumber);
       $lastadded = $ncallnumber;
     }
@@ -440,7 +438,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
 	  # this brackets ends until:
 	  }
     # Make move array values unique, by building new array and skipping adding values we've already seen
-    $timea .= Dumper(\@move);
     my %seenmove;
     @move = grep { ! $seenmove{ $_ }++ } @move;
   # this bracket ends outer unless
@@ -448,7 +445,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
   if ( @move ) {
     $count_out_of_order = scalar(@move);
-    $timea .= Dumper(\@move);
     if ( @move eq "loop error" ) {
       @error = "until loop not stopping";
     } else {
@@ -464,7 +460,6 @@ if ( scalar(@sortbarcodes) > 0 ) {
         }
   		  if ( $ncallnumber ~~ @move ) {
     			$item->{out_of_order} = 1;
-          $timea .= $ncallnumber;
     			additemtobarcodes($item,@barcodes);
   		  }
 		  }
