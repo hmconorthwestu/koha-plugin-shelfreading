@@ -315,7 +315,8 @@ if ( scalar(@sortbarcodes) > 0 ) {
     unless ($value->{itemcallnumber} eq $lastadded ) {
       my $ncallnumber;
       if ( $value->{cn_source} eq "lcc" ) {
-        my $callnumber = Library::CallNumber::LC->new($callnumber);
+        my $callnumber = $value->{itemcallnumber};
+        $callnumber = Library::CallNumber::LC->new($callnumber);
         $ncallnumber = $callnumber->normalize;
       } else {
         my $callnumber = $value->{itemcallnumber};
