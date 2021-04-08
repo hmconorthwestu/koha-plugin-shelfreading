@@ -312,18 +312,19 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
   while ( my ($key, $value) = each @sortbarcodes ) {
     # get all cnsort values into array, skip those with sequential duplicates
-    unless ($value->{itemcallnumber} eq $lastadded ) {
+    my $fullcallno = $value->{itemcallnumber} . $value->{enumchron};
+    unless ($fullcallno eq $lastadded ) {
       my $ncallnumber;
       if ( $value->{cn_source} eq "lcc" ) {
-        my $callnumber = $value->{itemcallnumber};
+        my $callnumber = $fullcallno;
         $callnumber = Library::CallNumber::LC->new($callnumber);
         $ncallnumber = $callnumber->normalize;
       } else {
-        my $callnumber = $value->{itemcallnumber};
+        my $callnumber = $fullcallno;
         $ncallnumber = $callnumber;
       }
       push(@cnsort,$ncallnumber);
-      $lastadded = $value->{itemcallnumber};
+      $lastadded = $fullcallno;
     }
   }
      # build sorted array from cn_sort
