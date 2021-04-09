@@ -312,7 +312,14 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
   while ( my ($key, $value) = each @sortbarcodes ) {
     # get all cnsort values into array, skip those with sequential duplicates
-    my $fullcallno = $value->{itemcallnumber} . $value->{enumchron};
+
+    # sort volumes before other items like index and supplement
+    $enumchron = $value->{enumchron};
+    if (substr($enumchron, 0, 3) = "v. ") {
+      $enumchron = substr $string, 3);
+    }
+
+    my $fullcallno = $value->{itemcallnumber} . $enumchron;
     unless ($fullcallno eq $lastadded ) {
       my $ncallnumber;
       if ( $value->{cn_source} eq "lcc" ) {
