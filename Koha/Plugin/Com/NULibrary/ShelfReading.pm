@@ -452,7 +452,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
         my $item = $sortbarcodes[$i];
-        my $callnumber = $item->{itemcallnumber};
+        my $callnumber = $item->{itemcallnumber} . $item->{enumchron};
         my $ncallnumber;
         if ( $item->{cn_source} eq "lcc" ) {
           my $callnumber = Library::CallNumber::LC->new($callnumber);
