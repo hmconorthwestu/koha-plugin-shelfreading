@@ -316,7 +316,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     # sort volumes before other items like index and supplement
     my $enumchron = $value->{enumchron};
     if (substr($enumchron, 0, 3) = "v. ") {
-      $enumchron = substr $enumchron, 3);
+      $enumchron = substr $enumchron, 3;
     }
 
     my $fullcallno = $value->{itemcallnumber} . $enumchron;
