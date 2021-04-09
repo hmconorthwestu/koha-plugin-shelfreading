@@ -314,7 +314,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     # get all cnsort values into array, skip those with sequential duplicates
 
     # sort volumes before other items like index and supplement
-    $enumchron = $value->{enumchron};
+    my $enumchron = $value->{enumchron};
     if (substr($enumchron, 0, 3) = "v. ") {
       $enumchron = substr $string, 3);
     }
