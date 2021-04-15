@@ -452,6 +452,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   # this bracket ends outer unless
 	}
 
+
   if ( @move ) {
     $count_out_of_order = scalar(@move);
     if ( @move eq "loop error" ) {
@@ -459,7 +460,11 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
         my $item = $sortbarcodes[$i];
-        my $callnumber = $item->{itemcallnumber} . $item->{enumchron};
+        my $enumchron = $item->{enumchron};
+        if (substr($enumchron, 0, 3) = "v. ") {
+          $enumchron = substr $enumchron, 3;
+        }
+        my $callnumber = $item->{itemcallnumber} . $enumchron;
         my $ncallnumber;
         if ( $item->{cn_source} eq "lcc" ) {
           my $callnumber = Library::CallNumber::LC->new($callnumber);
