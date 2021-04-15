@@ -315,8 +315,8 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
     # sort volumes before other items like index and supplement
     my $enumchron = $value->{enumchron};
-    if (substr($enumchron, 0, 3) = "v. ") {
-      $enumchron = substr $enumchron, 3;
+    if (substr($enumchron, 0, 2) = "v.") {
+      $enumchron = substr $enumchron, 2;
     }
 
     my $fullcallno = $value->{itemcallnumber} . $enumchron;
@@ -459,8 +459,8 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       while ( my ($key, $value) = each @sortbarcodes ) {
         my $enumchron = $value->{enumchron};
-        if (substr($enumchron, 0, 3) = "v. ") {
-          $enumchron = substr $enumchron, 3;
+        if (substr($enumchron, 0, 2) = "v.") {
+          $enumchron = substr $enumchron, 2;
         }
         my $fullcallno = $value->{itemcallnumber} . $enumchron;
         my $ncallnumber;
