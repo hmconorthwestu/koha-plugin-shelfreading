@@ -327,8 +327,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
         $callnumber = Library::CallNumber::LC->new($callnumber);
         $ncallnumber = $callnumber->normalize;
       } else {
-        my $callnumber = $fullcallno;
-        $ncallnumber = $callnumber;
+          $ncallnumber = $fullcallno;
       }
       push(@cnsort,$ncallnumber);
       $lastadded = $fullcallno;
@@ -458,23 +457,23 @@ if ( scalar(@sortbarcodes) > 0 ) {
     if ( @move eq "loop error" ) {
       @error = "until loop not stopping";
     } else {
-      for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
-        my $item = $sortbarcodes[$i];
-        my $enumchron = $item->{enumchron};
+      while ( my ($key, $value) = each @sortbarcodes ) {
+        my $enumchron = $value->{enumchron};
         if (substr($enumchron, 0, 3) = "v. ") {
           $enumchron = substr $enumchron, 3;
         }
-        my $callnumber = $item->{itemcallnumber} . $enumchron;
+        my $fullcallno = $value->{itemcallnumber} . $enumchron;
         my $ncallnumber;
-        if ( $item->{cn_source} eq "lcc" ) {
-          my $callnumber = Library::CallNumber::LC->new($callnumber);
+        if ( $value->{cn_source} eq "lcc" ) {
+          my $callnumber = $fullcallno;
+          $callnumber = Library::CallNumber::LC->new($callnumber);
           $ncallnumber = $callnumber->normalize;
         } else {
-          $ncallnumber = $callnumber;
+          $ncallnumber = $fullcallno;
         }
   		  if ( $ncallnumber ~~ @move ) {
-    			$item->{out_of_order} = $ncallnumber;
-    			additemtobarcodes($item,@barcodes);
+    			$value->{out_of_order} = $ncallnumber;
+    			additemtobarcodes($value,@barcodes);
   		  }
 		  }
     }
