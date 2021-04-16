@@ -472,7 +472,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
           $ncallnumber = $fullcallno;
         }
   		  if ( $ncallnumber ~~ @move ) {
-    			$value->{out_of_order} = $ncallnumber;
+    			$value->{out_of_order} = 1;
     			additemtobarcodes($value,@barcodes);
   		  }
 		  }
