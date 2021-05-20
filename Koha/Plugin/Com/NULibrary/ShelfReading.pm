@@ -333,8 +333,8 @@ if ( scalar(@sortbarcodes) > 0 ) {
       $lastadded = $fullcallno;
     }
   }
-     # build sorted array from cn_sort
-     @cnsorted = sort(@cnsort);
+  # build sorted array from cn_sort
+  @cnsorted = sort(@cnsort);
 
  # begin shelf sort function that will not stop looping when copied into the shelf sort sub
   my @move;
