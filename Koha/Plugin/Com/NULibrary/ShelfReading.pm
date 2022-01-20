@@ -304,6 +304,7 @@ sub inventory2 {
 # end of checks
 my $count_out_of_order;
 my $timea;
+my @move;
 if ( scalar(@sortbarcodes) > 0 ) {
 
    my @cnsort;
@@ -315,7 +316,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
     # sort volumes before other items like index and supplement
     my $enumchron = $value->{enumchron};
-    if (substr($enumchron, 0, 2) = "v.") {
+    if (substr($enumchron, 0, 2) == "v.") {
       $enumchron = substr $enumchron, 2;
     }
 
@@ -333,11 +334,10 @@ if ( scalar(@sortbarcodes) > 0 ) {
       $lastadded = $fullcallno;
     }
   }
-  # build sorted array from cn_sort
-  @cnsorted = sort(@cnsort);
+     # build sorted array from cn_sort
+     @cnsorted = sort(@cnsort);
 
  # begin shelf sort function that will not stop looping when copied into the shelf sort sub
-  my @move;
   unless ( @cnsort ~~ @cnsorted && @cnsorted ~~ @cnsort ) {
 
   # hashes to hold data for calculations
@@ -459,7 +459,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       while ( my ($key, $value) = each @sortbarcodes ) {
         my $enumchron = $value->{enumchron};
-        if (substr($enumchron, 0, 2) = "v.") {
+        if (substr($enumchron, 0, 2) == "v.") {
           $enumchron = substr $enumchron, 2;
         }
         my $fullcallno = $value->{itemcallnumber} . $enumchron;
