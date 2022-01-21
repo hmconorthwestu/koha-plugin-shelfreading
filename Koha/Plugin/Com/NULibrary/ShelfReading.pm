@@ -309,7 +309,7 @@ my @move;
 if ( scalar(@sortbarcodes) > 0 ) {
 
    my @cnsort;
-   $cnsort;
+   my $cnsort;
    my @cnsorted;
   my $lastadded;
 
@@ -361,7 +361,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
 		  for my $item_key (0 .. $#cnsort) {
 			# find the given item's position in the sorted array
-			my $foundkey = first { $cnsorted[$_] eq $cnsort[$item_key] } 0..$#cnsorted;
+			my $foundkey = first { $cnsorted[$_] eq $cnsort->{$item_key} } 0..$#cnsorted;
 
 			# calculate distance from where item is in sorted array
 			my $d = $foundkey - $item_key;
