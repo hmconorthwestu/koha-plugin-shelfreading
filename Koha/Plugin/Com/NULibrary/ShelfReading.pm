@@ -12,7 +12,7 @@ use CGI qw ( -utf8 );
 #use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my @oldBarcodes = $input->param('oldBarcodes');
+my @oldBarcodes = scalar $input->param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 #use C4::Auth;
@@ -49,6 +49,7 @@ use Array::Utils qw(:all);
 # for Testing
 use Data::Dumper;
 use Library::CallNumber::LC;
+use Koha::DateUtils qw(dt_from_string);
 
 my $starta = time();
 ## Here we set our plugin version
@@ -136,7 +137,7 @@ sub intranet_js {
 sub upgrade {
     my ( $self, $args ) = @_;
 
-    my $dt = dt_from_string();
+    my $dt = DateTime->now;
     $self->store_data( { last_upgraded => $dt->ymd('-') . ' ' . $dt->hms(':') } );
 
     return 1;
@@ -207,7 +208,7 @@ sub inventory2 {
   unless ($duplicate == 1) {
 
   	# set date to log in datelastseen column
-  	my $dt = dt_from_string();
+  	my $dt = DateTime->now;
   	my $datelastseen = $dt->ymd('-');
   	my $kohaitem = Koha::Items->find({barcode => $bc});
     my $item;
@@ -406,7 +407,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 			  $chunk_move = $k;
 
 			  for my $i ( @{$chunks{$k}{i}} ) {
-				push @move, @cnsort[$i];
+				push @move, $cnsort->{$i};
 			  }
 			  			last;
 			}
@@ -440,7 +441,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   			my $test = $chunks{$sorted}{i};
   			for my $i ( values @{$chunks{$sorted}{i}} ) {
   		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
-  			  push @cnsort, @prev[$i];
+  			  push $cnsort, @prev[$i];
   			}
 		  }
 	  # this brackets ends until:
@@ -571,7 +572,7 @@ if ($c > $ct) {
       $chunk_move = $k;
 
       for my $i ( @{$chunks{$k}{i}} ) {
-        push @move, @cnsort[$i];
+        push @move, $cnsort->{$i};
       }
     }
     last;
@@ -618,7 +619,7 @@ if ($c > $ct) {
   for my $sortedkey (0 .. $#cnsort) {
     # substitute correct call number values in for key values
     my $value = $cnsort[$sortedkey];
-    @cnsort[$sortedkey] = @prev[$value];
+    $cnsort->{$sortedkey} = @prev[$value];
   }
 
   # this brackets ends until:
