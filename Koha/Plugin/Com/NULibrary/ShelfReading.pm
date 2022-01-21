@@ -309,6 +309,7 @@ my @move;
 if ( scalar(@sortbarcodes) > 0 ) {
 
    my @cnsort;
+   $cnsort;
    my @cnsorted;
   my $lastadded;
 
@@ -441,7 +442,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   			my $test = $chunks{$sorted}{i};
   			for my $i ( values @{$chunks{$sorted}{i}} ) {
   		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
-  			  push $cnsort, @prev[$i];
+  			  push @cnsort, @prev[$i];
   			}
 		  }
 	  # this brackets ends until:
@@ -521,7 +522,7 @@ if ($c > $ct) {
 
   for my $k (0 .. $#cnsort) {
     # find the given item's position in the sorted array
-    my $foundkey = first { $cnsorted[$_] eq $cnsort[$k] } 0..$#cnsorted;
+    my $foundkey = first { $cnsorted[$_] eq $cnsort->{$k} } 0..$#cnsorted;
 
     # calculate distance from where item is in sorted array
     my $d = $foundkey - $k;
