@@ -536,4 +536,4 @@ sub additemtobarcodes {
 #    return $spec;
 #}
 
-1;
+;
