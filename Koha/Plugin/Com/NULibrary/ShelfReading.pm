@@ -442,7 +442,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   			my $test = $chunks{$sorted}{i};
   			for my $i ( values @{$chunks{$sorted}{i}} ) {
   		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
-  			  push @cnsort, $prev[$i];
+  			  push @cnsort, $prev->{$i};
   			}
 		  }
 	  # this brackets ends until:
