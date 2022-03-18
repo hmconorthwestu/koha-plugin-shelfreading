@@ -53,7 +53,7 @@ use Koha::DateUtils qw(dt_from_string);
 
 my $starta = time();
 ## Here we set our plugin version
-our $VERSION = "v1.0.201";
+our $VERSION = "1.1.0";
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -434,7 +434,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 		  }
 
 		  # copy call number array into a different array
-		  my @prev = @cnsort;
+		  my $prev = @cnsort;
 		  # reset call number array
 		  @cnsort = ();
 		  # sort chunks by f value, into correct order
@@ -442,7 +442,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   			my $test = $chunks{$sorted}{i};
   			for my $i ( values @{$chunks{$sorted}{i}} ) {
   		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
-  			  push @cnsort, @prev[$i];
+  			  push @cnsort, $prev[$i];
   			}
 		  }
 	  # this brackets ends until:
