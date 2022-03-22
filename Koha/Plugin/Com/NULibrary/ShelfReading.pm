@@ -29,6 +29,7 @@ use C4::Koha;
 #use Koha::ClassSources;
 # to get item details:
 use Koha::Items;
+use Koha::Item;
 #use List::MoreUtils qw( none );
 use List::Util qw(first);
 
@@ -176,13 +177,16 @@ sub inventory2 {
   my $duplicate;
   my @error;
   my $erroritems = 0;
+  my $timea;
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
-    if ($b == $bc) {
-      $duplicate = 1;
-    }
-  		my $item = Koha::Items->find({barcode => $b});
+    if (!$b) {
+      $duplicate = 0;
+    } elsif ($b == $bc) {
+        $duplicate = 1;
+    } else {
+    	my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
         $item = $item->unblessed;
         push @sortbarcodes, $item;
@@ -195,7 +199,8 @@ sub inventory2 {
         $erroritems++;
         push @barcodes, $item;
       }
-  	$count = $count + 1;
+    }
+      	$count = $count + 1;
   }
 
   my $template = $self->get_template({ file => 'inventory2.tt' });
@@ -254,7 +259,7 @@ sub inventory2 {
 		} elsif ( $item->{itemcallnumber} eq "" || $item->{itemcallnumber} eq "undef" ) {
       $item->{problem} = "sort field missing - sort manually";
       additemtobarcodes($item,@barcodes);
-    } elsif ( $item->{problem} eq "item not found" ) {
+    } elsif ( $item->{problem} && $item->{problem} eq "item not found" ) {
       additemtobarcodes($item,@barcodes);
     }
     if ( $i == 0 && $firstitem->{problem} ) {
@@ -304,7 +309,6 @@ sub inventory2 {
   }
 # end of checks
 my $count_out_of_order;
-my $timea;
 my @move;
 if ( scalar(@sortbarcodes) > 0 ) {
 
@@ -317,13 +321,18 @@ if ( scalar(@sortbarcodes) > 0 ) {
     # get all cnsort values into array, skip those with sequential duplicates
 
     # sort volumes before other items like index and supplement
-    my $enumchron = $value->{enumchron};
-    if (substr($enumchron, 0, 2) == "v.") {
-      $enumchron = substr $enumchron, 2;
+    my $fullcallno;
+    if ($value->{enumchron}) {
+      my $enumchron = $value->{enumchron};
+      if (substr($enumchron, 0, 2) eq "v.") {
+        $enumchron = substr $enumchron, 2;
+      }
+      $fullcallno = $value->{itemcallnumber} . $enumchron;
+    } else {
+      $fullcallno = $value->{itemcallnumber};
     }
 
-    my $fullcallno = $value->{itemcallnumber} . $enumchron;
-    unless ($fullcallno eq $lastadded ) {
+    unless ($lastadded && $fullcallno eq $lastadded ) {
       my $ncallnumber;
       if ( $value->{cn_source} eq "lcc" ) {
         my $callnumber = $fullcallno;
@@ -461,7 +470,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     } else {
       while ( my ($key, $value) = each @sortbarcodes ) {
         my $enumchron = $value->{enumchron};
-        if (substr($enumchron, 0, 2) == "v.") {
+        if (substr($enumchron, 0, 2) eq "v.") {
           $enumchron = substr $enumchron, 2;
         }
         my $fullcallno = $value->{itemcallnumber} . $enumchron;
@@ -489,11 +498,12 @@ if ( scalar(@sortbarcodes) > 0 ) {
   $template->param( 'misshelved' => $count_out_of_order ) if ($count_out_of_order);
   $template->param( 'erroritems' => $erroritems ) if ($erroritems);
   my $end = time();
-  my $time = $end - $start;
+#  my $time = $end - $start;
   my $enda = time();
 #  my $timea = $end - $starta;
 
-  $template->param('time' => $time);
+
+#  $template->param('time' => $time);
   $template->param('timea' => $timea);
 
   $self->output_html( $template->output() );
