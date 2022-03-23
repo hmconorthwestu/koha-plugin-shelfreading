@@ -102,7 +102,6 @@ sub tool {
     else {
         $self->inventory2();
     }
-
 }
 
 ## If your plugin needs to add some CSS to the staff intranet, you'll want
