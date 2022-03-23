@@ -3,6 +3,7 @@ package Koha::Plugin::Com::NULibrary::ShelfReading;
 ## It's good practice to use Modern::Perl
 use Modern::Perl;
 use strict;
+no warnings 'experimental::smartmatch';
 
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
@@ -12,7 +13,7 @@ use CGI qw ( -utf8 );
 #use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my @oldBarcodes = scalar $input->param('oldBarcodes');
+my @oldBarcodes = $input->param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 #use C4::Auth;
@@ -178,20 +179,26 @@ sub inventory2 {
   my @error;
   my $erroritems = 0;
   my $timea;
+  #$timea .= 'old Barcodes ' . Dumper(\@oldBarcodes);
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
-    if (!$b) {
-      $duplicate = 0;
-    } elsif ($b == $bc) {
+  #  $timea .= 'old Barcodes ' . Dumper(\@oldBarcodes);
+    if ($b == $bc) {
         $duplicate = 1;
+#        $timea .= 'duplicate';
     } else {
+      $duplicate = 0;
+#      $timea .= 'not duplicate';
+    }
     	my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
+  #      $timea .= 'item found = ' . $b;
         $item = $item->unblessed;
         push @sortbarcodes, $item;
         push @barcodes, $item;
       } else {
+  #      $timea .= 'item NOT found = ' . $b;
         $item->{itemcallnumber} = $b;
         $item->{itemnumber} = $b;
         $item->{barcode} = $b;
@@ -199,9 +206,10 @@ sub inventory2 {
         $erroritems++;
         push @barcodes, $item;
       }
-    }
       	$count = $count + 1;
+#        $timea .= 'count ' . $count;
   }
+
 
   my $template = $self->get_template({ file => 'inventory2.tt' });
 
@@ -304,6 +312,7 @@ sub inventory2 {
         $erroritems++;
         # remove problem items from sorting
         splice(@sortbarcodes, $i, 1);
+        $i--;
       }
     }
   }
@@ -370,7 +379,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 
 		  for my $item_key (0 .. $#cnsort) {
 			# find the given item's position in the sorted array
-			my $foundkey = first { $cnsorted[$_] eq $cnsort->{$item_key} } 0..$#cnsorted;
+			my $foundkey = first { $cnsorted[$_] eq $cnsort[$item_key] } 0..$#cnsorted;
 
 			# calculate distance from where item is in sorted array
 			my $d = $foundkey - $item_key;
@@ -415,9 +424,8 @@ if ( scalar(@sortbarcodes) > 0 ) {
 		  while ( my ($k, $v) = each %chunks ) {
 			if ( abs($chunks{$k}{d}) eq $chunk_dist) {
 			  $chunk_move = $k;
-
 			  for my $i ( @{$chunks{$k}{i}} ) {
-				push @move, $cnsort->{$i};
+				push @move, $cnsort[$i];
 			  }
 			  			last;
 			}
@@ -443,7 +451,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
 		  }
 
 		  # copy call number array into a different array
-		  my $prev = @cnsort;
+		  my @prev = @cnsort;
 		  # reset call number array
 		  @cnsort = ();
 		  # sort chunks by f value, into correct order
@@ -451,7 +459,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
   			my $test = $chunks{$sorted}{i};
   			for my $i ( values @{$chunks{$sorted}{i}} ) {
   		  # instead of create new cnsort array with keys as values in correct order, just add prev value into array
-  			  push @cnsort, $prev->{$i};
+  			  push @cnsort, $prev[$i];
   			}
 		  }
 	  # this brackets ends until:
