@@ -13,7 +13,7 @@ use CGI qw ( -utf8 );
 #use CGI::Session;
 my $input = CGI->new;
 my $bc = $input->param('bc');
-my @oldBarcodes = $input->param('oldBarcodes');
+my @oldBarcodes = $input->multi_param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
 #use C4::Auth;
