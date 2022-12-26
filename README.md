@@ -7,7 +7,7 @@ Koha’s Plugin System (available in Koha 3.12+) allows for you to add additiona
 
 # Downloading
 
-From the [release page](https://github.com/bywatersolutions/koha-plugin-kitchen-sink/releases) you can download the relevant *.kpz file
+From the [release page](https://github.com/hmconorthwestu/koha-plugin-shelfreading/releases) you can download the relevant *.kpz file
 
 # Installing
 
