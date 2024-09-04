@@ -2,6 +2,8 @@ package Koha::Plugin::Com::NULibrary::ShelfReading;
 
 ## It's good practice to use Modern::Perl
 use Modern::Perl;
+use strict;
+no warnings 'experimental::smartmatch';
 
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
@@ -9,14 +11,40 @@ use base qw(Koha::Plugins::Base);
 ## We will also need to include any Koha libraries we want to access
 use CGI qw ( -utf8 );
 #use CGI::Session;
-
+my $input = CGI->new;
+my $bc = $input->param('bc');
+my @oldBarcodes = $input->multi_param('oldBarcodes');
 use C4::Context;
 use lib C4::Context->config("pluginsdir");
+#use C4::Auth;
+#use C4::Output;
+#use C4::Biblio;
+#use C4::Items;
 use C4::Koha;
+#use C4::Circulation;
+#use C4::Reports::Guided;    #_get_column_defs
+#use C4::Charset;
+#use Koha::Biblios;
+#use Koha::AuthorisedValues;
+#use Koha::BiblioFrameworks;
+#use Koha::ClassSources;
+# to get item details:
 use Koha::Items;
 use Koha::Item;
+#use List::MoreUtils qw( none );
 use List::Util qw(first);
 
+# use Koha::Patron;
+use Koha::DateUtils;
+# use Koha::Libraries;
+# use Koha::Patron::Categories;
+# use Koha::Account;
+# use Koha::Account::Lines;
+# use MARC::Record;
+#use Cwd qw(abs_path);
+#use Mojo::JSON qw(decode_json);;
+#use URI::Escape qw(uri_unescape);
+#use LWP::UserAgent;
 use Time::HiRes qw( time );
 # to compare sorted and unsorted lists:
 use Array::Utils qw(:all);
@@ -25,7 +53,7 @@ use Data::Dumper;
 use Library::CallNumber::LC;
 use Koha::DateUtils qw(dt_from_string);
 
-
+my $starta = time();
 ## Here we set our plugin version
 our $VERSION = "1.1.0";
 
@@ -41,11 +69,6 @@ our $metadata = {
     description     => 'This plugin implements inventory features '
       . 'for shelf reading as barcodes are scanned. ',
 };
-
-my $input = CGI->new;
-my $bc = $input->param('bc');
-my @oldBarcodes = $input->multi_param('oldBarcodes');
-my $starta = time();
 
 ## This is the minimum code required for a plugin's 'new' method
 ## More can be added, but none should be removed
