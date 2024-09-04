@@ -1,7 +1,13 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
- <title>Koha Shelf Reading</title>
+<title>Koha Shelf Reading</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
+
 <body>
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Shelf Reading</div>
