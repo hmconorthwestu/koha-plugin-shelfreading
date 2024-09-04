@@ -43,7 +43,7 @@
   [% ELSE %]
   	<form method="post">
   		<input type="hidden" name="class" value="[% CLASS %]"/>
-      <input type="hidden" name="method" value="[% METHOD %]"/>
+        <input type="hidden" name="method" value="[% METHOD %]"/>
   		[% IF barcodes %]
   			[% FOREACH p IN barcodes %]
   				<input type="hidden" name="oldBarcodes" value="[% p.barcode %]"/>
