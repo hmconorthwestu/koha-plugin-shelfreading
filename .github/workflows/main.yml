@@ -15,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         koha-version: [main, stable, oldstable]
-        
+
     steps:
-    
+
     - name: Is a tag?
       run: |
         echo "${{ startsWith(github.ref, 'refs/tags/v') }}"
@@ -41,7 +41,7 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
-      
+
     - uses: actions/checkout@v1
 
     - name: Get Koha Version Branch Name
@@ -54,7 +54,7 @@ jobs:
       run: |
         cd ..
         git clone --branch ${{ steps.koha-version.outputs.current-branch-name }} --single-branch --depth 1 https://github.com.Koha-Community.org/Koha-Community/Koha.git kohaclone
-
+      
     - name: Export additional variables needed by koha-testing-docker
       run: |
         cd ..
@@ -67,14 +67,14 @@ jobs:
         export SYNC_REPO="$ROOT_DIR/kohaclone"
         export KOHA_INTRANET_URL="http://127.0.0.1:8081"
         export KOHA_MARC_FLAVOUR="marc21"
-        echo "GITHUB_REPO=$GITHUB_REPO"  >> $GITHUB_ENV
-        echo "ROOT_DIR=$ROOT_DIR"  >> $GITHUB_ENV
-        echo "LOCAL_USER_ID=$LOCAL_USER_ID"  >> $GITHUB_ENV
-        echo "SYNC_REPO=$SYNC_REPO"  >> $GITHUB_ENV
-        echo "KOHA_INTRANET_URL=$KOHA_INTRANET_URL"  >> $GITHUB_ENV
-        echo "KOHA_MARC_FLAVOUR=$KOHA_MARC_FLAVOUR"  >> $GITHUB_ENV
-        echo "RUN_TESTS_AND_EXIT=no"  >> $GITHUB_ENV
-        echo "KOHA_IMAGE=main"  >> $GITHUB_ENV
+        echo "GITHUB_REPO=$GITHUB_REPO" >> $GITHUB_ENV
+        echo "ROOT_DIR=$ROOT_DIR" >> $GITHUB_ENV
+        echo "LOCAL_USER_ID=$LOCAL_USER_ID" >> $GITHUB_ENV
+        echo "SYNC_REPO=$SYNC_REPO" >> $GITHUB_ENV
+        echo "KOHA_INTRANET_URL=$KOHA_INTRANET_URL" >> $GITHUB_ENV
+        echo "KOHA_MARC_FLAVOUR=$KOHA_MARC_FLAVOUR" >> $GITHUB_ENV
+        echo "RUN_TESTS_AND_EXIT=no" >> $GITHUB_ENV
+        echo "KOHA_IMAGE=main" >> $GITHUB_ENV
         echo "GITHUB REPO: $GITHUB_REPO"
         echo "ROOT DIR: $ROOT_DIR"
         echo "SYNC_REPO: $SYNC_REPO"
@@ -110,12 +110,11 @@ jobs:
         sleep 60
         echo "3 MINUTES DONE"
         echo "WAKING UP"
-         echo "DOCKER LOGS"
+        echo "DOCKER LOGS"
         docker logs koha-koha-1 2>&1
         echo "/DOCKER LOGS"
         docker cp $GITHUB_REPO/. koha-koha-1:/var/lib/koha/kohadev/plugins
         docker exec koha-koha-1 bash -c 'prove /var/lib/koha/kohadev/plugins/t'
-
     - name: Post test cleanup
       run: |
         docker compose down
@@ -141,14 +140,14 @@ jobs:
         GITHUB_REPO="${parts[1]}"
         echo ::set-output name=github_repo::$GITHUB_REPO
         echo "GITHUB REPO: $GITHUB_REPO"
-        
-         TAG_VERSION="${GITHUB_REF##*/}"
+
+        TAG_VERSION="${GITHUB_REF##*/}"
         echo "TAG VERSION: $TAG_VERSION"
         TAG_VERSION="${TAG_VERSION:1}"
         echo "TAG VERSION 2: $TAG_VERSION"
         echo ::set-output name=tag_version::$TAG_VERSION
-        
- - name: Get Koha Version Branch Name
+
+    - name: Get Koha Version Branch Name
       id: koha-version-oldstable
       uses: "bywatersolutions/github-action-koha-get-version-by-label@master"
       with:
@@ -179,13 +178,15 @@ jobs:
 
     - name: Release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-      files: |
+        files: |
           ${{ steps.kpz.outputs.filename }}
           CHANGELOG.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      keepalive:
+
+  keepalive:
     name: Keep Alive
     runs-on: ubuntu-latest
     steps:
