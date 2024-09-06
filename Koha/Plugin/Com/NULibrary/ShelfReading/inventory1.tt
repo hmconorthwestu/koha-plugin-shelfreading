@@ -17,7 +17,7 @@
 </div>
 <div id="NUPluginContent">
 <div id="doc3">
-    <form method="post" action="">
+    <form method="get" action="">
 		<input type="hidden" name="class" value="[% CLASS %]"/>
         <input type="hidden" name="method" value="[% METHOD %]"/>
         <input id="bc" type="text" name="bc" size=15 placeholder="Barcode" autocomplete="off" autofocus >
