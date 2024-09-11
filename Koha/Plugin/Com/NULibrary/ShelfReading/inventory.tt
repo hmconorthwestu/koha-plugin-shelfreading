@@ -36,6 +36,7 @@
        [% UNLESS op %]
 
     <form method="post">
+	[% INCLUDE 'csrf-token.inc' %]
         <fieldset class="rows">
           <legend>Use a barcode file</legend>
           <ol>
@@ -160,6 +161,7 @@
     [% END %]
     [% IF (op) %]
     <form method="post" action="inventory.pl" class="checkboxed">
+	[% INCLUDE 'csrf-token.inc' %]
     <input type="hidden" name="minlocation" value="[% minlocation | html %]" />
     <input type="hidden" name="maxlocation" value="[% maxlocation | html %]" />
     <input type="hidden" name="location" value="[% location | html %]" />

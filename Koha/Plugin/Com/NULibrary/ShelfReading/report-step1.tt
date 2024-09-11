@@ -1,3 +1,4 @@
+
 [% INCLUDE 'doc-head-open.inc' %]
  <title>Koha: Kitchen Sink Plugin: Report: Patron List</title>
  <script type="text/javascript" src="[% PLUGIN_PATH %]/datepicker/js/datepicker.js"></script>
