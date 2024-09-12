@@ -17,7 +17,7 @@
 </div>
 <div id="NUPluginContent">
 <div id="doc3">
-    <form method="post" action="">
+    <form method="post">
 	[% INCLUDE 'csrf-token.inc' %]
 		<input type="hidden" name="class" value="[% CLASS %]"/>
         <input type="hidden" name="method" value="[% METHOD %]"/>

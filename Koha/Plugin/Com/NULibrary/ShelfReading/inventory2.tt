@@ -41,7 +41,7 @@
   [% IF errorloop %]
     <p class="NU_shelfreading_error">Error - start a new shelf [% errorloop.0 %]</p>
   [% ELSE %]
-  	<form method="post" action="">
+  	<form method="post">
 	[% INCLUDE 'csrf-token.inc' %]
   		<input type="hidden" name="class" value="[% CLASS %]"/>
         <input type="hidden" name="method" value="[% METHOD %]"/>
@@ -56,7 +56,7 @@
   <br/>
   <br/>
   [% END %]
-  <form method="post" action="">
+  <form method="post">
   [% INCLUDE 'csrf-token.inc' %]
     <input type="hidden" name="class" value="[% CLASS %]"/>
     <input type="hidden" name="method" value="[% METHOD %]"/>
