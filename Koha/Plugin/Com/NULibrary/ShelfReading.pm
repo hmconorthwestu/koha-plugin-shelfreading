@@ -13,10 +13,12 @@ use CGI qw ( -utf8 );
 #use CGI::Session;
 
 use C4::Context;
+use C4::Members;
 use lib C4::Context->config("pluginsdir");
 use C4::Koha;
 use Koha::Items;
 use Koha::Item;
+use Koha::Token;
 use List::Util qw(first);
 
 use Time::HiRes qw( time );
@@ -28,11 +30,10 @@ use Library::CallNumber::LC;
 use Koha::DateUtils qw(dt_from_string);
 
 my $input = CGI->new;
-my $bc = $input->param('bc');
-my @oldBarcodes = $input->multi_param('oldBarcodes');
+
 my $starta = time();
 ## Here we set our plugin version
-our $VERSION = "1.1.0";
+our $VERSION = "1.1.9";
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -140,6 +141,7 @@ sub inventory1 {
     my $cgi = $self->{'cgi'};
 
     my $template = $self->get_template({ file => 'inventory1.tt' });
+	$template->param(csrf_token => Koha::Token->new->generate_csrf({ session_id => $input->cookie('CGISESSID'),}),);
 
     $self->output_html( $template->output() );
 }
@@ -149,32 +151,37 @@ sub inventory2 {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
-	my @barcodes;
+  my $bc = $cgi->param('bc');
+  my @oldBarcodes = $cgi->multi_param('oldBarcodes');
+  my @barcodes;
   my @sortbarcodes;
-  my $duplicate;
+  my $duplicate = 0;
   my @error;
   my $erroritems = 0;
   my $timea;
-  #$timea .= 'old Barcodes ' . Dumper(\@oldBarcodes);
+#  $timea .= 'input param: ' . Dumper(\$input->param) . '</br>';
+#  $timea .= 'input multi-param: ' . Dumper(\$input->multi_param) . '</br>';
+  
+  
+ # $timea .= '$cgi ' . Dumper(\$cgi->param) . '</br>';
+ #  $timea .= '$cgi barcode' . Dumper(\$cgi->param("bc")) . '</br>';
 
 	my $count = 0;
 	foreach $b (@oldBarcodes) {
-  #  $timea .= 'old Barcodes ' . Dumper(\@oldBarcodes);
+ #   $timea .= '<p>old Barcodes foreach: ' . Dumper(\$b) . '</p>';
     if ($b == $bc) {
         $duplicate = 1;
-#        $timea .= 'duplicate';
     } else {
       $duplicate = 0;
-#      $timea .= 'not duplicate';
     }
     	my $item = Koha::Items->find({barcode => $b});
   		if ( $item ) {
-  #      $timea .= 'item found = ' . $b;
+ #       $timea .= 'item found = ' . $b;
         $item = $item->unblessed;
         push @sortbarcodes, $item;
         push @barcodes, $item;
       } else {
-  #      $timea .= 'item NOT found = ' . $b;
+        $timea .= 'item NOT found = ' . $b;
         $item->{itemcallnumber} = $b;
         $item->{itemnumber} = $b;
         $item->{barcode} = $b;
@@ -183,7 +190,7 @@ sub inventory2 {
         push @barcodes, $item;
       }
       	$count = $count + 1;
-#        $timea .= 'count ' . $count;
+       # $timea .= 'count ' . $count;
   }
 
 
@@ -191,18 +198,22 @@ sub inventory2 {
 
 	#if ($cgi->cookie( 'barcodes' )) {
 	#	@barcodes = $cgi->cookie( 'barcodes' );
-	#	my $test = "cookie (barcodes) does exist";
+	#	$timea .= "cookie (barcodes) does exist " . Dumper(\@barcodes);
 	#	$template->param( 'test' => $test );
+	#} else {
+	#	$timea .= "cookie (barcodes) does NOT exist " . Dumper(\$cgi->cookie) . "</br>";
+	#	$timea .= ". Barcode = " . $bc;
 	#}
   unless ($duplicate == 1) {
-
+	#$timea .= '. Made it into unless duplicate';
   	# set date to log in datelastseen column
   	my $dt = DateTime->now;
   	my $datelastseen = $dt->ymd('-');
-  	my $kohaitem = Koha::Items->find({barcode => $bc});
+  	my $kohaitem = Koha::Items->find({barcode => $bc});	
     my $item;
   	if ( $kohaitem ) {
   		my $item = $kohaitem->unblessed;
+		# $timea .= "</br>Koha item: " . Dumper(\$item) . "</br>";
         # Modify date last seen for scanned items, remove lost status
         $kohaitem->set({ itemlost => 0, datelastseen => $datelastseen })->store;
         # update item hash accordingly
@@ -214,7 +225,6 @@ sub inventory2 {
       $item->{itemcallnumber} = $bc;
       $item->{itemnumber} = $bc;
       $item->{barcode} = $bc;
-      $item->{problem} = "item not found";
       $erroritems++;
       if ( !@barcodes ) {
         # if this is the first item scanned, send restart Error
@@ -228,6 +238,7 @@ sub inventory2 {
 
 # start of checks - need to add mending and/or processing
 	for ( my $i = 0; $i < @sortbarcodes; $i++ ) {
+		#$timea .= 'inside start of checks for loop';
 		my $item = $sortbarcodes[$i];
     my $firstitem = $sortbarcodes[0];
 
@@ -444,6 +455,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     my %seenmove;
     @move = grep { ! $seenmove{ $_ }++ } @move;
   # this bracket ends outer unless
+#  $timea .= '<p>end of sorting array</p>';
 	}
 
 
@@ -474,6 +486,7 @@ if ( scalar(@sortbarcodes) > 0 ) {
     }
   }
 # end handling if count of barcodes is > 0
+# $timea .= '<p>end handling if count of barcodes is > 0</p>';
 }
 
 
@@ -481,6 +494,9 @@ if ( scalar(@sortbarcodes) > 0 ) {
 	$template->param( errorloop => \@error ) if (@error);
   $template->param( 'misshelved' => $count_out_of_order ) if ($count_out_of_order);
   $template->param( 'erroritems' => $erroritems ) if ($erroritems);
+ # $template->param(csrf_token => Koha::Token->new->generate_csrf({ session_id => $input->cookie('CGISESSID'),}),);
+  
+ # $timea .= 'input cookie = ' . $input->cookie('CGISESSID');
   my $end = time();
 #  my $time = $end - $start;
   my $enda = time();
